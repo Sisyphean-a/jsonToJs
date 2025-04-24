@@ -1,12 +1,18 @@
 <template>
   <div class="js-transformer">
-    <div class="function-header">function transform(json) {</div>
+    <div class="function-header">
+      <span style="color: #2196f3">function </span>
+      <span style="color: #4caf50">transform</span>(<span style="color: #ff9800">json</span>) {
+    </div>
 
     <div class="code-editor">
+      <div ref="editor" class="hljs" v-html="highlightedCode"></div>
       <textarea
         v-model="jsCode"
         class="js-editor"
-        placeholder="在这里输入转换代码，例如：&#10;return { ...json, processed: true }"
+        @input="updateHighlight"
+        @keydown.ctrl.enter.prevent="handleCtrlEnter"
+        placeholder="在这里输入转换代码，例如：&#10;return {&#10;  ...json,&#10;  processed: true,&#10;  ids: json.data.map(item => item.id)&#10;}&#10;按下Ctrl+Enter快速执行"
       ></textarea>
     </div>
 
@@ -14,6 +20,7 @@
 
     <div class="button-area">
       <v-btn color="primary" @click="executeTransform" :loading="isExecuting"> 执行转换 </v-btn>
+      <v-btn color="secondary" @click="formatCode" class="ml-2"> 格式化代码 </v-btn>
     </div>
 
     <div v-if="error" class="error-area">
@@ -24,7 +31,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/github.css'
+import * as prettier from 'prettier/standalone'
+import * as prettierPluginBabel from 'prettier/parser-babel'
+import * as prettierPluginEstree from 'prettier/plugins/estree'
 
 const props = defineProps({
   json: {
@@ -38,6 +50,37 @@ const emit = defineEmits(['update:transformedJson'])
 const jsCode = ref('')
 const error = ref('')
 const isExecuting = ref(false)
+const editor = ref(null)
+
+const highlightedCode = computed(() => {
+  return hljs.highlight(jsCode.value, { language: 'javascript' }).value
+})
+
+const updateHighlight = () => {
+  if (editor.value) {
+    editor.value.innerHTML = highlightedCode.value
+  }
+}
+
+const formatCode = async () => {
+  try {
+    const formatted = await prettier.format(jsCode.value, {
+      parser: 'babel',
+      plugins: [prettierPluginBabel, prettierPluginEstree],
+      semi: false,
+      singleQuote: true,
+      tabWidth: 2,
+      printWidth: 80,
+      trailingComma: 'none',
+      bracketSpacing: true,
+      arrowParens: 'avoid',
+    })
+    jsCode.value = formatted
+    updateHighlight()
+  } catch (err) {
+    error.value = '格式化代码时出错：' + err.message
+  }
+}
 
 const executeTransform = () => {
   isExecuting.value = true
@@ -70,6 +113,15 @@ const executeTransform = () => {
     isExecuting.value = false
   }
 }
+
+const handleCtrlEnter = async () => {
+  await formatCode()
+  executeTransform()
+}
+
+onMounted(() => {
+  updateHighlight()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -91,6 +143,23 @@ const executeTransform = () => {
   .code-editor {
     flex: 1;
     min-height: 100px;
+    position: relative;
+  }
+
+  .hljs {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px;
+    pointer-events: none;
+    z-index: 1;
+    white-space: pre;
+    overflow: auto;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
   }
 
   .js-editor {
@@ -99,8 +168,16 @@ const executeTransform = () => {
     padding: 10px;
     border: 1px solid #dcdfe6;
     border-radius: 4px;
-    font-family: monospace;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
     resize: none;
+    background: transparent;
+    color: transparent;
+    caret-color: black;
+    position: relative;
+    z-index: 2;
+    tab-size: 2;
 
     &:focus {
       outline: none;
