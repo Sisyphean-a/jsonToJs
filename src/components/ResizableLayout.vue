@@ -3,8 +3,8 @@
     <template v-for="(_, index) in columnCount" :key="index">
       <v-sheet class="column" :style="{ width: `${columnWidths[index]}%` }">
         <column-header :is-collapsed="isCollapsed[index]" @toggle="toggleColumn(index)" />
-        <div class="column-content">
-          <slot :name="`column${index + 1}`" v-if="!isCollapsed[index]"></slot>
+        <div class="column-content" :style="{ display: isCollapsed[index] ? 'none' : 'block' }">
+          <slot :name="`column${index + 1}`"></slot>
         </div>
       </v-sheet>
       <div
@@ -208,6 +208,8 @@ onUnmounted(() => {
   flex: 1;
   overflow: auto;
   padding: 16px;
+  background-color: #fafafa;
+  transition: display 0.3s ease;
 }
 
 .resize-handle {
