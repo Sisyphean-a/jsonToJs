@@ -1,9 +1,7 @@
 <template>
   <div class="d-flex flex-row" style="height: 100vh; width: 100vw">
     <v-sheet class="column" :style="{ width: `${columnWidths[0]}%` }">
-      <div class="column-header" @click="toggleColumn(0)">
-        <span class="collapse-text">{{ isCollapsed[0] ? '点击展开' : '点击折叠' }}</span>
-      </div>
+      <column-header :is-collapsed="isCollapsed[0]" @toggle="toggleColumn(0)" />
       <div class="column-content">
         <v-textarea
           v-if="!isCollapsed[0]"
@@ -21,9 +19,7 @@
     <div class="resize-handle" @mousedown="startResize(0)"></div>
 
     <v-sheet class="column" :style="{ width: `${columnWidths[1]}%` }">
-      <div class="column-header" @click="toggleColumn(1)">
-        <span class="collapse-text">{{ isCollapsed[1] ? '点击展开' : '点击折叠' }}</span>
-      </div>
+      <column-header :is-collapsed="isCollapsed[1]" @toggle="toggleColumn(1)" />
       <div class="column-content">
         <json-view v-if="!isCollapsed[1]" :json="json" class="pa-2" />
       </div>
@@ -32,9 +28,7 @@
     <div class="resize-handle" @mousedown="startResize(1)"></div>
 
     <v-sheet class="column" :style="{ width: `${columnWidths[2]}%` }">
-      <div class="column-header" @click="toggleColumn(2)">
-        <span class="collapse-text">{{ isCollapsed[2] ? '点击展开' : '点击折叠' }}</span>
-      </div>
+      <column-header :is-collapsed="isCollapsed[2]" @toggle="toggleColumn(2)" />
       <div class="column-content">
         <div v-if="!isCollapsed[2]" class="pa-2">第三列内容</div>
       </div>
@@ -43,9 +37,7 @@
     <div class="resize-handle" @mousedown="startResize(2)"></div>
 
     <v-sheet class="column" :style="{ width: `${columnWidths[3]}%` }">
-      <div class="column-header" @click="toggleColumn(3)">
-        <span class="collapse-text">{{ isCollapsed[3] ? '点击展开' : '点击折叠' }}</span>
-      </div>
+      <column-header :is-collapsed="isCollapsed[3]" @toggle="toggleColumn(3)" />
       <div class="column-content">
         <div v-if="!isCollapsed[3]" class="pa-2">第四列内容</div>
       </div>
@@ -56,6 +48,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import jsonView from '@/components/jsonView.vue'
+import ColumnHeader from '@/components/ColumnHeader.vue'
 
 // 默认JSON数据
 const defaultJson = {
@@ -237,27 +230,6 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.column-header {
-  display: flex;
-  justify-content: flex-end; /* 让文本靠右 */
-  padding: 8px; /* 稍微增加内边距 */
-  border-bottom: 1px solid #e0e0e0;
-  background-color: #f5f5f5;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  cursor: pointer;
-  align-items: center;
-  height: 40px; /* 固定一个高度，避免折叠时变化 */
-  box-sizing: border-box;
-}
-
-.collapse-text {
-  font-size: 12px; /* 调整字体大小 */
-  color: #1976d2; /* 使用主题色 */
-  user-select: none; /* 防止文本被选中 */
-}
-
 .column {
   height: 100%;
   overflow: auto;
