@@ -9,11 +9,11 @@
     </template>
 
     <template #column3>
-      <div>第三列内容</div>
+      <js-transformer :json="json" @update:transformedJson="transformedJson = $event" />
     </template>
 
     <template #column4>
-      <div>第四列内容</div>
+      <json-view :json="transformedJson || json" />
     </template>
   </resizable-layout>
 </template>
@@ -23,6 +23,7 @@ import { ref } from 'vue'
 import jsonView from '@/components/JsonView.vue'
 import JsonInputContent from '@/components/JsonInputContent.vue'
 import ResizableLayout from '@/components/ResizableLayout.vue'
+import JsTransformer from '@/components/JsTransformer.vue'
 
 // 默认JSON数据
 const defaultJson = {
@@ -38,6 +39,7 @@ const defaultJson = {
 
 const json = ref(defaultJson)
 const jsonInput = ref(JSON.stringify(defaultJson, null, 2))
+const transformedJson = ref(defaultJson)
 const columnCount = ref(4) // 默认4列，可以根据需要调整
 </script>
 

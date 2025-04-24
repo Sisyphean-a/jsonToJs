@@ -42,8 +42,6 @@ const handleInput = () => {
     emit('update:json', parsedJson)
     hasError.value = false
   } catch (e) {
-    // 解析错误时不更新
-    console.log('解析错误', e)
     hasError.value = true
   }
 }
