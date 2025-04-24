@@ -34,12 +34,12 @@ const resizingIndex = ref(null)
 const startX = ref(0)
 const startWidths = ref([])
 
-// 添加折叠状态管理
+// 折叠状态管理
 const isCollapsed = ref(Array(props.columnCount).fill(false))
 
 // 定义折叠后的最小宽度百分比
 const collapsedWidthPercentage = 4
-// 定义展开时的最小宽度百分比 (避免宽度过小)
+// 定义展开时的最小宽度百分比
 const minExpandedWidthPercentage = 10
 
 // 计算可见列的数量
@@ -47,12 +47,8 @@ const visibleColumnsCount = computed(() => {
   return isCollapsed.value.filter((collapsed) => !collapsed).length
 })
 
-// 缓存宽度计算结果
-const widthCache = ref(new Map())
-
 // 切换列的折叠状态
 const toggleColumn = (index) => {
-  // 如果要折叠的是最后一列可见列，则阻止操作
   if (!isCollapsed.value[index] && visibleColumnsCount.value <= 1) {
     console.warn('Cannot collapse the last visible column.')
     return
@@ -67,42 +63,25 @@ const redistributeWidths = () => {
   const visibleCount = visibleColumnsCount.value
   const collapsedCount = props.columnCount - visibleCount
 
-  // 检查缓存
-  const cacheKey = `${visibleCount}-${collapsedCount}-${isCollapsed.value.join(',')}`
-  if (widthCache.value.has(cacheKey)) {
-    columnWidths.value = widthCache.value.get(cacheKey)
-    return
-  }
-
-  // 如果所有列都折叠 (理论上不应发生，因为 toggleColumn 会阻止)
+  // 如果所有列都折叠，强制展开第一个
   if (visibleCount === 0 && collapsedCount > 0) {
-    // 强制展开第一个折叠的列
     const firstCollapsedIndex = isCollapsed.value.findIndex((c) => c)
     if (firstCollapsedIndex !== -1) {
       isCollapsed.value[firstCollapsedIndex] = false
-      // 重新计算 visibleCount 和 collapsedCount
-      visibleCount = 1
-      collapsedCount = props.columnCount - 1
-    } else {
-      // 极端情况：无法找到折叠列，则全部展开
-      isCollapsed.value.fill(false)
-      visibleCount = props.columnCount
-      collapsedCount = 0
+      return
     }
   }
 
   // 如果只有展开的列，则平分
   if (collapsedCount === 0) {
-    const evenWidth = 100 / props.columnCount
-    columnWidths.value = Array(props.columnCount).fill(evenWidth)
-    widthCache.value.set(cacheKey, columnWidths.value)
+    columnWidths.value = Array(props.columnCount).fill(100 / props.columnCount)
     return
   }
 
   // 计算折叠列占用的总宽度
   const totalCollapsedWidth = collapsedCount * collapsedWidthPercentage
   // 计算剩余给展开列的总宽度
-  let totalVisibleWidth = 100 - totalCollapsedWidth
+  const totalVisibleWidth = 100 - totalCollapsedWidth
 
   // 计算每个展开列的理论宽度
   let visibleColumnWidth = totalVisibleWidth / visibleCount
@@ -110,7 +89,7 @@ const redistributeWidths = () => {
   // 确保展开列不低于最小宽度
   if (visibleColumnWidth < minExpandedWidthPercentage) {
     visibleColumnWidth = minExpandedWidthPercentage
-    totalVisibleWidth = visibleCount * visibleColumnWidth
+    const totalVisibleWidth = visibleCount * visibleColumnWidth
     const remainingForCollapsed = 100 - totalVisibleWidth
     const actualCollapsedWidth = collapsedCount > 0 ? remainingForCollapsed / collapsedCount : 0
 
@@ -124,9 +103,6 @@ const redistributeWidths = () => {
       .fill(0)
       .map((_, i) => (isCollapsed.value[i] ? collapsedWidthPercentage : visibleColumnWidth))
   }
-
-  // 缓存结果
-  widthCache.value.set(cacheKey, columnWidths.value)
 }
 
 // 开始调整大小
@@ -163,7 +139,7 @@ const handleMouseMove = (event) => {
   let newWidthLeft = originalWidthLeft + deltaPercentage
   let newWidthRight = originalWidthRight - deltaPercentage
 
-  // 应用最小宽度限制 (对展开列)
+  // 应用最小宽度限制
   const minWidth = minExpandedWidthPercentage
   if (newWidthLeft < minWidth) {
     deltaPercentage = minWidth - originalWidthLeft

@@ -6,14 +6,7 @@
     </div>
 
     <div class="code-editor">
-      <div ref="editor" class="hljs" v-html="highlightedCode"></div>
-      <textarea
-        v-model="jsCode"
-        class="js-editor"
-        @input="updateHighlight"
-        @keydown.ctrl.enter.prevent="handleCtrlEnter"
-        placeholder="在这里输入转换代码，例如：&#10;return {&#10;  ...json,&#10;  processed: true,&#10;  ids: json.data.map(item => item.id)&#10;}&#10;按下Ctrl+Enter快速执行"
-      ></textarea>
+      <div ref="editor"></div>
     </div>
 
     <div class="function-footer">}</div>
@@ -34,13 +27,95 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import hljs from 'highlight.js'
-import 'highlight.js/styles/github.css'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { EditorState } from '@codemirror/state'
+import { EditorView, keymap } from '@codemirror/view'
+import { javascript } from '@codemirror/lang-javascript'
+import { HighlightStyle, syntaxHighlighting } from '@codemirror/language'
+import { tags } from '@lezer/highlight'
 import * as prettier from 'prettier/standalone'
 import * as prettierPluginBabel from 'prettier/parser-babel'
 import * as prettierPluginEstree from 'prettier/plugins/estree'
 import CommonCodeDialog from './CommonCodeDialog.vue'
+
+// 自定义浅色主题
+const lightTheme = EditorView.theme({
+  '&': {
+    backgroundColor: '#fafafa',
+    color: '#333333',
+  },
+  '.cm-content': {
+    caretColor: '#333333',
+  },
+  '.cm-cursor, .cm-dropCursor': {
+    borderLeftColor: '#333333',
+  },
+  '.cm-selectionBackground': {
+    backgroundColor: '#e6f3ff',
+  },
+  '.cm-line': {
+    '&::selection, & > span::selection, & > span > span::selection': {
+      backgroundColor: '#e6f3ff',
+    },
+  },
+  '.cm-gutters': {
+    backgroundColor: '#f5f5f5',
+    color: '#999999',
+    borderRight: '1px solid #e0e0e0',
+  },
+  '.cm-activeLineGutter': {
+    backgroundColor: '#f0f0f0',
+    color: '#333333',
+  },
+  '.cm-activeLine': {
+    backgroundColor: '#f5f5f5',
+  },
+  // JavaScript 语法高亮
+  '.cm-keyword': { color: '#7f0055', fontWeight: 'bold' },
+  '.cm-atom': { color: '#219' },
+  '.cm-number': { color: '#164' },
+  '.cm-def': { color: '#00f' },
+  '.cm-variable': { color: '#333' },
+  '.cm-variable-2': { color: '#05a' },
+  '.cm-variable-3': { color: '#085' },
+  '.cm-property': { color: '#333' },
+  '.cm-operator': { color: '#333' },
+  '.cm-comment': { color: '#a50' },
+  '.cm-string': { color: '#a11' },
+  '.cm-string-2': { color: '#f50' },
+  '.cm-meta': { color: '#555' },
+  '.cm-qualifier': { color: '#555' },
+  '.cm-builtin': { color: '#30a' },
+  '.cm-bracket': { color: '#997' },
+  '.cm-tag': { color: '#170' },
+  '.cm-attribute': { color: '#00c' },
+  '.cm-hr': { color: '#999' },
+  '.cm-link': { color: '#00c' },
+  '.cm-error': { color: '#f00' },
+})
+
+// 定义语法高亮样式
+const jsHighlightStyle = HighlightStyle.define([
+  { tag: tags.keyword, color: '#7f0055', fontWeight: 'bold' },
+  { tag: tags.atom, color: '#219' }, // null, boolean, undefined
+  { tag: tags.number, color: '#164' },
+  { tag: tags.definition(tags.variableName), color: '#00f' }, // let/const/var name
+  { tag: tags.variableName, color: '#333' }, // Other variable names
+  { tag: tags.propertyName, color: '#333' }, // Object properties
+  { tag: tags.operator, color: '#333' },
+  { tag: tags.comment, color: '#a50', fontStyle: 'italic' },
+  { tag: tags.string, color: '#a11' },
+  { tag: tags.meta, color: '#555' }, // e.g., 'use strict'
+  { tag: tags.function(tags.variableName), color: '#7f0055' }, // Function definition names
+  { tag: tags.function(tags.propertyName), color: '#7f0055' }, // Method names
+  { tag: tags.punctuation, color: '#997' }, // Brackets, commas etc.
+  { tag: tags.className, color: '#085' },
+  { tag: tags.modifier, color: '#085' }, // Like async
+  { tag: tags.bool, color: '#219' },
+  { tag: tags.regexp, color: '#f50' },
+  { tag: tags.null, color: '#219' },
+  { tag: tags.invalid, color: '#f00' },
+])
 
 const props = defineProps({
   json: {
@@ -51,25 +126,32 @@ const props = defineProps({
 
 const emit = defineEmits(['update:transformedJson'])
 
-const jsCode = ref('')
+const editor = ref(null)
+const editorView = ref(null)
 const error = ref('')
 const isExecuting = ref(false)
-const editor = ref(null)
 const showCommonCodeDialog = ref(false)
 
-const highlightedCode = computed(() => {
-  return hljs.highlight(jsCode.value, { language: 'javascript' }).value
-})
-
-const updateHighlight = () => {
-  if (editor.value) {
-    editor.value.innerHTML = highlightedCode.value
-  }
-}
+// 创建编辑器扩展
+const extensions = [
+  javascript(),
+  lightTheme,
+  syntaxHighlighting(jsHighlightStyle),
+  keymap.of([
+    {
+      key: 'Ctrl-Enter',
+      run: () => {
+        handleCtrlEnter()
+        return true
+      },
+    },
+  ]),
+]
 
 const formatCode = async () => {
   try {
-    const formatted = await prettier.format(jsCode.value, {
+    const code = editorView.value.state.doc.toString()
+    const formatted = await prettier.format(code, {
       parser: 'babel',
       plugins: [prettierPluginBabel, prettierPluginEstree],
       semi: false,
@@ -80,8 +162,15 @@ const formatCode = async () => {
       bracketSpacing: true,
       arrowParens: 'avoid',
     })
-    jsCode.value = formatted
-    updateHighlight()
+
+    // 更新编辑器内容
+    editorView.value.dispatch({
+      changes: {
+        from: 0,
+        to: editorView.value.state.doc.length,
+        insert: formatted,
+      },
+    })
   } catch (err) {
     error.value = '格式化代码时出错：' + err.message
   }
@@ -92,23 +181,22 @@ const executeTransform = () => {
   error.value = ''
 
   try {
-    if (!jsCode.value.trim()) {
+    const code = editorView.value.state.doc.toString()
+    if (!code.trim()) {
       emit('update:transformedJson', props.json)
       return
     }
 
-    // 创建一个新的函数
     const transformFn = new Function(
       'json',
       `
       function transform(json) {
-        ${jsCode.value}
+        ${code}
       }
       return transform(json)
     `,
     )
 
-    // 执行转换
     const transformedJson = transformFn(props.json)
     emit('update:transformedJson', transformedJson)
   } catch (err) {
@@ -125,12 +213,33 @@ const handleCtrlEnter = async () => {
 }
 
 const handleCodeSelect = (code) => {
-  jsCode.value = code
-  updateHighlight()
+  if (editorView.value) {
+    editorView.value.dispatch({
+      changes: {
+        from: 0,
+        to: editorView.value.state.doc.length,
+        insert: code,
+      },
+    })
+  }
 }
 
 onMounted(() => {
-  updateHighlight()
+  // 创建编辑器实例
+  editorView.value = new EditorView({
+    state: EditorState.create({
+      doc: '',
+      extensions,
+    }),
+    parent: editor.value,
+  })
+})
+
+onBeforeUnmount(() => {
+  if (editorView.value) {
+    editorView.value.destroy()
+    editorView.value = null
+  }
 })
 </script>
 
@@ -153,45 +262,19 @@ onMounted(() => {
   .code-editor {
     flex: 1;
     min-height: 100px;
-    position: relative;
-  }
-
-  .hljs {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 10px;
-    pointer-events: none;
-    z-index: 1;
-    white-space: pre;
-    overflow: auto;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 14px;
-    line-height: 1.5;
-  }
-
-  .js-editor {
-    width: 100%;
-    height: 100%;
-    padding: 10px;
     border: 1px solid #dcdfe6;
     border-radius: 4px;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 14px;
-    line-height: 1.5;
-    resize: none;
-    background: transparent;
-    color: transparent;
-    caret-color: black;
-    position: relative;
-    z-index: 2;
-    tab-size: 2;
+    overflow: hidden;
 
-    &:focus {
-      outline: none;
+    &:focus-within {
       border-color: #409eff;
+    }
+
+    :deep(.cm-editor) {
+      height: 100%;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.5;
     }
   }
 
