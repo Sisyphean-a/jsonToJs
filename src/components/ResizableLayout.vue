@@ -43,14 +43,17 @@ const collapsedWidthPercentage = 4
 const minExpandedWidthPercentage = 10
 
 // 计算可见列的数量
-const getVisibleColumnsCount = () => {
+const visibleColumnsCount = computed(() => {
   return isCollapsed.value.filter((collapsed) => !collapsed).length
-}
+})
+
+// 缓存宽度计算结果
+const widthCache = ref(new Map())
 
 // 切换列的折叠状态
 const toggleColumn = (index) => {
   // 如果要折叠的是最后一列可见列，则阻止操作
-  if (!isCollapsed.value[index] && getVisibleColumnsCount() <= 1) {
+  if (!isCollapsed.value[index] && visibleColumnsCount.value <= 1) {
     console.warn('Cannot collapse the last visible column.')
     return
   }
@@ -61,8 +64,15 @@ const toggleColumn = (index) => {
 
 // 重新分配宽度
 const redistributeWidths = () => {
-  const visibleCount = getVisibleColumnsCount()
+  const visibleCount = visibleColumnsCount.value
   const collapsedCount = props.columnCount - visibleCount
+
+  // 检查缓存
+  const cacheKey = `${visibleCount}-${collapsedCount}-${isCollapsed.value.join(',')}`
+  if (widthCache.value.has(cacheKey)) {
+    columnWidths.value = widthCache.value.get(cacheKey)
+    return
+  }
 
   // 如果所有列都折叠 (理论上不应发生，因为 toggleColumn 会阻止)
   if (visibleCount === 0 && collapsedCount > 0) {
@@ -84,7 +94,8 @@ const redistributeWidths = () => {
   // 如果只有展开的列，则平分
   if (collapsedCount === 0) {
     const evenWidth = 100 / props.columnCount
-    columnWidths.value = columnWidths.value.map(() => evenWidth)
+    columnWidths.value = Array(props.columnCount).fill(evenWidth)
+    widthCache.value.set(cacheKey, columnWidths.value)
     return
   }
 
@@ -98,25 +109,24 @@ const redistributeWidths = () => {
 
   // 确保展开列不低于最小宽度
   if (visibleColumnWidth < minExpandedWidthPercentage) {
-    // 如果理论宽度过小，说明折叠列占用了太多空间
-    // 我们需要减少折叠列的数量或者它们的宽度，这里优先保证展开列至少有 minExpandedWidthPercentage
     visibleColumnWidth = minExpandedWidthPercentage
-    // 重新计算需要多少总宽度给展开列
     totalVisibleWidth = visibleCount * visibleColumnWidth
-    // 剩余给折叠列的总宽度也相应调整
     const remainingForCollapsed = 100 - totalVisibleWidth
-    // 重新计算每个折叠列的宽度 (可能小于我们期望的 collapsedWidthPercentage)
     const actualCollapsedWidth = collapsedCount > 0 ? remainingForCollapsed / collapsedCount : 0
 
-    columnWidths.value = columnWidths.value.map((_, i) =>
-      isCollapsed.value[i] ? Math.max(0, actualCollapsedWidth) : visibleColumnWidth,
-    )
+    columnWidths.value = Array(props.columnCount)
+      .fill(0)
+      .map((_, i) =>
+        isCollapsed.value[i] ? Math.max(0, actualCollapsedWidth) : visibleColumnWidth,
+      )
   } else {
-    // 正常分配
-    columnWidths.value = columnWidths.value.map((_, i) =>
-      isCollapsed.value[i] ? collapsedWidthPercentage : visibleColumnWidth,
-    )
+    columnWidths.value = Array(props.columnCount)
+      .fill(0)
+      .map((_, i) => (isCollapsed.value[i] ? collapsedWidthPercentage : visibleColumnWidth))
   }
+
+  // 缓存结果
+  widthCache.value.set(cacheKey, columnWidths.value)
 }
 
 // 开始调整大小
@@ -198,6 +208,7 @@ onUnmounted(() => {
   transition: width 0.3s ease;
   background-color: #f5f5f5;
   border-right: 1px solid #e0e0e0;
+  will-change: width;
 
   &:last-child {
     border-right: none;
@@ -210,6 +221,7 @@ onUnmounted(() => {
   padding: 16px;
   background-color: #fafafa;
   transition: display 0.3s ease;
+  will-change: display;
 }
 
 .resize-handle {
