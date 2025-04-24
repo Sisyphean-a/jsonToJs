@@ -5,15 +5,15 @@
     </template>
 
     <template #column2>
-      <json-view :json="json" class="pa-2" />
+      <json-view :json="json" />
     </template>
 
     <template #column3>
-      <div class="pa-2">第三列内容</div>
+      <div>第三列内容</div>
     </template>
 
     <template #column4>
-      <div class="pa-2">第四列内容</div>
+      <div>第四列内容</div>
     </template>
   </resizable-layout>
 </template>
