@@ -2,18 +2,11 @@
   <div class="d-flex flex-row" style="height: 100vh; width: 100vw">
     <v-sheet class="column" :style="{ width: `${columnWidths[0]}%` }">
       <column-header :is-collapsed="isCollapsed[0]" @toggle="toggleColumn(0)" />
-      <div class="column-content">
-        <v-textarea
-          v-if="!isCollapsed[0]"
-          v-model="jsonInput"
-          label="粘贴JSON数据"
-          auto-grow
-          filled
-          height="100%"
-          @input="updateJson"
-          class="pa-2"
-        ></v-textarea>
-      </div>
+      <json-input-content
+        v-if="!isCollapsed[0]"
+        :initial-json="jsonInput"
+        @update:json="json = $event"
+      />
     </v-sheet>
 
     <div class="resize-handle" @mousedown="startResize(0)"></div>
@@ -47,8 +40,9 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
-import jsonView from '@/components/jsonView.vue'
+import jsonView from '@/components/JsonView.vue'
 import ColumnHeader from '@/components/ColumnHeader.vue'
+import JsonInputContent from '@/components/JsonInputContent.vue'
 
 // 默认JSON数据
 const defaultJson = {
@@ -156,15 +150,6 @@ const redistributeWidths = () => {
   }
 }
 
-// 更新JSON数据
-const updateJson = () => {
-  try {
-    json.value = JSON.parse(jsonInput.value)
-  } catch (e) {
-    // 解析错误时不更新
-  }
-}
-
 // 开始调整大小
 const startResize = (index) => {
   resizingIndex.value = index
@@ -257,7 +242,7 @@ onUnmounted(() => {
   }
 }
 
-::v-deep .v-theme--light {
+:deep(.v-theme--light) {
   height: 100%;
 }
 </style>
