@@ -21,7 +21,10 @@
     <div class="button-area">
       <v-btn color="primary" @click="executeTransform" :loading="isExecuting"> 执行转换 </v-btn>
       <v-btn color="secondary" @click="formatCode" class="ml-2"> 格式化代码 </v-btn>
+      <v-btn color="info" @click="showCommonCodeDialog = true" class="ml-2"> 常用代码 </v-btn>
     </div>
+
+    <CommonCodeDialog v-model="showCommonCodeDialog" @select="handleCodeSelect" />
 
     <div v-if="error" class="error-area">
       <div class="error-title">错误信息：</div>
@@ -37,6 +40,7 @@ import 'highlight.js/styles/github.css'
 import * as prettier from 'prettier/standalone'
 import * as prettierPluginBabel from 'prettier/parser-babel'
 import * as prettierPluginEstree from 'prettier/plugins/estree'
+import CommonCodeDialog from './CommonCodeDialog.vue'
 
 const props = defineProps({
   json: {
@@ -51,6 +55,7 @@ const jsCode = ref('')
 const error = ref('')
 const isExecuting = ref(false)
 const editor = ref(null)
+const showCommonCodeDialog = ref(false)
 
 const highlightedCode = computed(() => {
   return hljs.highlight(jsCode.value, { language: 'javascript' }).value
@@ -117,6 +122,11 @@ const executeTransform = () => {
 const handleCtrlEnter = async () => {
   await formatCode()
   executeTransform()
+}
+
+const handleCodeSelect = (code) => {
+  jsCode.value = code
+  updateHighlight()
 }
 
 onMounted(() => {

@@ -46,3 +46,9 @@ const handleInput = () => {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+:deep(.v-input__details) {
+  display: none;
+}
+</style>
