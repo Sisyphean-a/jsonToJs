@@ -20,7 +20,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import jsonView from '@/components/JsonView.vue'
+import JsonView from '@/components/JsonView.vue'
 import JsonInputContent from '@/components/JsonInputContent.vue'
 import ResizableLayout from '@/components/ResizableLayout.vue'
 import JsTransformer from '@/components/JsTransformer.vue'
