@@ -1,5 +1,5 @@
 <template>
-  <resizable-layout>
+  <resizable-layout :column-count="columnCount">
     <template #column1>
       <json-input-content :initial-json="jsonInput" @update:json="json = $event" />
     </template>
@@ -38,6 +38,7 @@ const defaultJson = {
 
 const json = ref(defaultJson)
 const jsonInput = ref(JSON.stringify(defaultJson, null, 2))
+const columnCount = ref(4) // 默认4列，可以根据需要调整
 </script>
 
 <style lang="scss" scoped></style>

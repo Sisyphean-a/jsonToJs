@@ -1,53 +1,41 @@
 <template>
   <div class="d-flex flex-row" style="height: 100vh; width: 100vw">
-    <v-sheet class="column" :style="{ width: `${columnWidths[0]}%` }">
-      <column-header :is-collapsed="isCollapsed[0]" @toggle="toggleColumn(0)" />
-      <div class="column-content">
-        <slot name="column1" v-if="!isCollapsed[0]"></slot>
-      </div>
-    </v-sheet>
-
-    <div class="resize-handle" @mousedown="startResize(0)"></div>
-
-    <v-sheet class="column" :style="{ width: `${columnWidths[1]}%` }">
-      <column-header :is-collapsed="isCollapsed[1]" @toggle="toggleColumn(1)" />
-      <div class="column-content">
-        <slot name="column2" v-if="!isCollapsed[1]"></slot>
-      </div>
-    </v-sheet>
-
-    <div class="resize-handle" @mousedown="startResize(1)"></div>
-
-    <v-sheet class="column" :style="{ width: `${columnWidths[2]}%` }">
-      <column-header :is-collapsed="isCollapsed[2]" @toggle="toggleColumn(2)" />
-      <div class="column-content">
-        <slot name="column3" v-if="!isCollapsed[2]"></slot>
-      </div>
-    </v-sheet>
-
-    <div class="resize-handle" @mousedown="startResize(2)"></div>
-
-    <v-sheet class="column" :style="{ width: `${columnWidths[3]}%` }">
-      <column-header :is-collapsed="isCollapsed[3]" @toggle="toggleColumn(3)" />
-      <div class="column-content">
-        <slot name="column4" v-if="!isCollapsed[3]"></slot>
-      </div>
-    </v-sheet>
+    <template v-for="(_, index) in columnCount" :key="index">
+      <v-sheet class="column" :style="{ width: `${columnWidths[index]}%` }">
+        <column-header :is-collapsed="isCollapsed[index]" @toggle="toggleColumn(index)" />
+        <div class="column-content">
+          <slot :name="`column${index + 1}`" v-if="!isCollapsed[index]"></slot>
+        </div>
+      </v-sheet>
+      <div
+        v-if="index < columnCount - 1"
+        class="resize-handle"
+        @mousedown="startResize(index)"
+      ></div>
+    </template>
   </div>
 </template>
 
 <script setup>
-import { ref, onUnmounted } from 'vue'
+import { ref, onUnmounted, computed } from 'vue'
 import ColumnHeader from '@/components/ColumnHeader.vue'
 
+const props = defineProps({
+  columnCount: {
+    type: Number,
+    required: true,
+    validator: (value) => value >= 1,
+  },
+})
+
 // 列宽度百分比
-const columnWidths = ref([25, 25, 25, 25])
+const columnWidths = ref(Array(props.columnCount).fill(100 / props.columnCount))
 const resizingIndex = ref(null)
 const startX = ref(0)
 const startWidths = ref([])
 
 // 添加折叠状态管理
-const isCollapsed = ref([false, false, false, false])
+const isCollapsed = ref(Array(props.columnCount).fill(false))
 
 // 定义折叠后的最小宽度百分比
 const collapsedWidthPercentage = 4
@@ -74,7 +62,7 @@ const toggleColumn = (index) => {
 // 重新分配宽度
 const redistributeWidths = () => {
   const visibleCount = getVisibleColumnsCount()
-  const collapsedCount = isCollapsed.value.length - visibleCount
+  const collapsedCount = props.columnCount - visibleCount
 
   // 如果所有列都折叠 (理论上不应发生，因为 toggleColumn 会阻止)
   if (visibleCount === 0 && collapsedCount > 0) {
@@ -84,18 +72,18 @@ const redistributeWidths = () => {
       isCollapsed.value[firstCollapsedIndex] = false
       // 重新计算 visibleCount 和 collapsedCount
       visibleCount = 1
-      collapsedCount = isCollapsed.value.length - 1
+      collapsedCount = props.columnCount - 1
     } else {
       // 极端情况：无法找到折叠列，则全部展开
       isCollapsed.value.fill(false)
-      visibleCount = isCollapsed.value.length
+      visibleCount = props.columnCount
       collapsedCount = 0
     }
   }
 
   // 如果只有展开的列，则平分
   if (collapsedCount === 0) {
-    const evenWidth = 100 / isCollapsed.value.length
+    const evenWidth = 100 / props.columnCount
     columnWidths.value = columnWidths.value.map(() => evenWidth)
     return
   }
