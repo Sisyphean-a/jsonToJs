@@ -6,7 +6,7 @@
     </div>
 
     <div class="code-editor">
-      <div ref="editor"></div>
+      <div ref="editor" style="height: 100%"></div>
     </div>
 
     <div class="function-footer">}</div>
@@ -138,6 +138,17 @@ const extensions = [
   lightTheme,
   syntaxHighlighting(jsHighlightStyle),
   keymap.of([
+    {
+      key: 'Enter',
+      run: (view) => {
+        // 默认的换行行为
+        view.dispatch({
+          changes: { from: view.state.selection.main.head, insert: '\n' },
+          selection: { anchor: view.state.selection.main.head + 1 },
+        })
+        return true
+      },
+    },
     {
       key: 'Ctrl-Enter',
       run: () => {
