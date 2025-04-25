@@ -13,7 +13,7 @@
     </template>
 
     <template #column4>
-      <json-view :json="transformedJson || json" />
+      <json-view :json="transformedJson" />
     </template>
   </resizable-layout>
 </template>
@@ -37,9 +37,15 @@ const defaultJson = {
   },
 }
 
+const defaultTransformedJson = {
+  province: '北京',
+  city: '北京',
+  district: '朝阳区',
+}
+
 const json = ref(defaultJson)
 const jsonInput = ref(JSON.stringify(defaultJson, null, 2))
-const transformedJson = ref(defaultJson)
+const transformedJson = ref(defaultTransformedJson)
 const columnCount = ref(4) // 默认4列，可以根据需要调整
 </script>
 

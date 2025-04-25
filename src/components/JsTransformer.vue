@@ -70,6 +70,13 @@ const extensions = [
         return true
       },
     },
+    {
+      key: 'Ctrl-s',
+      run: () => {
+        handleCtrlSave()
+        return true
+      },
+    },
   ]),
 ]
 
@@ -127,6 +134,10 @@ const handleCtrlEnter = async () => {
   executeTransform()
 }
 
+const handleCtrlSave = async () => {
+  await formatCode()
+}
+
 const handleCodeSelect = (code) => {
   if (editorView.value) {
     editorView.value.dispatch({
@@ -143,7 +154,7 @@ onMounted(() => {
   // 创建编辑器实例
   editorView.value = new EditorView({
     state: EditorState.create({
-      doc: '',
+      doc: '// Ctrl + Enter：格式化+执行\n// Ctrl + S：格式化\nreturn json.address',
       extensions,
     }),
     parent: editor.value,

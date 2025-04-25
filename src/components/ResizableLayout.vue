@@ -3,7 +3,7 @@
     <template v-for="(_, index) in columnCount" :key="index">
       <v-sheet class="column" :style="{ width: `${columnWidths[index]}%` }">
         <column-header :is-collapsed="isCollapsed[index]" @toggle="toggleColumn(index)" />
-        <div class="column-content" :style="{ display: isCollapsed[index] ? 'none' : 'block' }">
+        <div class="column-content" v-show="transitioningColumn !== index && !isCollapsed[index]">
           <slot :name="`column${index + 1}`"></slot>
         </div>
       </v-sheet>
@@ -27,6 +27,10 @@ const props = defineProps({
     validator: (value) => value >= 1,
   },
 })
+
+// 修改过渡状态控制
+const transitioningColumn = ref(null)
+const transitionTimeout = ref(null)
 
 // 列宽度百分比
 const columnWidths = ref(Array(props.columnCount).fill(100 / props.columnCount))
@@ -54,7 +58,20 @@ const toggleColumn = (index) => {
     return
   }
 
+  transitioningColumn.value = index
   isCollapsed.value[index] = !isCollapsed.value[index]
+
+  // 清除之前的定时器
+  if (transitionTimeout.value) {
+    clearTimeout(transitionTimeout.value)
+  }
+
+  // 设置新的定时器
+  transitionTimeout.value = setTimeout(() => {
+    transitioningColumn.value = null
+    transitionTimeout.value = null
+  }, 300) // 与CSS过渡时间保持一致
+
   redistributeWidths()
 }
 
@@ -162,10 +179,13 @@ const stopResize = () => {
   document.removeEventListener('mouseup', stopResize)
 }
 
-// 组件卸载时移除事件监听
+// 组件卸载时移除事件监听和定时器
 onUnmounted(() => {
   document.removeEventListener('mousemove', handleMouseMove)
   document.removeEventListener('mouseup', stopResize)
+  if (transitionTimeout.value) {
+    clearTimeout(transitionTimeout.value)
+  }
 })
 </script>
 

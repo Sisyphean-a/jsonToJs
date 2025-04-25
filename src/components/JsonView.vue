@@ -8,7 +8,7 @@
       ></span>
       <div class="content-wrap">
         <p class="first-line">
-          <span v-if="jsonKey" class="json-key">"{{ jsonKey }}": </span>
+          <span v-if="jsonKey" class="json-key">"{{ jsonKey }}":</span>
           <span v-if="length">
             {{ prefix }}
             {{ innerclosed ? '...' + subfix : '' }}
