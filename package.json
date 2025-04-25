@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.3",
+    "code-inspector-plugin": "^0.20.10",
     "prettier": "^3.5.3",
     "sass-embedded": "^1.87.0",
     "vite": "^6.2.4",
