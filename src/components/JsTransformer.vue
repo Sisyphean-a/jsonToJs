@@ -77,8 +77,53 @@ const extensions = [
         return true
       },
     },
+    {
+      key: 'Ctrl-/',
+      run: (view) => {
+        toggleLineComment(view)
+        return true
+      },
+    },
   ]),
 ]
+
+const toggleLineComment = (view) => {
+  const { state } = view
+  const { doc } = state
+  const { head } = state.selection.main
+
+  // 获取当前行的行号
+  const line = doc.lineAt(head)
+  const lineText = line.text
+
+  // 检查当前行是否已经被注释
+  const trimmedText = lineText.trimStart()
+  const leadingSpaces = lineText.length - trimmedText.length
+  const isCommented = trimmedText.startsWith('//')
+
+  // 创建变更
+  if (isCommented) {
+    // 移除注释
+    const commentStart = line.from + leadingSpaces
+    view.dispatch({
+      changes: {
+        from: commentStart,
+        to: commentStart + 2,
+        insert: '',
+      },
+    })
+  } else {
+    // 添加注释
+    const commentStart = line.from + leadingSpaces
+    view.dispatch({
+      changes: {
+        from: commentStart,
+        to: commentStart,
+        insert: '//',
+      },
+    })
+  }
+}
 
 const formatCode = async () => {
   try {
@@ -154,7 +199,7 @@ onMounted(() => {
   // 创建编辑器实例
   editorView.value = new EditorView({
     state: EditorState.create({
-      doc: '// Ctrl + Enter：格式化+执行\n// Ctrl + S：格式化\nreturn json.address',
+      doc: '// Ctrl + Enter：格式化+执行\n// Ctrl + S：格式化\n// Ctrl + /：注释/取消注释\nreturn json.address',
       extensions,
     }),
     parent: editor.value,
