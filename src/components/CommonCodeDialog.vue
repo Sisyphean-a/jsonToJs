@@ -6,12 +6,12 @@
     <v-card>
       <v-card-title>常用代码示例</v-card-title>
       <v-card-text>
-        <v-expansion-panels>
+        <v-expansion-panels v-model="expandedPanels">
           <v-expansion-panel
             v-for="(code, index) in commonCodes"
             :key="index"
           >
-            <v-expansion-panel-title @click="handlePanelClick(index)">
+            <v-expansion-panel-title>
               {{ code.title }}
             </v-expansion-panel-title>
             <v-expansion-panel-text>
@@ -69,7 +69,7 @@ const dialog = computed({
 
 const codeEditors = ref([])
 const editorViews = ref([])
-const expandedPanels = ref(new Set())
+const expandedPanels = ref([])
 
 // 创建编辑器扩展
 const extensions = createEditorExtensions(true)
@@ -78,12 +78,8 @@ const extensions = createEditorExtensions(true)
 const initEditor = async (index) => {
   await nextTick()
   const editor = codeEditors.value[index]
-  if (editor) {
-    // 如果已经有编辑器实例，先销毁
-    if (editorViews.value[index]) {
-      editorViews.value[index].destroy()
-    }
 
+  if (editor && !editorViews.value[index]) {
     const view = new EditorView({
       state: EditorState.create({
         doc: commonCodes[index].code,
@@ -97,28 +93,34 @@ const initEditor = async (index) => {
 
 // 清理编辑器实例
 const cleanupEditors = () => {
-  editorViews.value.forEach((view) => {
+  editorViews.value.forEach((view, index) => {
     if (view) {
       view.destroy()
     }
   })
   editorViews.value = []
-  expandedPanels.value.clear()
+  expandedPanels.value = []
 }
 
-// 处理面板点击
-const handlePanelClick = async (index) => {
-  if (expandedPanels.value.has(index)) {
-    expandedPanels.value.delete(index)
-    if (editorViews.value[index]) {
-      editorViews.value[index].destroy()
-      editorViews.value[index] = null
+// 监听面板展开状态变化
+watch(
+  expandedPanels,
+  async (newVal, oldVal) => {
+    // 初始化新展开的面板
+    if (newVal !== null) {
+      await initEditor(newVal)
     }
-  } else {
-    expandedPanels.value.add(index)
-    await initEditor(index)
-  }
-}
+
+    // 清理已关闭的面板的编辑器实例
+    if (oldVal !== null && oldVal !== newVal) {
+      if (editorViews.value[oldVal]) {
+        editorViews.value[oldVal].destroy()
+        editorViews.value[oldVal] = null
+      }
+    }
+  },
+  { deep: true },
+)
 
 watch(dialog, (newVal) => {
   if (!newVal) {
@@ -126,14 +128,14 @@ watch(dialog, (newVal) => {
   }
 })
 
+onBeforeUnmount(() => {
+  cleanupEditors()
+})
+
 const selectCode = (code) => {
   emit('select', code.code)
   dialog.value = false
 }
-
-onBeforeUnmount(() => {
-  cleanupEditors()
-})
 </script>
 
 <style scoped>
