@@ -54,7 +54,14 @@
                 {{ isArray ? '' : '"' + item.key + '"' }}
               </span>
               <span v-if="!isArray || item.key">:</span>
-              <span class="json-value">
+              <span
+                class="json-value"
+                :class="{
+                  'json-string': item.type === 'string',
+                  'json-number': item.type === 'number',
+                  'json-bool': item.type === 'boolean',
+                }"
+              >
                 {{ item.value + (index === items.length - 1 ? '' : ',') }}
               </span>
             </p>
@@ -139,10 +146,14 @@ const items = computed(() => {
   if (isArray.value) {
     return props.json.map((item) => {
       const isJSON = isObjectOrArray(item)
+      let type = typeof item
+      if (isJSON) type = 'json'
       return {
         value: isJSON ? item : JSON.stringify(item),
         isJSON,
         key: '',
+        type,
+        raw: item,
       }
     })
   }
@@ -151,10 +162,14 @@ const items = computed(() => {
   return Object.keys(json).map((key) => {
     const item = json[key]
     const isJSON = isObjectOrArray(item)
+    let type = typeof item
+    if (isJSON) type = 'json'
     return {
       value: isJSON ? item : JSON.stringify(item),
       isJSON,
       key,
+      type,
+      raw: item,
     }
   })
 })
@@ -192,6 +207,18 @@ const items = computed(() => {
   .json-value {
     color: #28a745;
     font-weight: 400;
+  }
+
+  .json-string {
+    color: #28a745;
+  }
+
+  .json-number {
+    color: #007bff;
+  }
+
+  .json-bool {
+    color: #fd7e14;
   }
 
   .collapsed-content {
