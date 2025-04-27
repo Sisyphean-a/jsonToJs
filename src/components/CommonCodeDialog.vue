@@ -10,9 +10,8 @@
           <v-expansion-panel
             v-for="(code, index) in commonCodes"
             :key="index"
-            @click="handlePanelClick(index)"
           >
-            <v-expansion-panel-title>
+            <v-expansion-panel-title @click="handlePanelClick(index)">
               {{ code.title }}
             </v-expansion-panel-title>
             <v-expansion-panel-text>
@@ -154,7 +153,7 @@ onBeforeUnmount(() => {
   margin: 0;
   overflow-x: auto;
   border: 1px solid #e0e0e0;
-  min-height: 100px;
+  min-height: 50px;
 }
 
 .v-expansion-panel {
