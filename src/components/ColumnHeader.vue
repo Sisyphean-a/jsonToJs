@@ -1,5 +1,8 @@
 <template>
-  <div class="column-header" @click="$emit('toggle')">
+  <div
+    class="column-header"
+    @click="$emit('toggle')"
+  >
     <span class="collapse-text">{{ isCollapsed ? '点击展开' : '点击折叠' }}</span>
   </div>
 </template>

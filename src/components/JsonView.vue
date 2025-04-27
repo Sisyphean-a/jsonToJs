@@ -1,6 +1,9 @@
 <template>
   <div class="bgView">
-    <div :class="['json-view', length ? 'closeable' : '']" :style="'font-size:' + fontSize + 'px'">
+    <div
+      :class="['json-view', length ? 'closeable' : '']"
+      :style="'font-size:' + fontSize + 'px'"
+    >
       <span
         @click="toggleClose"
         :class="['angle', innerclosed ? 'closed' : '']"
@@ -8,7 +11,11 @@
       ></span>
       <div class="content-wrap">
         <p class="first-line">
-          <span v-if="jsonKey" class="json-key">"{{ jsonKey }}":</span>
+          <span
+            v-if="jsonKey"
+            class="json-key"
+            >"{{ jsonKey }}":</span
+          >
           <span v-if="length">
             {{ prefix }}
             {{ innerclosed ? '...' + subfix : '' }}
@@ -18,8 +25,14 @@
           </span>
           <span v-if="!length">{{ isArray ? '[]' : '{}' }}</span>
         </p>
-        <div v-if="!innerclosed && length" class="json-body">
-          <template v-for="(item, index) in items" :key="index">
+        <div
+          v-if="!innerclosed && length"
+          class="json-body"
+        >
+          <template
+            v-for="(item, index) in items"
+            :key="index"
+          >
             <json-view
               :closed="closed"
               v-if="item.isJSON"
@@ -27,7 +40,10 @@
               :jsonKey="item.key"
               :isLast="index === items.length - 1"
             ></json-view>
-            <p class="json-item" v-else>
+            <p
+              class="json-item"
+              v-else
+            >
               <span class="json-key">
                 {{ isArray ? '' : '"' + item.key + '"' }}
               </span>
@@ -37,9 +53,15 @@
               </span>
             </p>
           </template>
-          <span v-show="!innerclosed" class="body-line"></span>
+          <span
+            v-show="!innerclosed"
+            class="body-line"
+          ></span>
         </div>
-        <p v-if="!innerclosed && length" class="last-line">
+        <p
+          v-if="!innerclosed && length"
+          class="last-line"
+        >
           <span>{{ subfix }}</span>
         </p>
       </div>

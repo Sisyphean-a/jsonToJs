@@ -1,5 +1,8 @@
 <template>
-  <v-dialog v-model="dialog" max-width="800px">
+  <v-dialog
+    v-model="dialog"
+    max-width="800px"
+  >
     <v-card>
       <v-card-title>常用代码示例</v-card-title>
       <v-card-text>
@@ -14,8 +17,16 @@
             </v-expansion-panel-title>
             <v-expansion-panel-text>
               <div class="code-container">
-                <div :ref="(el) => (codeEditors[index] = el)" class="code-editor"></div>
-                <v-btn color="primary" variant="text" size="small" @click.stop="selectCode(code)">
+                <div
+                  :ref="(el) => (codeEditors[index] = el)"
+                  class="code-editor"
+                ></div>
+                <v-btn
+                  color="primary"
+                  variant="text"
+                  size="small"
+                  @click.stop="selectCode(code)"
+                >
                   使用此代码
                 </v-btn>
               </div>
@@ -25,7 +36,12 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" text @click="dialog = false">关闭</v-btn>
+        <v-btn
+          color="primary"
+          text
+          @click="dialog = false"
+          >关闭</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>

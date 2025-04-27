@@ -1,9 +1,24 @@
 <template>
-  <div class="d-flex flex-row" style="height: 100vh; width: 100vw">
-    <template v-for="(_, index) in columnCount" :key="index">
-      <v-sheet class="column" :style="{ width: `${columnWidths[index]}%` }">
-        <column-header :is-collapsed="isCollapsed[index]" @toggle="toggleColumn(index)" />
-        <div class="column-content" v-show="transitioningColumn !== index && !isCollapsed[index]">
+  <div
+    class="d-flex flex-row"
+    style="height: 100vh; width: 100vw"
+  >
+    <template
+      v-for="(_, index) in columnCount"
+      :key="index"
+    >
+      <v-sheet
+        class="column"
+        :style="{ width: `${columnWidths[index]}%` }"
+      >
+        <column-header
+          :is-collapsed="isCollapsed[index]"
+          @toggle="toggleColumn(index)"
+        />
+        <div
+          class="column-content"
+          v-show="transitioningColumn !== index && !isCollapsed[index]"
+        >
           <slot :name="`column${index + 1}`"></slot>
         </div>
       </v-sheet>

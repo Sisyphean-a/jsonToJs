@@ -6,20 +6,47 @@
     </div>
 
     <div class="code-editor">
-      <div ref="editor" style="height: 100%"></div>
+      <div
+        ref="editor"
+        style="height: 100%"
+      ></div>
     </div>
 
     <div class="function-footer">}</div>
 
     <div class="button-area">
-      <v-btn color="primary" @click="executeTransform" :loading="isExecuting"> 执行转换 </v-btn>
-      <v-btn color="secondary" @click="formatCode" class="ml-2"> 格式化代码 </v-btn>
-      <v-btn color="info" @click="showCommonCodeDialog = true" class="ml-2"> 常用代码 </v-btn>
+      <v-btn
+        color="primary"
+        @click="executeTransform"
+        :loading="isExecuting"
+      >
+        执行转换
+      </v-btn>
+      <v-btn
+        color="secondary"
+        @click="formatCode"
+        class="ml-2"
+      >
+        格式化代码
+      </v-btn>
+      <v-btn
+        color="info"
+        @click="showCommonCodeDialog = true"
+        class="ml-2"
+      >
+        常用代码
+      </v-btn>
     </div>
 
-    <CommonCodeDialog v-model="showCommonCodeDialog" @select="handleCodeSelect" />
+    <CommonCodeDialog
+      v-model="showCommonCodeDialog"
+      @select="handleCodeSelect"
+    />
 
-    <div v-if="error" class="error-area">
+    <div
+      v-if="error"
+      class="error-area"
+    >
       <div class="error-title">错误信息：</div>
       <div class="error-content">{{ error }}</div>
     </div>

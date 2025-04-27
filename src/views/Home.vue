@@ -1,7 +1,10 @@
 <template>
   <resizable-layout :column-count="columnCount">
     <template #column1>
-      <json-input-content :initial-json="jsonInput" @update:json="json = $event" />
+      <json-input-content
+        :initial-json="jsonInput"
+        @update:json="json = $event"
+      />
     </template>
 
     <template #column2>
@@ -9,7 +12,10 @@
     </template>
 
     <template #column3>
-      <js-transformer :json="json" @update:transformedJson="transformedJson = $event" />
+      <js-transformer
+        :json="json"
+        @update:transformedJson="transformedJson = $event"
+      />
     </template>
 
     <template #column4>
