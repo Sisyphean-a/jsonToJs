@@ -16,10 +16,7 @@
             </v-expansion-panel-title>
             <v-expansion-panel-text>
               <div class="code-container">
-                <div
-                  :ref="(el) => (codeEditors[index] = el)"
-                  class="code-editor"
-                ></div>
+                <pre><code class="language-javascript" v-html="highlightedCodes[index]"></code></pre>
                 <v-btn
                   color="primary"
                   variant="text"
@@ -47,11 +44,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { commonCodes } from '../utils/commonCodes'
-import { EditorState } from '@codemirror/state'
-import { EditorView } from '@codemirror/view'
-import { createEditorExtensions } from '../utils/editorUtils'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/github.css'
 
 const props = defineProps({
   modelValue: {
@@ -67,69 +63,14 @@ const dialog = computed({
   set: (value) => emit('update:modelValue', value),
 })
 
-const codeEditors = ref([])
-const editorViews = ref([])
 const expandedPanels = ref([])
+const highlightedCodes = ref([])
 
-// 创建编辑器扩展
-const extensions = createEditorExtensions(true)
-
-// 初始化指定索引的编辑器
-const initEditor = async (index) => {
-  await nextTick()
-  const editor = codeEditors.value[index]
-
-  if (editor && !editorViews.value[index]) {
-    const view = new EditorView({
-      state: EditorState.create({
-        doc: commonCodes[index].code,
-        extensions,
-      }),
-      parent: editor,
-    })
-    editorViews.value[index] = view
-  }
-}
-
-// 清理编辑器实例
-const cleanupEditors = () => {
-  editorViews.value.forEach((view, index) => {
-    if (view) {
-      view.destroy()
-    }
+// 高亮所有代码
+onMounted(() => {
+  highlightedCodes.value = commonCodes.map((code) => {
+    return hljs.highlight(code.code, { language: 'javascript' }).value
   })
-  editorViews.value = []
-  expandedPanels.value = []
-}
-
-// 监听面板展开状态变化
-watch(
-  expandedPanels,
-  async (newVal, oldVal) => {
-    // 初始化新展开的面板
-    if (newVal !== null) {
-      await initEditor(newVal)
-    }
-
-    // 清理已关闭的面板的编辑器实例
-    if (oldVal !== null && oldVal !== newVal) {
-      if (editorViews.value[oldVal]) {
-        editorViews.value[oldVal].destroy()
-        editorViews.value[oldVal] = null
-      }
-    }
-  },
-  { deep: true },
-)
-
-watch(dialog, (newVal) => {
-  if (!newVal) {
-    cleanupEditors()
-  }
-})
-
-onBeforeUnmount(() => {
-  cleanupEditors()
 })
 
 const selectCode = (code) => {
@@ -144,18 +85,19 @@ const selectCode = (code) => {
   margin: 8px 0;
 }
 
-.code-editor {
-  background-color: #fafafa;
+pre {
+  background-color: #f6f8fa;
   padding: 16px;
   border-radius: 4px;
-  font-family: 'Consolas', 'Monaco', monospace;
-  font-size: 14px;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  margin: 0;
   overflow-x: auto;
   border: 1px solid #e0e0e0;
-  min-height: 50px;
+  margin: 0;
+}
+
+code {
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .v-expansion-panel {
@@ -166,12 +108,5 @@ const selectCode = (code) => {
 
 .v-expansion-panel-title {
   font-weight: 500;
-}
-
-:deep(.cm-editor) {
-  height: 100%;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  font-size: 14px;
-  line-height: 1.5;
 }
 </style>
