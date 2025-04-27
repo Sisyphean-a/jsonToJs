@@ -17,14 +17,13 @@
             >"{{ jsonKey }}":</span
           >
           <span v-if="length">
-            {{ prefix }}
-            <span
+            {{ prefix
+            }}<span
               v-if="innerclosed"
               class="collapsed-content"
               @click="toggleClose"
               >...</span
-            >
-            <span v-if="innerclosed">{{ subfix }}</span>
+            ><span v-if="innerclosed">{{ subfix }}</span>
             <span class="json-note">
               {{ innerclosed ? ' // count: ' + length : '' }}
             </span>
