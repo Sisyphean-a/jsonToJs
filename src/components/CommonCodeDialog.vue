@@ -17,14 +17,16 @@
             <v-expansion-panel-text>
               <div class="code-container">
                 <pre><code class="language-javascript" v-html="highlightedCodes[index]"></code></pre>
-                <v-btn
-                  color="primary"
-                  variant="text"
-                  size="small"
-                  @click.stop="selectCode(code)"
-                >
-                  使用此代码
-                </v-btn>
+                <div class="btn-container">
+                  <v-btn
+                    color="primary"
+                    variant="text"
+                    size="small"
+                    @click.stop="selectCode(code)"
+                  >
+                    使用此代码
+                  </v-btn>
+                </div>
               </div>
             </v-expansion-panel-text>
           </v-expansion-panel>
@@ -83,6 +85,12 @@ const selectCode = (code) => {
 .code-container {
   position: relative;
   margin: 8px 0;
+}
+
+.btn-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
 }
 
 pre {
