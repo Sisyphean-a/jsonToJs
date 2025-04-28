@@ -270,8 +270,8 @@ onBeforeUnmount(() => {
 
     :deep(.cm-editor) {
       height: 100%;
-      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-      font-size: 14px;
+      font-family: 'Monaco', 'Menlo', 'Consolas', 'SF Mono', monospace;
+      font-size: 16px;
       line-height: 1.5;
     }
   }
