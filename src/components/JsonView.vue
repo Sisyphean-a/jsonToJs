@@ -32,10 +32,11 @@
                 v-if="!isExpanded"
                 class="collapsed-content"
                 @click="toggleExpand"
+                :title="jsonPath"
                 >...</span
               ><span v-if="!isExpanded">{{ subfix }}</span>
               <span class="json-note">
-                {{ !isExpanded ? ' // count: ' + length + ' path: ' + jsonPath : '' }}
+                {{ !isExpanded ? ' ' + length : '' }}
               </span>
             </span>
             <span v-if="!length">{{ isArray ? '[]' : '{}' }}</span>
