@@ -1,34 +1,59 @@
 export const commonCodes = [
   {
     title: '提取对象数组中的ID',
+    code: 'const list = json.data\n\n' + 'return list.map(item => item.id)\n',
+  },
+  {
+    title: '提取对象数组中的部分元素',
     code:
-      'const obj = json.data\n' +
-      'return obj.map(item => {\n' +
-      '  return { id: item.id }\n' +
+      'const list = json.data\n' +
+      'const keys = ["id", "name"]\n\n' +
+      'return list.map(item => {\n' +
+      '  const result = {}\n' +
+      '  keys.forEach(key => {\n' +
+      '    result[key] = item[key]\n' +
+      '  })\n' +
+      '  return result\n' +
       '})',
   },
   {
-    title: '过滤数组中的空值',
-    code: 'return json.data.filter(item => item !== null && item !== undefined)',
+    title: '过滤数组中的某些为空元素的对象',
+    code:
+      '// 获取目标数组\n' +
+      'const list = json.data\n' +
+      'const keys = ["id", "name"]\n\n' +
+      'return list.filter(item => {\n' +
+      '  return keys.every(key => item[key] !== null && item[key] !== undefined)\n' +
+      '})',
   },
   {
     title: '对象数组去重',
     code:
-      'const uniqueArray = [...new Map(json.data.map(item => [item.id, item])).values()]' +
-      '\n' +
+      '// 获取目标对象数组\n' +
+      'const list = json.data\n' +
+      'const key = "id"\n\n' +
+      'const uniqueArray = [...new Map(list.map(item => [item[key], item])).values()]\n' +
       'return uniqueArray',
   },
   {
     title: '对象数组排序',
-    code: 'return json.data.sort((a, b) => a.id - b.id)',
+    code:
+      '// 获取目标对象数组 以及排序的key\n' +
+      'const list = json.data\n' +
+      'const key = "id"\n\n' +
+      'return list.sort((a, b) => a[key] - b[key])',
   },
   {
     title: '对象数组分组',
     code:
-      'const grouped = json.data.reduce((acc, item) => {\n' +
-      '  const key = item.category\n' +
+      '// 获取目标对象数组 以及分组的key\n' +
+      'const list = json.data\n' +
+      'const groupKey = "category"\n\n' +
+      'const grouped = list.reduce((acc, item) => {\n' +
+      '  const key = item[groupKey]\n' +
       '  if (!acc[key]) {\n' +
       '    acc[key] = []\n' +
+      '  }\n' +
       '  acc[key].push(item)\n' +
       '  return acc\n' +
       '}, {})\n' +
@@ -37,13 +62,16 @@ export const commonCodes = [
   {
     title: '对象数组统计',
     code:
-      'const stats = json.data.reduce((acc, item) => {\n' +
-      '  acc.total += item.value\n' +
+      '// 获取目标对象数组\n' +
+      'const list = json.data\n' +
+      'const key = "value"\n\n' +
+      'const stats = list.reduce((acc, item) => {\n' +
+      '  acc.total += item[key]\n' +
       '  acc.count++\n' +
       '  return acc\n' +
-      '}, { total: 0, count: 0 })\n' +
+      '}, { total: 0, count: 0 })\n\n' +
       'return {\n' +
-      '  ...json,\n' +
+      '  obj: list.map(item => item[key]),\n' +
       '  stats: {\n' +
       '    ...stats,\n' +
       '    average: stats.total / stats.count\n' +
@@ -53,15 +81,17 @@ export const commonCodes = [
   {
     title: '对象数组计算指定值总和',
     code:
-      'const stats = json.list.reduce((acc, item) => {\n' +
-      '  const amount = Number(item.amount);\n' +
-      '  acc.num += amount;\n' +
-      '  acc.count++;\n' +
-      '  if (amount > acc.max || acc.count === 1) acc.max = amount;\n' +
-      '  if (amount < acc.min || acc.count === 1) acc.min = amount;\n' +
-      '  return acc;\n' +
-      '}, { num: 0, count: 0, max: 0, min: 0 });\n' +
-      '\n' +
+      '// 获取目标对象数组\n' +
+      'const list = json.list\n' +
+      'const key = "amount"\n\n' +
+      'const stats = list.reduce((acc, item) => {\n' +
+      '  const value = Number(item[key])\n' +
+      '  acc.num += value\n' +
+      '  acc.count++\n' +
+      '  if (value > acc.max || acc.count === 1) acc.max = value\n' +
+      '  if (value < acc.min || acc.count === 1) acc.min = value\n' +
+      '  return acc\n' +
+      '}, { num: 0, count: 0, max: 0, min: 0 })\n\n' +
       'return {\n' +
       '  stats: {\n' +
       '    total: stats.num,\n' +
