@@ -59,7 +59,7 @@
             class="json-body"
           >
             <template
-              v-for="(item, index) in items"
+              v-for="(item, index) in renderedItems"
               :key="index"
             >
               <json-view
@@ -70,6 +70,8 @@
                 :isLast="index === items.length - 1"
                 :fontSize="fontSize"
                 :isRootLevel="false"
+                :depth="currentDepth + 1"
+                :maxExpandDepth="maxExpandDepth"
               ></json-view>
               <p
                 class="json-item"
@@ -91,6 +93,12 @@
                 </span>
               </p>
             </template>
+            <p
+              v-if="renderingComplete === false"
+              class="json-loading"
+            >
+              加载中...
+            </p>
             <span
               v-show="!innerclosed"
               class="body-line"
@@ -109,7 +117,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 
 const props = defineProps({
   json: {
@@ -136,16 +144,33 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  // 新增：当前深度层级
+  depth: {
+    type: Number,
+    default: 0,
+  },
+  // 新增：默认最大展开深度
+  maxExpandDepth: {
+    type: Number,
+    default: 3,
+  },
 })
 
 const snackbar = ref(false)
+// 默认状态根据深度决定
+const innerclosed = ref(props.closed || props.depth >= props.maxExpandDepth)
+// 当前深度（方便在模板中使用）
+const currentDepth = computed(() => props.depth)
 
-const innerclosed = ref(props.closed)
+// 异步渲染相关状态
+const renderedItems = ref([])
+const renderingComplete = ref(false)
+const batchSize = 20 // 每批渲染的项目数量
 
 watch(
   () => props.closed,
   (newVal) => {
-    innerclosed.value = newVal
+    innerclosed.value = newVal || props.depth >= props.maxExpandDepth
   },
 )
 
@@ -216,6 +241,70 @@ const items = computed(() => {
     }
   })
 })
+
+// 异步渲染函数
+const renderBatch = (startIdx, allItems) => {
+  const endIdx = Math.min(startIdx + batchSize, allItems.length)
+
+  // 使用requestIdleCallback实现时间分片（兼容性处理）
+  const requestIdle =
+    window.requestIdleCallback || ((cb) => setTimeout(() => cb({ timeRemaining: () => 50 }), 1))
+
+  requestIdle(() => {
+    renderedItems.value = [...renderedItems.value, ...allItems.slice(startIdx, endIdx)]
+
+    if (endIdx < allItems.length) {
+      renderBatch(endIdx, allItems)
+    } else {
+      renderingComplete.value = true
+    }
+  })
+}
+
+// 当组件挂载或items变化时启动异步渲染
+watch(
+  () => items.value,
+  (newItems) => {
+    // 如果items为空或已折叠，直接设置完成
+    if (newItems.length === 0 || innerclosed.value) {
+      renderedItems.value = newItems
+      renderingComplete.value = true
+      return
+    }
+
+    // 如果items数量少，直接一次性渲染
+    if (newItems.length <= batchSize) {
+      renderedItems.value = newItems
+      renderingComplete.value = true
+      return
+    }
+
+    // 重置渲染状态
+    renderedItems.value = []
+    renderingComplete.value = false
+
+    // 开始批量渲染
+    nextTick(() => {
+      renderBatch(0, newItems)
+    })
+  },
+  { immediate: true },
+)
+
+// 当折叠状态变化时，处理渲染逻辑
+watch(
+  () => innerclosed.value,
+  (newClosed) => {
+    if (!newClosed && items.value.length > 0 && renderedItems.value.length === 0) {
+      // 如果展开且尚未渲染，启动渲染流程
+      renderBatch(0, items.value)
+    } else if (newClosed) {
+      // 如果折叠，不需要保持渲染状态
+      renderedItems.value = []
+      renderingComplete.value = true
+    }
+  },
+)
 </script>
 
 <style lang="scss" scoped>
@@ -299,6 +388,12 @@ const items = computed(() => {
 
 .json-bool {
   color: #fd7e14;
+}
+
+.json-loading {
+  padding-left: 20px;
+  color: #6c757d;
+  font-style: italic;
 }
 
 .collapsed-content {
