@@ -12,10 +12,11 @@
       <div
         :class="['json-view', length ? 'closeable' : '']"
         :style="'font-size:' + fontSize + 'px'"
+        :data-path="jsonPath"
       >
         <span
-          @click="toggleClose"
-          :class="['toggle-icon', innerclosed ? 'closed' : '']"
+          @click="toggleExpand"
+          :class="['toggle-icon', !isExpanded ? 'closed' : '']"
           v-if="length"
         ></span>
         <div class="content-wrap">
@@ -28,13 +29,13 @@
             <span v-if="length">
               {{ prefix
               }}<span
-                v-if="innerclosed"
+                v-if="!isExpanded"
                 class="collapsed-content"
-                @click="toggleClose"
+                @click="toggleExpand"
                 >...</span
-              ><span v-if="innerclosed">{{ subfix }}</span>
+              ><span v-if="!isExpanded">{{ subfix }}</span>
               <span class="json-note">
-                {{ innerclosed ? ' // count: ' + length : '' }}
+                {{ !isExpanded ? ' // count: ' + length + ' path: ' + jsonPath : '' }}
               </span>
             </span>
             <span v-if="!length">{{ isArray ? '[]' : '{}' }}</span>
@@ -55,7 +56,7 @@
             </button>
           </p>
           <div
-            v-if="!innerclosed && length"
+            v-if="isExpanded && length && forceRender"
             class="json-body"
           >
             <template
@@ -72,6 +73,7 @@
                 :isRootLevel="false"
                 :depth="currentDepth + 1"
                 :maxExpandDepth="maxExpandDepth"
+                :jsonPath="generateChildPath(item.key, index)"
               ></json-view>
               <p
                 class="json-item"
@@ -100,12 +102,12 @@
               加载中...
             </p>
             <span
-              v-show="!innerclosed"
+              v-show="isExpanded"
               class="body-line"
             ></span>
           </div>
           <p
-            v-if="!innerclosed && length"
+            v-if="isExpanded && length"
             class="last-line"
           >
             <span>{{ subfix }}</span>
@@ -117,7 +119,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 
 const props = defineProps({
   json: {
@@ -144,35 +146,60 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  // 新增：当前深度层级
+  // 当前深度层级
   depth: {
     type: Number,
     default: 0,
   },
-  // 新增：默认最大展开深度
+  // 默认最大展开深度
   maxExpandDepth: {
     type: Number,
     default: 3,
   },
+  // JSON 路径标识
+  jsonPath: {
+    type: String,
+    default: '',
+  },
 })
 
 const snackbar = ref(false)
-// 默认状态根据深度决定
-const innerclosed = ref(props.closed || props.depth >= props.maxExpandDepth)
-// 当前深度（方便在模板中使用）
+// 计算当前深度
 const currentDepth = computed(() => props.depth)
+
+// 展开/折叠状态 - 注意这里与之前的innerclosed逻辑相反
+const isExpanded = ref(!(props.closed || props.depth >= props.maxExpandDepth))
+// 是否需要渲染子节点 - 初始状态与展开状态相同
+const forceRender = ref(isExpanded.value)
 
 // 异步渲染相关状态
 const renderedItems = ref([])
 const renderingComplete = ref(false)
 const batchSize = 20 // 每批渲染的项目数量
 
+// 监听closed属性变化
 watch(
   () => props.closed,
   (newVal) => {
-    innerclosed.value = newVal || props.depth >= props.maxExpandDepth
+    const shouldExpand = !(newVal || props.depth >= props.maxExpandDepth)
+    isExpanded.value = shouldExpand
+    // 只有当展开时才设置forceRender为true
+    if (shouldExpand) {
+      forceRender.value = true
+    }
   },
 )
+
+// 生成子节点的JSON路径
+const generateChildPath = (key, index) => {
+  const basePathStr = props.jsonPath || ''
+  // 对于数组，使用索引作为路径
+  if (isArray.value) {
+    return `${basePathStr}/${index}`
+  }
+  // 对于对象，使用键名作为路径
+  return `${basePathStr}/${key}`
+}
 
 const copyJson = () => {
   const jsonStr = JSON.stringify(
@@ -190,8 +217,37 @@ const isObjectOrArray = (source) => {
   return type === '[object Array]' || type === '[object Object]'
 }
 
-const toggleClose = () => {
-  innerclosed.value = !innerclosed.value
+// 切换展开/折叠状态
+const toggleExpand = () => {
+  isExpanded.value = !isExpanded.value
+
+  // 只有当展开时才设置forceRender为true
+  if (isExpanded.value) {
+    forceRender.value = true
+    // 如果展开且尚未渲染任何项，则启动渲染
+    if (items.value.length > 0 && renderedItems.value.length === 0) {
+      startRender()
+    }
+  }
+}
+
+// 开始渲染流程
+const startRender = () => {
+  // 如果items数量少，直接一次性渲染
+  if (items.value.length <= batchSize) {
+    renderedItems.value = items.value
+    renderingComplete.value = true
+    return
+  }
+
+  // 重置渲染状态
+  renderedItems.value = []
+  renderingComplete.value = false
+
+  // 开始批量渲染
+  nextTick(() => {
+    renderBatch(0, items.value)
+  })
 }
 
 const isArray = computed(() => {
@@ -251,6 +307,12 @@ const renderBatch = (startIdx, allItems) => {
     window.requestIdleCallback || ((cb) => setTimeout(() => cb({ timeRemaining: () => 50 }), 1))
 
   requestIdle(() => {
+    // 如果已经折叠或不再需要渲染，则停止渲染过程
+    if (!isExpanded.value || !forceRender.value) {
+      renderingComplete.value = true
+      return
+    }
+
     renderedItems.value = [...renderedItems.value, ...allItems.slice(startIdx, endIdx)]
 
     if (endIdx < allItems.length) {
@@ -261,48 +323,36 @@ const renderBatch = (startIdx, allItems) => {
   })
 }
 
-// 当组件挂载或items变化时启动异步渲染
+// 初始化时，只有展开状态才渲染
+onMounted(() => {
+  if (isExpanded.value && forceRender.value) {
+    startRender()
+  }
+})
+
+// 监听items变化
 watch(
   () => items.value,
   (newItems) => {
-    // 如果items为空或已折叠，直接设置完成
-    if (newItems.length === 0 || innerclosed.value) {
-      renderedItems.value = newItems
-      renderingComplete.value = true
-      return
+    // 只有在展开状态且需要渲染时才处理
+    if (isExpanded.value && forceRender.value) {
+      // 如果items为空，直接设置完成
+      if (newItems.length === 0) {
+        renderedItems.value = newItems
+        renderingComplete.value = true
+        return
+      }
+
+      startRender()
     }
-
-    // 如果items数量少，直接一次性渲染
-    if (newItems.length <= batchSize) {
-      renderedItems.value = newItems
-      renderingComplete.value = true
-      return
-    }
-
-    // 重置渲染状态
-    renderedItems.value = []
-    renderingComplete.value = false
-
-    // 开始批量渲染
-    nextTick(() => {
-      renderBatch(0, newItems)
-    })
   },
-  { immediate: true },
 )
 
-// 当折叠状态变化时，处理渲染逻辑
+// 监听展开状态变化
 watch(
-  () => innerclosed.value,
-  (newClosed) => {
-    if (!newClosed && items.value.length > 0 && renderedItems.value.length === 0) {
-      // 如果展开且尚未渲染，启动渲染流程
-      renderBatch(0, items.value)
-    } else if (newClosed) {
-      // 如果折叠，不需要保持渲染状态
-      renderedItems.value = []
-      renderingComplete.value = true
-    }
+  () => isExpanded.value,
+  (newExpanded) => {
+    // 不再需要监听innerclosed了，逻辑已移至toggleExpand
   },
 )
 </script>
