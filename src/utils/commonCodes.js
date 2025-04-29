@@ -4,11 +4,40 @@ export const commonCodes = [
     code: 'const list = json.data\n\n' + 'return list.map(item => item.id)\n',
   },
   {
+    title: '递归提取对象数组中的ID',
+    code:
+      'return json.map(item => {\n' +
+      '  if (item.children) {\n' +
+      '    return transform(item.children)\n' +
+      '  }\n' +
+      '  return item.id\n' +
+      '})',
+  },
+  {
     title: '提取对象数组中的部分元素',
     code:
       'const list = json.data\n' +
       'const keys = ["id", "name"]\n\n' +
       'return list.map(item => {\n' +
+      '  const result = {}\n' +
+      '  keys.forEach(key => {\n' +
+      '    result[key] = item[key]\n' +
+      '  })\n' +
+      '  return result\n' +
+      '})',
+  },
+  {
+    title: '递归提取对象数组中的部分元素',
+    code:
+      '// 提取对象数组中的部分元素\n' +
+      "const keys = ['id', 'name']\n" +
+      '// 递归对象\n' +
+      "const son = 'children'\n" +
+      '\n' +
+      'return json.map(item => {\n' +
+      '  if (item[son]) {\n' +
+      '    return transform(item[son])\n' +
+      '  }\n' +
       '  const result = {}\n' +
       '  keys.forEach(key => {\n' +
       '    result[key] = item[key]\n' +

@@ -511,7 +511,7 @@ watch(
   height: 16px;
   text-align: center;
   left: 0;
-  top: 4px;
+  top: 7px;
   border-radius: 3px;
   transition: all 0.2s ease;
 
