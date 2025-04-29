@@ -12,7 +12,7 @@
       <div
         :class="['json-view', length ? 'closeable' : '']"
         :style="'font-size:' + fontSize + 'px'"
-        :data-path="jsonPath"
+        :data-path="componentId + '-' + jsonPath"
       >
         <span
           @click="toggleExpand"
@@ -176,6 +176,10 @@ const props = defineProps({
   jsonPath: {
     type: String,
     default: '',
+  },
+  componentId: {
+    type: String,
+    default: () => Math.random().toString(36).substr(2, 9),
   },
 })
 
@@ -343,20 +347,16 @@ const hasCollapsedDescendants = computed(() => {
 
 // 展开所有后代节点 - 简化实现
 const expandAllDescendants = () => {
-  // 找到所有子JSON组件并展开
   nextTick(() => {
-    const currentElement = document.querySelector(`[data-path="${props.jsonPath}"]`)
+    const currentElement = document.querySelector(
+      `[data-path="${props.componentId}-${props.jsonPath}"]`,
+    )
     if (!currentElement) return
 
-    // 查找当前组件内的所有子JSON组件
     const childNodes = currentElement.querySelectorAll('.json-view')
-
-    // 手动触发每个子组件的展开功能
     childNodes.forEach((node) => {
-      // 获取展开图标
       const toggleIcon = node.querySelector('.toggle-icon')
       if (toggleIcon && toggleIcon.classList.contains('closed')) {
-        // 模拟点击展开图标
         toggleIcon.click()
       }
     })
