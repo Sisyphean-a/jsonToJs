@@ -205,11 +205,7 @@ const generateChildPath = (key, index) => {
 }
 
 const copyJson = () => {
-  const jsonStr = JSON.stringify(
-    props.jsonKey ? { [props.jsonKey]: props.json } : props.json,
-    null,
-    2,
-  )
+  const jsonStr = JSON.stringify(props.json, null, 2)
   navigator.clipboard.writeText(jsonStr).then(() => {
     snackbar.value = true
   })
