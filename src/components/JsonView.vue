@@ -55,6 +55,21 @@
                 height="14"
               />
             </button>
+            <!-- 新增展开所有按钮，仅在当前节点已展开且有折叠子节点时显示 -->
+            <button
+              v-if="isExpanded && hasCollapsedDescendants"
+              class="expand-all-btn"
+              :class="{ 'root-level': isRootLevel }"
+              @click.stop="expandAllDescendants"
+              title="展开所有子级"
+            >
+              <img
+                src="@/assets/icons/expand.svg"
+                alt="展开所有"
+                width="14"
+                height="14"
+              />
+            </button>
           </p>
           <div
             v-if="isExpanded && length && forceRender"
@@ -120,7 +135,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, provide, inject, onUnmounted } from 'vue'
 
 const props = defineProps({
   json: {
@@ -177,19 +192,6 @@ const forceRender = ref(isExpanded.value)
 const renderedItems = ref([])
 const renderingComplete = ref(false)
 const batchSize = 20 // 每批渲染的项目数量
-
-// 监听closed属性变化
-watch(
-  () => props.closed,
-  (newVal) => {
-    const shouldExpand = !(newVal || props.depth >= props.maxExpandDepth)
-    isExpanded.value = shouldExpand
-    // 只有当展开时才设置forceRender为true
-    if (shouldExpand) {
-      forceRender.value = true
-    }
-  },
-)
 
 // 生成子节点的JSON路径
 const generateChildPath = (key, index) => {
@@ -324,11 +326,57 @@ const renderBatch = (startIdx, allItems) => {
   })
 }
 
-// 初始化时，只有展开状态才渲染
+// 检查是否有已折叠的后代节点
+const hasCollapsedDescendants = computed(() => {
+  // 如果当前节点没有子项，或者当前节点是折叠的，则没有需要展开的后代
+  if (!length.value || !isExpanded.value) return false
+
+  return items.value.some((item) => {
+    // 对于JSON类型的子项
+    if (item.isJSON && item.value) {
+      const valueType = Object.prototype.toString.call(item.value)
+      const hasChildren =
+        valueType === '[object Array]' ? item.value.length > 0 : Object.keys(item.value).length > 0
+
+      // 如果有子项，就可能需要展开
+      return hasChildren
+    }
+    return false
+  })
+})
+
+// 展开所有后代节点 - 简化实现
+const expandAllDescendants = () => {
+  // 找到所有子JSON组件并展开
+  nextTick(() => {
+    const currentElement = document.querySelector(`[data-path="${props.jsonPath}"]`)
+    if (!currentElement) return
+
+    // 查找当前组件内的所有子JSON组件
+    const childNodes = currentElement.querySelectorAll('.json-view')
+
+    // 手动触发每个子组件的展开功能
+    childNodes.forEach((node) => {
+      // 获取展开图标
+      const toggleIcon = node.querySelector('.toggle-icon')
+      if (toggleIcon && toggleIcon.classList.contains('closed')) {
+        // 模拟点击展开图标
+        toggleIcon.click()
+      }
+    })
+  })
+}
+
+// 注册事件监听
 onMounted(() => {
   if (isExpanded.value && forceRender.value) {
     startRender()
   }
+})
+
+// 移除事件监听
+onUnmounted(() => {
+  // 移除之前的事件监听
 })
 
 // 监听items变化
@@ -477,7 +525,7 @@ watch(
   min-height: 24px;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .json-body {
@@ -533,5 +581,36 @@ watch(
   &.closed::before {
     transform: rotate(-90deg);
   }
+}
+
+.expand-all-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #495057;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  /* 根层级永远显示 */
+  &.root-level {
+    opacity: 0.7;
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+/* 非根层级，鼠标悬停时显示 */
+.first-line:hover .expand-all-btn:not(.root-level) {
+  opacity: 0.7;
 }
 </style>
