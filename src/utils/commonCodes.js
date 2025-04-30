@@ -4,11 +4,12 @@ export const commonCodes = [
     code: 'const list = json.data\n\n' + 'return list.map(item => item.id)\n',
   },
   {
-    title: '递归提取对象数组中的ID',
+    title: '递归提取数组中的ID',
     code:
+      'const son = "children"\n\n' +
       'return json.map(item => {\n' +
-      '  if (item.children) {\n' +
-      '    return transform(item.children)\n' +
+      '  if (item[son] && item[son].length > 0) {\n' +
+      '    return transform(item[son])\n' +
       '  }\n' +
       '  return item.id\n' +
       '})',
@@ -27,7 +28,7 @@ export const commonCodes = [
       '})',
   },
   {
-    title: '递归提取对象数组中的部分元素',
+    title: '递归提取数组中的部分元素',
     code:
       '// 提取对象数组中的部分元素\n' +
       "const keys = ['id', 'name']\n" +
@@ -35,7 +36,7 @@ export const commonCodes = [
       "const son = 'children'\n" +
       '\n' +
       'return json.map(item => {\n' +
-      '  if (item[son]) {\n' +
+      '  if (item[son] && item[son].length > 0) {\n' +
       '    return transform(item[son])\n' +
       '  }\n' +
       '  const result = {}\n' +
@@ -92,25 +93,6 @@ export const commonCodes = [
     title: '对象数组统计',
     code:
       '// 获取目标对象数组\n' +
-      'const list = json.data\n' +
-      'const key = "value"\n\n' +
-      'const stats = list.reduce((acc, item) => {\n' +
-      '  acc.total += item[key]\n' +
-      '  acc.count++\n' +
-      '  return acc\n' +
-      '}, { total: 0, count: 0 })\n\n' +
-      'return {\n' +
-      '  obj: list.map(item => item[key]),\n' +
-      '  stats: {\n' +
-      '    ...stats,\n' +
-      '    average: stats.total / stats.count\n' +
-      '  }\n' +
-      '}',
-  },
-  {
-    title: '对象数组计算指定值总和',
-    code:
-      '// 获取目标对象数组\n' +
       'const list = json.list\n' +
       'const key = "amount"\n\n' +
       'const stats = list.reduce((acc, item) => {\n' +
@@ -123,11 +105,8 @@ export const commonCodes = [
       '}, { num: 0, count: 0, max: 0, min: 0 })\n\n' +
       'return {\n' +
       '  stats: {\n' +
-      '    total: stats.num,\n' +
-      '    count: stats.count,\n' +
+      '    ...stats,\n' +
       '    average: stats.count ? stats.num / stats.count : 0,\n' +
-      '    max: stats.max,\n' +
-      '    min: stats.min\n' +
       '  }\n' +
       '}',
   },
