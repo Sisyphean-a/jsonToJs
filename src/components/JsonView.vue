@@ -6,7 +6,7 @@
       color="success"
       location="top"
     >
-      复制成功
+      复制成功 {{ snackbarText }}
     </v-snackbar>
     <div class="json-content">
       <div
@@ -23,7 +23,8 @@
           <p class="first-line">
             <span
               v-if="jsonKey"
-              class="json-key"
+              class="json-key clickable"
+              @click.stop="copyKey(jsonKey)"
               >"{{ jsonKey }}":</span
             >
             <span v-if="length">
@@ -95,7 +96,10 @@
                 class="json-item"
                 v-else
               >
-                <span class="json-key">
+                <span
+                  class="json-key clickable"
+                  @click.stop="copyKey(item.key)"
+                >
                   {{ isArray ? '' : '"' + item.key + '"' }}
                 </span>
                 <span v-if="!isArray || item.key">:</span>
@@ -184,6 +188,8 @@ const props = defineProps({
 })
 
 const snackbar = ref(false)
+const snackbarText = ref('')
+
 // 计算当前深度
 const currentDepth = computed(() => props.depth)
 
@@ -393,13 +399,12 @@ watch(
   },
 )
 
-// 监听展开状态变化
-watch(
-  () => isExpanded.value,
-  (newExpanded) => {
-    // 不再需要监听innerclosed了，逻辑已移至toggleExpand
-  },
-)
+const copyKey = (key) => {
+  navigator.clipboard.writeText(key).then(() => {
+    snackbar.value = true
+    snackbarText.value = key
+  })
+}
 </script>
 
 <style lang="scss" scoped>
@@ -608,5 +613,14 @@ watch(
 /* 非根层级，鼠标悬停时显示 */
 .first-line:hover .expand-all-btn:not(.root-level) {
   opacity: 0.7;
+}
+
+.json-key.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    opacity: 0.7;
+  }
 }
 </style>
