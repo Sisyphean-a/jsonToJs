@@ -1,5 +1,13 @@
 export const commonCodes = [
   {
+    title: '转义Json字符串',
+    code: 'return JSON.parse(json.data)',
+  },
+  {
+    title: '反转义Json字符串',
+    code: 'return {"data" : JSON.stringify(json)}',
+  },
+  {
     title: '提取对象数组中的ID',
     code: 'const list = json.data\n\n' + 'return list.map(item => item.id)\n',
   },
