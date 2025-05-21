@@ -104,12 +104,13 @@
                 </span>
                 <span v-if="!isArray || item.key">:</span>
                 <span
-                  class="json-value"
+                  class="json-value clickable"
                   :class="{
                     'json-string': item.type === 'string',
                     'json-number': item.type === 'number',
                     'json-bool': item.type === 'boolean',
                   }"
+                  @click.stop="copyKey(item.value)"
                 >
                   {{ item.value + (index === items.length - 1 ? '' : ',') }}
                 </span>
@@ -410,7 +411,7 @@ const copyKey = (key) => {
 <style lang="scss" scoped>
 .json-container {
   background-color: #f8f9fa;
-  padding: 12px;
+  padding: 7px;
   padding-right: 40px;
   border-radius: 6px;
   position: relative;
@@ -615,7 +616,7 @@ const copyKey = (key) => {
   opacity: 0.7;
 }
 
-.json-key.clickable {
+.json-item .clickable {
   cursor: pointer;
   transition: all 0.2s ease;
 
