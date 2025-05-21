@@ -42,6 +42,11 @@ const handleInput = () => {
     emit('update:json', parsedJson)
     hasError.value = false
   } catch (e) {
+    const errorJson = {
+      data: localJsonInput.value,
+      error: e.message,
+    }
+    emit('update:json', errorJson)
     hasError.value = true
   }
 }
