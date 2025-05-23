@@ -10,7 +10,7 @@ const router = createRouter({
       component: Home,
       meta: {
         title: 'JSON转JS',
-        description: '使用JS处理JSON，不止JSON，还有List',
+        description: '使用JS处理JSON',
         icon: 'mdi-home',
         category: '处理工具'
       }

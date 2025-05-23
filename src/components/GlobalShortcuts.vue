@@ -96,7 +96,14 @@ const groupedRoutes = computed(() => {
 const handleKeyDown = (event) => {
   // 检查是否按下了 Tab 键
   if (event.key === 'Tab') {
-    // 检查当前焦点是否在输入元素上（输入框、文本域等）
+    // 如果弹窗已经显示，关闭弹窗
+    if (showNavigationDialog.value) {
+      event.preventDefault()
+      closeDialog()
+      return
+    }
+    
+    // 如果弹窗没有显示，检查当前焦点是否在输入元素上
     const activeElement = document.activeElement
     const inputElements = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON']
     
