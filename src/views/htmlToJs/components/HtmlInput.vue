@@ -4,22 +4,10 @@
       <h2>HTML 输入</h2>
       <div class="actions">
         <button
-          @click="clearContent"
-          class="action-btn"
-        >
-          移除data-v属性
-        </button>
-        <button
           @click="resetContent"
           class="action-btn"
         >
           移除注释
-        </button>
-        <button
-          @click="removeAllAttributes"
-          class="action-btn"
-        >
-          移除全部属性
         </button>
         <button
           @click="openAttributeSelector"
@@ -68,19 +56,6 @@ const updateHtml = () => {
   emit('update:html', htmlContent.value)
 }
 
-// 清空内容
-const clearContent = () => {
-  // 移除data-v-xxx属性
-  htmlContent.value = htmlContent.value.replace(/\s+data-v-[a-zA-Z0-9]+=""/g, '')
-  updateHtml()
-}
-
-// 移除全部属性
-const removeAllAttributes = () => {
-  // 移除所有HTML标签中的属性，但保留标签本身
-  htmlContent.value = htmlContent.value.replace(/<([a-zA-Z][a-zA-Z0-9]*)[^>]*>/g, '<$1>')
-  updateHtml()
-}
 
 // 重置为初始内容
 const resetContent = () => {

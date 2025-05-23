@@ -40,18 +40,22 @@
         >
           <!-- 全选功能 -->
           <div class="select-all-section">
-            <div class="select-all-item">
+            <div 
+              class="select-all-item"
+              @click="toggleSelectAll"
+            >
               <input
                 type="checkbox"
                 id="select-all"
                 :checked="isAllSelected"
                 :indeterminate="isIndeterminate"
-                @change="toggleSelectAll"
                 class="custom-checkbox"
+                @click.stop
               />
               <label
                 for="select-all"
                 class="select-all-label"
+                @click.prevent
               >
                 全选 ({{ selectedCount }}/{{ attributes.length }})
               </label>
@@ -281,10 +285,18 @@ const confirmRemove = () => {
         border-radius: 10px;
         border: 1px solid #0ea5e9;
         transition: all 0.2s ease;
+        cursor: pointer;
+        user-select: none;
 
         &:hover {
           transform: translateY(-1px);
           box-shadow: 0 3px 8px rgba(14, 165, 233, 0.12);
+          background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        }
+
+        &:active {
+          transform: translateY(0);
+          background: linear-gradient(135deg, #bae6fd 0%, #7dd3fc 100%);
         }
 
         .select-all-label {
@@ -292,6 +304,7 @@ const confirmRemove = () => {
           color: #0369a1;
           cursor: pointer;
           font-size: 14px;
+          flex: 1;
         }
       }
     }
