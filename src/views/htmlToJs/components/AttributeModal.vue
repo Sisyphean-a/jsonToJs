@@ -207,7 +207,7 @@ const confirmRemove = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  padding: 16px 24px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   position: relative;
@@ -230,9 +230,9 @@ const confirmRemove = () => {
   }
 
   .close-btn {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
+    border-radius: 10px;
     width: 32px;
     height: 32px;
     cursor: pointer;
@@ -241,10 +241,16 @@ const confirmRemove = () => {
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
 
     &:hover {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.25);
       transform: scale(1.05);
+    }
+
+    svg {
+      width: 12px;
+      height: 12px;
     }
   }
 }
@@ -465,6 +471,24 @@ const confirmRemove = () => {
     width: 95%;
     margin: 20px;
     max-height: 90vh;
+  }
+
+  .modal-header {
+    padding: 14px 20px;
+
+    h3 {
+      font-size: 16px;
+    }
+
+    .close-btn {
+      width: 28px;
+      height: 28px;
+
+      svg {
+        width: 10px;
+        height: 10px;
+      }
+    }
   }
 
   .modal-body .attribute-content .attribute-list {
