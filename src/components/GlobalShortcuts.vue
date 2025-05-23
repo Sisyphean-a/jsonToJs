@@ -1,32 +1,23 @@
 <template>
-  <!-- 背景遮罩层 -->
-  <div 
-    v-if="showNavigationDialog" 
-    class="navigation-overlay" 
-    @click="closeDialog"
+  <BaseModal
+    v-model="showNavigationDialog"
+    size="large"
+    no-padding
+    @close="closeDialog"
   >
-    <!-- 主弹窗容器 -->
-    <div 
-      class="navigation-modal" 
-      @click.stop
-    >
-      <!-- 头部区域 -->
-      <header class="modal-header">
-        <div class="header-content">
-          <div class="header-icon">
-            <v-icon size="20" color="white">mdi-navigation-variant</v-icon>
-          </div>
-          <div class="header-text">
-            <h2 class="header-title">快速导航 <span class="header-subtitle">Tab 键快速访问所有页面</span></h2>
-          </div>
-        </div>
-        <button class="close-btn" @click="closeDialog">
-          <v-icon size="18" color="rgba(255,255,255,0.8)">mdi-close</v-icon>
-        </button>
-      </header>
+    <!-- 头部 -->
+    <template #header>
+      <ModalHeader
+        title="快速导航"
+        subtitle="Tab 键快速访问所有页面"
+        icon="mdi-navigation-variant"
+        @close="closeDialog"
+      />
+    </template>
 
-      <!-- 内容区域 -->
-      <main class="modal-content">
+    <!-- 内容 -->
+    <template #content>
+      <div class="navigation-content">
         <div 
           v-for="(routes, category) in groupedRoutes" 
           :key="category"
@@ -61,14 +52,16 @@
             </div>
           </div>
         </div>
-      </main>
-    </div>
-  </div>
+      </div>
+    </template>
+  </BaseModal>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import BaseModal from './BaseModal.vue'
+import ModalHeader from './ModalHeader.vue'
 
 const router = useRouter()
 const showNavigationDialog = ref(false)
@@ -150,155 +143,11 @@ onUnmounted(() => {
 
 <style scoped>
 /* ========================================
-   核心布局样式
+   导航内容样式
 ======================================== */
 
-.navigation-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: 20px;
-  animation: overlayFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.navigation-modal {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border-radius: 24px;
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.5);
-  max-width: 800px;
-  width: 100%;
-  max-height: 90vh;
-  overflow: hidden;
-  animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-}
-
-/* ========================================
-   头部区域样式
-======================================== */
-
-.modal-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 16px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  overflow: hidden;
-}
-
-.modal-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-  pointer-events: none;
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  position: relative;
-  z-index: 1;
-}
-
-.header-icon {
-  width: 36px;
-  height: 36px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.header-text {
-  color: white;
-}
-
-.header-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0;
-  line-height: 1.2;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.header-subtitle {
-  font-size: 13px;
-  opacity: 0.85;
-  font-weight: 400;
-  margin: 0;
-}
-
-.close-btn {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  z-index: 1;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.close-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: scale(1.05);
-}
-
-/* ========================================
-   内容区域样式
-======================================== */
-
-.modal-content {
+.navigation-content {
   padding: 32px;
-  max-height: calc(90vh - 200px);
-  overflow-y: auto;
-  scroll-behavior: smooth;
-}
-
-.modal-content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.modal-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.modal-content::-webkit-scrollbar-thumb {
-  background: rgba(103, 126, 234, 0.3);
-  border-radius: 3px;
-}
-
-.modal-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(103, 126, 234, 0.5);
 }
 
 .route-category {
@@ -471,97 +320,12 @@ onUnmounted(() => {
 }
 
 /* ========================================
-   底部区域样式
-======================================== */
-
-.modal-footer {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border-top: 1px solid rgba(148, 163, 184, 0.2);
-  padding: 20px 32px;
-}
-
-.shortcut-tips {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.tip-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #64748b;
-  font-weight: 500;
-}
-
-kbd {
-  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #475569;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  font-family: inherit;
-}
-
-/* ========================================
-   动画定义
-======================================== */
-
-@keyframes overlayFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-/* ========================================
    响应式设计
 ======================================== */
 
 @media (max-width: 768px) {
-  .navigation-overlay {
-    padding: 16px;
-  }
-  
-  .navigation-modal {
-    border-radius: 20px;
-    max-height: 95vh;
-  }
-  
-  .modal-header {
-    padding: 14px 20px;
-  }
-  
-  .header-title {
-    font-size: 16px;
-  }
-  
-  .header-subtitle {
-    font-size: 12px;
-  }
-  
-  .modal-content {
+  .navigation-content {
     padding: 24px;
-    max-height: calc(95vh - 140px);
   }
   
   .route-grid {
@@ -583,30 +347,6 @@ kbd {
 }
 
 @media (max-width: 480px) {
-  .header-content {
-    gap: 10px;
-  }
-  
-  .header-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 10px;
-  }
-  
-  .header-title {
-    font-size: 15px;
-    gap: 8px;
-  }
-  
-  .header-subtitle {
-    font-size: 11px;
-  }
-  
-  .close-btn {
-    width: 28px;
-    height: 28px;
-  }
-  
   .route-card {
     gap: 12px;
     padding: 14px;
@@ -632,10 +372,7 @@ kbd {
 ======================================== */
 
 @media (prefers-reduced-motion: reduce) {
-  .navigation-overlay,
-  .navigation-modal,
   .route-card,
-  .close-btn,
   .route-icon,
   .route-arrow {
     animation: none;

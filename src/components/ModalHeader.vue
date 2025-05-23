@@ -1,0 +1,357 @@
+<template>
+  <header class="modal-header" :class="headerClasses">
+    <div class="header-content">
+      <!-- 图标区域 -->
+      <div class="header-icon" v-if="icon || $slots.icon">
+        <slot name="icon">
+          <v-icon v-if="icon" :size="iconSize" color="white">{{ icon }}</v-icon>
+        </slot>
+      </div>
+      
+      <!-- 文本区域 -->
+      <div class="header-text">
+        <h2 class="header-title">
+          {{ title }}
+          <span v-if="subtitle" class="header-subtitle">{{ subtitle }}</span>
+        </h2>
+        <!-- 额外内容插槽 -->
+        <slot name="extra"></slot>
+      </div>
+    </div>
+    
+    <!-- 右侧操作区域 -->
+    <div class="header-actions">
+      <!-- 自定义操作插槽 -->
+      <slot name="actions"></slot>
+      
+      <!-- 关闭按钮 -->
+      <button 
+        v-if="showCloseButton" 
+        class="close-btn" 
+        @click="handleClose"
+        :aria-label="closeButtonLabel"
+      >
+        <slot name="close-icon">
+          <v-icon :size="closeIconSize" color="rgba(255,255,255,0.8)">{{ closeIcon }}</v-icon>
+        </slot>
+      </button>
+    </div>
+  </header>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+
+const props = defineProps({
+  // 主标题
+  title: {
+    type: String,
+    required: true
+  },
+  // 副标题
+  subtitle: {
+    type: String,
+    default: ''
+  },
+  // 图标名称
+  icon: {
+    type: String,
+    default: ''
+  },
+  // 图标大小
+  iconSize: {
+    type: [String, Number],
+    default: 20
+  },
+  // 是否显示关闭按钮
+  showCloseButton: {
+    type: Boolean,
+    default: true
+  },
+  // 关闭图标
+  closeIcon: {
+    type: String,
+    default: 'mdi-close'
+  },
+  // 关闭图标大小
+  closeIconSize: {
+    type: [String, Number],
+    default: 18
+  },
+  // 关闭按钮的 aria-label
+  closeButtonLabel: {
+    type: String,
+    default: '关闭弹窗'
+  },
+  // 头部主题变体
+  variant: {
+    type: String,
+    default: 'default',
+    validator: (value) => ['default', 'primary', 'success', 'warning', 'danger'].includes(value)
+  },
+  // 是否使用简洁模式（无背景图案）
+  minimal: {
+    type: Boolean,
+    default: false
+  }
+})
+
+const emit = defineEmits(['close'])
+
+// 计算头部样式类
+const headerClasses = computed(() => {
+  return [
+    `modal-header--${props.variant}`,
+    {
+      'modal-header--minimal': props.minimal
+    }
+  ]
+})
+
+const handleClose = () => {
+  emit('close')
+}
+</script>
+
+<style scoped>
+/* ========================================
+   基础头部样式
+======================================== */
+
+.modal-header {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  min-height: 60px;
+}
+
+/* 默认主题 */
+.modal-header--default {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.modal-header--primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.modal-header--success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.modal-header--warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.modal-header--danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* 背景图案 */
+.modal-header:not(.modal-header--minimal)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+  pointer-events: none;
+}
+
+/* 头部内容区域 */
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+}
+
+.header-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.header-icon:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.header-text {
+  color: white;
+  flex: 1;
+  min-width: 0;
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.header-subtitle {
+  font-size: 13px;
+  opacity: 0.85;
+  font-weight: 400;
+  margin: 0;
+  margin-left: 0;
+}
+
+/* 右侧操作区域 */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+.close-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+.close-btn:active {
+  transform: scale(0.95);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .modal-header {
+    padding: 14px 20px;
+    min-height: 56px;
+  }
+  
+  .header-content {
+    gap: 10px;
+  }
+  
+  .header-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+  }
+  
+  .header-title {
+    font-size: 16px;
+    gap: 8px;
+  }
+  
+  .header-subtitle {
+    font-size: 12px;
+  }
+  
+  .close-btn {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-header {
+    padding: 12px 16px;
+    min-height: 52px;
+  }
+  
+  .header-title {
+    font-size: 15px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .header-subtitle {
+    font-size: 11px;
+  }
+  
+  .close-btn {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* 简洁模式下的头部标题适配 */
+.modal-header--minimal .header-title {
+  color: #1e293b;
+  text-shadow: none;
+}
+
+.modal-header--minimal .header-text {
+  color: #1e293b;
+}
+
+.modal-header--minimal .header-icon {
+  background: rgba(103, 126, 234, 0.1);
+  border-color: rgba(103, 126, 234, 0.2);
+}
+
+.modal-header--minimal .close-btn {
+  background: rgba(148, 163, 184, 0.1);
+  border-color: rgba(148, 163, 184, 0.2);
+  color: #64748b;
+}
+
+.modal-header--minimal .close-btn:hover {
+  background: rgba(148, 163, 184, 0.2);
+}
+
+/* 可访问性增强 */
+@media (prefers-reduced-motion: reduce) {
+  .header-icon,
+  .close-btn {
+    transition: none;
+  }
+}
+
+/* 高对比度支持 */
+@media (prefers-contrast: high) {
+  .modal-header {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+  }
+  
+  .header-icon,
+  .close-btn {
+    border-width: 2px;
+  }
+}
+</style> 
