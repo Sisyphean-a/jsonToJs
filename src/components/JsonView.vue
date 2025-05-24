@@ -145,7 +145,8 @@ import { ref, computed, watch, nextTick, onMounted, provide, inject, onUnmounted
 const props = defineProps({
   json: {
     type: [Object, Array],
-    required: true,
+    required: false,
+    default: null,
   },
   jsonKey: {
     type: String,
@@ -216,6 +217,7 @@ const generateChildPath = (key, index) => {
 }
 
 const copyJson = () => {
+  if (!props.json) return
   const jsonStr = JSON.stringify(props.json, null, 2)
   navigator.clipboard.writeText(jsonStr).then(() => {
     snackbar.value = true
@@ -261,10 +263,12 @@ const startRender = () => {
 }
 
 const isArray = computed(() => {
+  if (!props.json) return false
   return Object.prototype.toString.call(props.json) === '[object Array]'
 })
 
 const length = computed(() => {
+  if (!props.json) return 0
   return isArray.value ? props.json.length : Object.keys(props.json).length
 })
 
@@ -277,6 +281,8 @@ const prefix = computed(() => {
 })
 
 const items = computed(() => {
+  if (!props.json) return []
+
   if (isArray.value) {
     return props.json.map((item) => {
       const isJSON = isObjectOrArray(item)
@@ -336,14 +342,16 @@ const renderBatch = (startIdx, allItems) => {
 // 检查是否有已折叠的后代节点
 const hasCollapsedDescendants = computed(() => {
   // 如果当前节点没有子项，或者当前节点是折叠的，则没有需要展开的后代
-  if (!length.value || !isExpanded.value) return false
+  if (!props.json || !length.value || !isExpanded.value) return false
 
   return items.value.some((item) => {
     // 对于JSON类型的子项
     if (item.isJSON && item.value) {
       const valueType = Object.prototype.toString.call(item.value)
       const hasChildren =
-        valueType === '[object Array]' ? item.value.length > 0 : Object.keys(item.value).length > 0
+        valueType === '[object Array]'
+          ? item.value.length > 0
+          : item.value && Object.keys(item.value).length > 0
 
       // 如果有子项，就可能需要展开
       return hasChildren

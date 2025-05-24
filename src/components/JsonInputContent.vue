@@ -21,22 +21,27 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:json'])
+const emit = defineEmits(['update:json', 'update:jsonInput'])
 
 const localJsonInput = ref(props.initialJson)
 const hasError = ref(false)
 
-// 监听外部JSON变化
+// 监听外部JSON变化，只在值真正不同时才更新
 watch(
   () => props.initialJson,
   (newVal) => {
-    localJsonInput.value = newVal
-    hasError.value = false
+    if (newVal !== localJsonInput.value) {
+      localJsonInput.value = newVal
+      hasError.value = false
+    }
   },
 )
 
 // 处理输入变化
 const handleInput = () => {
+  // 发射原始输入文本
+  emit('update:jsonInput', localJsonInput.value)
+
   try {
     const parsedJson = JSON.parse(localJsonInput.value)
     emit('update:json', parsedJson)

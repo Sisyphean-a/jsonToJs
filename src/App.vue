@@ -4,7 +4,11 @@ import GlobalShortcuts from './components/GlobalShortcuts.vue'
 </script>
 
 <template>
-  <RouterView />
+  <RouterView v-slot="{ Component }">
+    <keep-alive>
+      <component :is="Component" />
+    </keep-alive>
+  </RouterView>
   <GlobalShortcuts />
 </template>
 

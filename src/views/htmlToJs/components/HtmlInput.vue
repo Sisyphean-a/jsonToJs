@@ -45,7 +45,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:html'])
+const emit = defineEmits(['update:html', 'update:htmlInput'])
 
 const htmlContent = ref(props.initialHtml)
 const showAttributeModal = ref(false)
@@ -53,9 +53,9 @@ const attributeList = ref([])
 
 // 当输入变化时更新HTML
 const updateHtml = () => {
+  emit('update:htmlInput', htmlContent.value)
   emit('update:html', htmlContent.value)
 }
-
 
 // 重置为初始内容
 const resetContent = () => {
@@ -108,11 +108,13 @@ const handleRemoveAttributes = (selectedAttrs) => {
   showAttributeModal.value = false
 }
 
-// 监听初始HTML变化
+// 监听初始HTML变化，只在值真正不同时才更新
 watch(
   () => props.initialHtml,
   (newValue) => {
-    htmlContent.value = newValue
+    if (newValue !== htmlContent.value) {
+      htmlContent.value = newValue
+    }
   },
 )
 </script>
