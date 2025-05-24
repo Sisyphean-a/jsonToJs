@@ -14,18 +14,43 @@ const props = defineProps({
   },
 })
 
-// 处理HTML内容：移除所有属性并添加预览样式类
+// 处理HTML内容：移除所有属性并添加预览样式类，但保留表格的rowspan和colspan属性
 const processedHtml = computed(() => {
   if (!props.html) return ''
 
   // 使用正则表达式处理HTML
   let processed = props.html
 
-  // 移除所有属性，但保留标签和内容
-  // 匹配开始标签和属性，保留标签名但移除所有属性
+  // 表格相关标签，需要保留 rowspan 和 colspan 属性
+  const tableElements = ['table', 'tr', 'td', 'th', 'thead', 'tbody', 'tfoot']
+
+  // 处理所有标签
   processed = processed.replace(/<([a-zA-Z][a-zA-Z0-9]*)[^>]*>/g, (match, tagName) => {
-    // 为每个标签添加预览样式类和title属性
-    return `<${tagName} class="preview-element" title="${tagName}">`
+    const lowerTagName = tagName.toLowerCase()
+
+    // 如果是表格相关元素，保留 rowspan 和 colspan 属性
+    if (tableElements.includes(lowerTagName)) {
+      const attributes = []
+
+      // 提取 rowspan 属性
+      const rowspanMatch = match.match(/rowspan\s*=\s*["']?([^"'\s>]+)["']?/i)
+      if (rowspanMatch) {
+        attributes.push(`rowspan="${rowspanMatch[1]}"`)
+      }
+
+      // 提取 colspan 属性
+      const colspanMatch = match.match(/colspan\s*=\s*["']?([^"'\s>]+)["']?/i)
+      if (colspanMatch) {
+        attributes.push(`colspan="${colspanMatch[1]}"`)
+      }
+
+      // 构建新标签
+      const attributesStr = attributes.length > 0 ? ' ' + attributes.join(' ') : ''
+      return `<${tagName} class="preview-element" title="${tagName}"${attributesStr}>`
+    } else {
+      // 非表格元素，移除所有属性
+      return `<${tagName} class="preview-element" title="${tagName}">`
+    }
   })
 
   return processed
@@ -186,11 +211,45 @@ const processedHtml = computed(() => {
   }
 
   // 表格元素
-  &:is(table, tr, td, th, thead, tbody, tfoot) {
-    display: block !important;
+  &:is(table) {
+    display: table !important;
+    margin: 3px !important;
+    padding: 4px !important;
+    border-collapse: separate !important;
+    border-spacing: 2px !important;
+    width: auto !important;
+    border: 2px solid #007bff !important;
+  }
+
+  &:is(tr) {
+    display: table-row !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid #007bff !important;
+  }
+
+  &:is(td, th) {
+    display: table-cell !important;
+    margin: 0 !important;
+    padding: 6px 8px !important;
+    vertical-align: top !important;
+    border: 1px solid #007bff !important;
+    min-height: 20px !important;
+    min-width: 40px !important;
+    text-align: center !important;
+
+    // 确保合并单元格正确显示
+    &[rowspan],
+    &[colspan] {
+      background-color: rgba(0, 123, 255, 0.1) !important;
+      font-weight: bold !important;
+    }
+  }
+
+  &:is(thead, tbody, tfoot) {
+    display: table-row-group !important;
     margin: 2px !important;
     padding: 2px !important;
-    clear: both !important;
   }
 
   // 表单元素

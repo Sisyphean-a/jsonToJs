@@ -409,7 +409,9 @@ const children = computed(() => {
       htmlTrim.startsWith('<colgroup') ||
       htmlTrim.startsWith('<thead') ||
       htmlTrim.startsWith('<tbody') ||
-      htmlTrim.startsWith('<tr')
+      htmlTrim.startsWith('<tr') ||
+      htmlTrim.startsWith('<td') ||
+      htmlTrim.startsWith('<th')
     ) {
       const doc = parser.parseFromString(`<table>${props.html}</table>`, 'text/html')
       element = doc.querySelector(firstTag)
