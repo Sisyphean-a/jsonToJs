@@ -231,7 +231,7 @@ onUnmounted(() => {
   flex: 1;
   overflow: auto;
   padding: 12px;
-  background-color: #ffffff;
+  background-color: #f8f9fa;
 }
 
 .resize-handle-horizontal {

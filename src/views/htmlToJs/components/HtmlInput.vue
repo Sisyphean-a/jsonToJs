@@ -181,9 +181,14 @@ watch(
   background-color: #f0f0f0;
   color: #212529;
   outline: none;
+  transition: background-color 0.2s;
 
   &::placeholder {
     color: #adb5bd;
+  }
+
+  &:focus {
+    background-color: #e9ecef;
   }
 }
 </style>

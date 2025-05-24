@@ -5,12 +5,14 @@
       <span style="color: #4caf50">transform</span>(<span style="color: #ff9800">json</span>) {
     </div>
 
-    <div class="code-editor">
-      <div
-        ref="editor"
-        style="height: 100%"
-      ></div>
-    </div>
+    <CodeEditor
+      ref="codeEditor"
+      v-model="code"
+      :placeholder="defaultCode"
+      @ctrl-enter="handleCtrlEnter"
+      @ctrl-save="handleCtrlSave"
+      @format="handleFormat"
+    />
 
     <div class="function-footer">}</div>
 
@@ -20,7 +22,11 @@
         @click="executeTransform"
         :disabled="isExecuting"
       >
-        <span v-if="isExecuting" class="btn-loading">⟳</span>
+        <span
+          v-if="isExecuting"
+          class="btn-loading"
+          >⟳</span
+        >
         <span>{{ isExecuting ? '执行中...' : '执行转换' }}</span>
       </button>
       <button
@@ -53,10 +59,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { EditorState } from '@codemirror/state'
-import { EditorView, keymap } from '@codemirror/view'
-import { createEditorExtensions, formatCode as formatCodeUtil } from '../utils/editorUtils'
+import { ref } from 'vue'
+import CodeEditor from './CodeEditor.vue'
 import CommonCodeDialog from './CommonCodeDialog.vue'
 
 const props = defineProps({
@@ -68,104 +72,24 @@ const props = defineProps({
 
 const emit = defineEmits(['update:transformedJson'])
 
-const editor = ref(null)
-const editorView = ref(null)
+const codeEditor = ref(null)
+const code = ref('')
 const error = ref('')
 const isExecuting = ref(false)
 const showCommonCodeDialog = ref(false)
 
-// 创建编辑器扩展
-const extensions = [
-  ...createEditorExtensions(),
-  keymap.of([
-    {
-      key: 'Enter',
-      run: (view) => {
-        // 默认的换行行为
-        view.dispatch({
-          changes: { from: view.state.selection.main.head, insert: '\n' },
-          selection: { anchor: view.state.selection.main.head + 1 },
-        })
-        return true
-      },
-    },
-    {
-      key: 'Ctrl-Enter',
-      run: () => {
-        handleCtrlEnter()
-        return true
-      },
-    },
-    {
-      key: 'Ctrl-s',
-      run: () => {
-        handleCtrlSave()
-        return true
-      },
-    },
-    {
-      key: 'Ctrl-/',
-      run: (view) => {
-        toggleLineComment(view)
-        return true
-      },
-    },
-  ]),
-]
+// 默认代码
+const defaultCode =
+  '// Ctrl + Enter：格式化+执行\n// Ctrl + S：格式化\n// Ctrl + /：注释/取消注释\nreturn json.address'
 
-const toggleLineComment = (view) => {
-  const { state } = view
-  const { doc } = state
-  const { head } = state.selection.main
-
-  // 获取当前行的行号
-  const line = doc.lineAt(head)
-  const lineText = line.text
-
-  // 检查当前行是否已经被注释
-  const trimmedText = lineText.trimStart()
-  const leadingSpaces = lineText.length - trimmedText.length
-  const isCommented = trimmedText.startsWith('//')
-
-  // 创建变更
-  if (isCommented) {
-    // 移除注释
-    const commentStart = line.from + leadingSpaces
-    view.dispatch({
-      changes: {
-        from: commentStart,
-        to: commentStart + 2,
-        insert: '',
-      },
-    })
-  } else {
-    // 添加注释
-    const commentStart = line.from + leadingSpaces
-    view.dispatch({
-      changes: {
-        from: commentStart,
-        to: commentStart,
-        insert: '//',
-      },
-    })
-  }
-}
+// 初始化代码
+code.value = defaultCode
 
 const formatCode = async () => {
   try {
-    const code = editorView.value.state.doc.toString()
-    const formatted = await formatCodeUtil(code)
-
-    // 更新编辑器内容
-    editorView.value.dispatch({
-      changes: {
-        from: 0,
-        to: editorView.value.state.doc.length,
-        insert: formatted,
-      },
-    })
+    await codeEditor.value?.formatCode()
   } catch (err) {
-    error.value = '格式化代码时出错：' + err.message
+    error.value = err.message
   }
 }
 
@@ -174,8 +98,8 @@ const executeTransform = () => {
   error.value = ''
 
   try {
-    const code = editorView.value.state.doc.toString()
-    if (!code.trim()) {
+    const currentCode = codeEditor.value?.getCode() || code.value
+    if (!currentCode.trim()) {
       emit('update:transformedJson', props.json)
       return
     }
@@ -184,7 +108,7 @@ const executeTransform = () => {
       'json',
       `
       function transform(json) {
-        ${code}
+        ${currentCode}
       }
       return transform(json)
     `,
@@ -200,44 +124,30 @@ const executeTransform = () => {
   }
 }
 
-const handleCtrlEnter = async () => {
-  await formatCode()
+const handleCtrlEnter = async (formattedCode, formatError) => {
+  if (formatError) {
+    error.value = formatError.message
+  } else {
+    error.value = ''
+  }
   executeTransform()
 }
 
-const handleCtrlSave = async () => {
-  await formatCode()
-}
-
-const handleCodeSelect = (code) => {
-  if (editorView.value) {
-    editorView.value.dispatch({
-      changes: {
-        from: 0,
-        to: editorView.value.state.doc.length,
-        insert: code,
-      },
-    })
+const handleCtrlSave = async (formattedCode, formatError) => {
+  if (formatError) {
+    error.value = formatError.message
+  } else {
+    error.value = ''
   }
 }
 
-onMounted(() => {
-  // 创建编辑器实例
-  editorView.value = new EditorView({
-    state: EditorState.create({
-      doc: '// Ctrl + Enter：格式化+执行\n// Ctrl + S：格式化\n// Ctrl + /：注释/取消注释\nreturn json.address',
-      extensions,
-    }),
-    parent: editor.value,
-  })
-})
+const handleFormat = (formattedCode) => {
+  error.value = ''
+}
 
-onBeforeUnmount(() => {
-  if (editorView.value) {
-    editorView.value.destroy()
-    editorView.value = null
-  }
-})
+const handleCodeSelect = (selectedCode) => {
+  codeEditor.value?.setCode(selectedCode)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -257,39 +167,6 @@ onBeforeUnmount(() => {
     user-select: none;
     font-size: 14px;
     font-weight: 500;
-  }
-
-  .code-editor {
-    flex: 1;
-    min-height: 120px;
-    border: 1px solid rgba(148, 163, 184, 0.3);
-    border-radius: 8px;
-    overflow: hidden;
-    background: #ffffff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    &:focus-within {
-      border-color: rgba(30, 41, 59, 0.4);
-      box-shadow: 
-        0 0 0 1px rgba(30, 41, 59, 0.2),
-        0 4px 12px rgba(30, 41, 59, 0.1);
-    }
-
-    :deep(.cm-editor) {
-      height: 100%;
-      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    :deep(.cm-editor.cm-focused) {
-      outline: none;
-    }
-
-    :deep(.cm-scroller) {
-      padding: 12px;
-    }
   }
 
   .button-area {
@@ -380,8 +257,12 @@ onBeforeUnmount(() => {
   }
 
   @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .error-area {
@@ -438,18 +319,6 @@ onBeforeUnmount(() => {
     .function-footer {
       font-size: 13px;
       padding: 0 8px;
-    }
-
-    .code-editor {
-      min-height: 100px;
-
-      :deep(.cm-editor) {
-        font-size: 13px;
-      }
-
-      :deep(.cm-scroller) {
-        padding: 10px;
-      }
     }
 
     .button-area {
