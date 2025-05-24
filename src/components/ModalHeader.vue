@@ -138,7 +138,7 @@ const handleClose = () => {
 ======================================== */
 
 .modal-header {
-  padding: 16px 24px;
+  padding: var(--spacing-lg) var(--spacing-2xl);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -149,21 +149,25 @@ const handleClose = () => {
 
 /* 默认主题 - 深色技术风格 */
 .modal-header--default {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  background: linear-gradient(135deg, var(--color-gray-800) 0%, var(--color-gray-700) 100%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
+
 .modal-header--primary {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  background: linear-gradient(135deg, var(--color-primary-900) 0%, var(--color-primary-800) 100%);
   border-bottom: 1px solid rgba(59, 130, 246, 0.2);
 }
+
 .modal-header--success {
   background: linear-gradient(135deg, #065f46 0%, #047857 100%);
   border-bottom: 1px solid rgba(16, 185, 129, 0.2);
 }
+
 .modal-header--warning {
   background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
   border-bottom: 1px solid rgba(245, 158, 11, 0.2);
 }
+
 .modal-header--danger {
   background: linear-gradient(135deg, #991b1b 0%, #b91c1c 100%);
   border-bottom: 1px solid rgba(239, 68, 68, 0.2);
@@ -185,7 +189,7 @@ const handleClose = () => {
 .header-content {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--spacing-md);
   position: relative;
   z-index: 1;
   flex: 1;
@@ -195,44 +199,45 @@ const handleClose = () => {
 .header-icon {
   width: 36px;
   height: 36px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
+  background: var(--glass-bg);
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--glass-border);
   flex-shrink: 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--transition-normal);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
+
 .header-icon:hover {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.18);
 }
 
 .header-text {
-  color: white;
+  color: var(--text-inverse);
   flex: 1;
   min-width: 0;
 }
 
 .header-title {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
   margin: 0;
   line-height: 1.2;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--spacing-md);
   flex-wrap: wrap;
 }
 
 .header-subtitle {
-  font-size: 13px;
+  font-size: var(--font-size-base);
   opacity: 0.85;
-  font-weight: 400;
+  font-weight: var(--font-weight-normal);
   margin: 0;
   margin-left: 0;
 }
@@ -241,7 +246,7 @@ const handleClose = () => {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--spacing-sm);
   position: relative;
   z-index: 1;
 }
@@ -250,50 +255,56 @@ const handleClose = () => {
   width: 32px;
   height: 32px;
   border: none;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
+  background: var(--glass-bg);
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all var(--transition-normal);
+  backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--glass-border);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
+
 .close-btn:hover {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.18);
 }
 
-.close-btn:focus {  outline: none;  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 0 2px rgba(255, 255, 255, 0.3);}
+.close-btn:focus {
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
 
-.close-btn:active {  background: rgba(255, 255, 255, 0.15);}
+.close-btn:active {
+  background: rgba(255, 255, 255, 0.15);
+}
 
 /* 响应式设计 */
 @media (max-width: 768px) {
   .modal-header {
-    padding: 14px 20px;
+    padding: var(--spacing-md) var(--spacing-xl);
     min-height: 56px;
   }
 
   .header-content {
-    gap: 10px;
+    gap: var(--spacing-sm);
   }
 
   .header-icon {
     width: 32px;
     height: 32px;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
   }
 
   .header-title {
-    font-size: 16px;
-    gap: 8px;
+    font-size: var(--font-size-xl);
+    gap: var(--spacing-sm);
   }
 
   .header-subtitle {
-    font-size: 12px;
+    font-size: var(--font-size-sm);
   }
 
   .close-btn {
@@ -304,19 +315,19 @@ const handleClose = () => {
 
 @media (max-width: 480px) {
   .modal-header {
-    padding: 12px 16px;
+    padding: var(--spacing-md) var(--spacing-lg);
     min-height: 52px;
   }
 
   .header-title {
-    font-size: 15px;
+    font-size: var(--font-size-lg);
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
+    gap: var(--spacing-xs);
   }
 
   .header-subtitle {
-    font-size: 11px;
+    font-size: var(--font-size-xs);
   }
 
   .close-btn {
@@ -327,15 +338,31 @@ const handleClose = () => {
 
 /* 简洁模式下的头部标题适配 */
 .modal-header--minimal .header-title {
-  color: #1e293b;
+  color: var(--text-primary);
   text-shadow: none;
 }
 
 .modal-header--minimal .header-text {
-  color: #1e293b;
+  color: var(--text-primary);
 }
 
-.modal-header--minimal .header-icon {  background: rgba(30, 41, 59, 0.06);  border-color: rgba(30, 41, 59, 0.12);  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);}.modal-header--minimal .close-btn {  background: rgba(30, 41, 59, 0.06);  border-color: rgba(30, 41, 59, 0.12);  color: #64748b;  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);}.modal-header--minimal .close-btn:hover {  background: rgba(30, 41, 59, 0.1);  border-color: rgba(30, 41, 59, 0.18);}
+.modal-header--minimal .header-icon {
+  background: rgba(var(--color-gray-800), 0.06);
+  border-color: rgba(var(--color-gray-800), 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.modal-header--minimal .close-btn {
+  background: rgba(var(--color-gray-800), 0.06);
+  border-color: rgba(var(--color-gray-800), 0.12);
+  color: var(--text-secondary);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.modal-header--minimal .close-btn:hover {
+  background: rgba(var(--color-gray-800), 0.1);
+  border-color: rgba(var(--color-gray-800), 0.18);
+}
 
 /* 可访问性增强 */
 @media (prefers-reduced-motion: reduce) {

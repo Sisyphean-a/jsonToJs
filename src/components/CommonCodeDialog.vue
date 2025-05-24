@@ -32,7 +32,7 @@
               <h3 class="code-title">{{ code.title }}</h3>
             </div>
             <div class="header-actions">
-              <button class="quick-use-btn" @click.stop="selectCode(code)">
+              <button class="btn btn--sm btn--secondary" @click.stop="selectCode(code)">
                 <v-icon size="14" color="#475569">mdi-check</v-icon>
                 使用
               </button>
@@ -54,7 +54,7 @@
               <pre><code class="language-javascript" v-html="highlightedCodes[index]"></code></pre>
             </div>
             <div class="code-actions">
-              <button class="copy-btn" @click="copyCode(code.code)">
+              <button class="btn btn--secondary" @click="copyCode(code.code)">
                 <v-icon size="16" color="#334155">mdi-content-copy</v-icon>
                 复制
               </button>
@@ -70,7 +70,7 @@
         <div class="footer-info">
           <span class="code-count">共 {{ commonCodes.length }} 个代码示例</span>
         </div>
-        <button class="close-footer-btn" @click="closeDialog">
+        <button class="btn btn--secondary" @click="closeDialog">
           关闭
         </button>
       </footer>
@@ -148,7 +148,7 @@ const closeDialog = () => {
 .code-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-lg);
 }
 
 /* ========================================
@@ -156,13 +156,13 @@ const closeDialog = () => {
 ======================================== */
 
 .code-item {
-  background: white;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--transition-normal);
   position: relative;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 .code-item::before {
@@ -172,16 +172,14 @@ const closeDialog = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(30, 41, 59, 0.02);
+  background: rgba(var(--color-gray-800), 0.02);
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity var(--transition-normal);
 }
 
 .code-item:hover {
-  border-color: rgba(30, 41, 59, 0.3);
-  box-shadow: 
-    0 8px 25px -5px rgba(30, 41, 59, 0.12),
-    0 4px 10px -5px rgba(30, 41, 59, 0.08);
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-lg);
 }
 
 .code-item:hover::before {
@@ -189,78 +187,57 @@ const closeDialog = () => {
 }
 
 .code-item.expanded {
-  border-color: rgba(30, 41, 59, 0.35);
+  border-color: var(--border-strong);
 }
 
 .code-header {
-  padding: 12px 16px;
+  padding: var(--spacing-md) var(--spacing-lg);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
   position: relative;
   z-index: 1;
 }
 
 .code-header:hover {
-  background: rgba(30, 41, 59, 0.05);
+  background: rgba(var(--color-gray-800), 0.05);
 }
 
 .code-title-content {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--spacing-sm);
 }
 
 .code-icon {
   width: 24px;
   height: 24px;
-  background: rgba(30, 41, 59, 0.08);
-  border-radius: 6px;
+  background: rgba(var(--color-gray-800), 0.08);
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(30, 41, 59, 0.12);
+  border: 1px solid rgba(var(--color-gray-800), 0.12);
 }
 
 .code-title {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
   margin: 0;
-  color: #1e293b;
+  color: var(--text-primary);
   line-height: 1.3;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-
-.quick-use-btn {
-  background: rgba(132, 147, 169, 0.1);
-  border: 1px solid rgba(94, 114, 142, 0.3);
-  color: #475569;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.quick-use-btn:hover {
-  background: rgba(148, 163, 184, 0.15);
-  border-color: rgba(148, 163, 184, 0.4);
-  color: #334155;
+  gap: var(--spacing-sm);
 }
 
 .expand-indicator {
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-normal);
 }
 
 .expand-indicator .rotated {
@@ -272,13 +249,13 @@ const closeDialog = () => {
 ======================================== */
 
 .code-content {
-  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  border-top: 1px solid var(--border-light);
   position: relative;
   z-index: 1;
   overflow: hidden;
   max-height: 0;
-  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
-              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: max-height var(--transition-normal), 
+              opacity var(--transition-normal);
   opacity: 0;
 }
 
@@ -289,18 +266,18 @@ const closeDialog = () => {
 
 .code-display {
   padding: 0;
-  background: #f8fafc;
+  background: var(--bg-secondary);
   border-radius: 0;
 }
 
 .code-display pre {
-  background: #f8fafc;
-  padding: 16px;
+  background: var(--bg-secondary);
+  padding: var(--spacing-lg);
   margin: 0;
   border: none;
   border-radius: 0;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
-  font-size: 14px;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-md);
   line-height: 1.5;
   overflow-x: auto;
 }
@@ -310,41 +287,21 @@ const closeDialog = () => {
 }
 
 .code-display pre::-webkit-scrollbar-track {
-  background: rgba(148, 163, 184, 0.1);
-  border-radius: 3px;
+  background: var(--border-light);
+  border-radius: var(--radius-xs);
 }
 
 .code-display pre::-webkit-scrollbar-thumb {
-  background: rgba(30, 41, 59, 0.3);
-  border-radius: 3px;
+  background: var(--text-tertiary);
+  border-radius: var(--radius-xs);
 }
 
 .code-actions {
-  padding: 12px 16px;
-  background: white;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--bg-primary);
   display: flex;
-  gap: 10px;
+  gap: var(--spacing-sm);
   justify-content: flex-end;
-}
-
-.copy-btn {
-  background: white;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  color: #334155;
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.copy-btn:hover {
-  background: rgba(30, 41, 59, 0.05);
-  border-color: rgba(30, 41, 59, 0.3);
 }
 
 /* ========================================
@@ -352,13 +309,13 @@ const closeDialog = () => {
 ======================================== */
 
 .modal-footer {
-  background: rgba(248, 250, 252, 0.8);
-  border-top: 1px solid rgba(148, 163, 184, 0.2);
-  padding: 16px 24px;
+  background: rgba(var(--bg-secondary), 0.8);
+  border-top: 1px solid var(--border-light);
+  padding: var(--spacing-lg) var(--spacing-2xl);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  backdrop-filter: blur(8px);
+  backdrop-filter: var(--backdrop-blur);
 }
 
 .footer-info {
@@ -367,26 +324,9 @@ const closeDialog = () => {
 }
 
 .code-count {
-  font-size: 14px;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.close-footer-btn {
-  background: white;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  color: #334155;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.close-footer-btn:hover {
-  background: rgba(248, 250, 252, 0.8);
-  border-color: rgba(148, 163, 184, 0.5);
+  font-size: var(--font-size-md);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
 }
 
 /* ========================================
@@ -395,44 +335,44 @@ const closeDialog = () => {
 
 @media (max-width: 768px) {
   .code-header {
-    padding: 10px 14px;
+    padding: var(--spacing-sm) var(--spacing-md);
   }
   
   .code-title {
-    font-size: 14px;
+    font-size: var(--font-size-md);
   }
   
   .code-display pre {
-    padding: 14px;
+    padding: var(--spacing-md);
   }
   
   .code-actions {
-    padding: 10px 14px;
+    padding: var(--spacing-sm) var(--spacing-md);
     flex-direction: column;
-    gap: 8px;
+    gap: var(--spacing-sm);
   }
   
-  .copy-btn {
+  .btn {
     width: 100%;
     justify-content: center;
-    padding: 10px 14px;
+    padding: var(--spacing-sm) var(--spacing-md);
   }
   
   .modal-footer {
-    padding: 14px 20px;
+    padding: var(--spacing-md) var(--spacing-xl);
     flex-direction: column;
-    gap: 12px;
+    gap: var(--spacing-md);
     text-align: center;
   }
   
-  .close-footer-btn {
+  .btn {
     width: 100%;
   }
 }
 
 @media (max-width: 480px) {
   .code-header {
-    padding: 10px 12px;
+    padding: var(--spacing-sm) var(--spacing-md);
   }
   
   .code-icon {
@@ -441,16 +381,16 @@ const closeDialog = () => {
   }
   
   .code-title {
-    font-size: 13px;
+    font-size: var(--font-size-base);
   }
   
   .code-display pre {
-    padding: 12px;
-    font-size: 13px;
+    padding: var(--spacing-md);
+    font-size: var(--font-size-base);
   }
   
   .code-actions {
-    padding: 10px 12px;
+    padding: var(--spacing-sm) var(--spacing-md);
   }
 }
 </style>

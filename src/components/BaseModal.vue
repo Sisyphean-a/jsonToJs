@@ -91,30 +91,29 @@ const handleOverlayClick = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--bg-overlay);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
-  padding: 20px;
-  animation: overlayFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: var(--z-modal);
+  padding: var(--spacing-xl);
+  animation: overlayFadeIn var(--transition-normal);
 }
+
 .base-modal-container {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow:
-    0 20px 40px -8px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
   width: 100%;
   max-height: 90vh;
   overflow: hidden;
-  animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: modalSlideIn var(--transition-slow);
   position: relative;
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid var(--border-light);
 }
 
 /* 不同尺寸的弹窗 */
@@ -137,12 +136,12 @@ const handleOverlayClick = () => {
 .base-modal--fullscreen {
   max-width: 95vw;
   max-height: 95vh;
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
 }
 
 /* 内容区域 */
 .base-modal-content {
-  padding: 24px;
+  padding: var(--spacing-2xl);
   overflow-y: auto;
   flex: 1;
   scroll-behavior: smooth;
@@ -162,11 +161,12 @@ const handleOverlayClick = () => {
 }
 
 .base-modal-content::-webkit-scrollbar-thumb {
-  background: rgba(30, 41, 59, 0.3);
-  border-radius: 3px;
+  background: var(--text-tertiary);
+  border-radius: var(--radius-xs);
 }
+
 .base-modal-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(30, 41, 59, 0.5);
+  background: var(--text-secondary);
 }
 
 /* 动画定义 */
@@ -193,20 +193,20 @@ const handleOverlayClick = () => {
 /* 响应式设计 */
 @media (max-width: 768px) {
   .base-modal-overlay {
-    padding: 16px;
+    padding: var(--spacing-lg);
   }
 
   .base-modal-container {
-    border-radius: 20px;
+    border-radius: var(--spacing-xl);
     max-height: 95vh;
   }
 
   .base-modal--fullscreen {
-    border-radius: 16px;
+    border-radius: var(--radius-xl);
   }
 
   .base-modal-content {
-    padding: 20px;
+    padding: var(--spacing-xl);
   }
 
   .base-modal--no-padding .base-modal-content {
@@ -216,11 +216,11 @@ const handleOverlayClick = () => {
 
 @media (max-width: 480px) {
   .base-modal-container {
-    border-radius: 16px;
+    border-radius: var(--radius-xl);
   }
 
   .base-modal-content {
-    padding: 16px;
+    padding: var(--spacing-lg);
   }
 
   .base-modal--no-padding .base-modal-content {

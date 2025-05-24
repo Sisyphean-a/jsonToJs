@@ -1,21 +1,29 @@
 @import './base.css';
+@import './design-tokens.css';
+@import './components.css';
+@import './animations.css';
 
 #app {
   margin: 0 auto;
-  font-weight: normal;
+  font-weight: var(--font-weight-normal);
+  font-family: var(--font-family-base);
+  color: var(--text-primary);
+  background: var(--bg-primary);
 }
 
 a,
 .green {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+  color: var(--color-success);
+  transition: var(--transition-fast);
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-xs);
 }
 
 @media (hover: hover) {
   a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+    background-color: var(--color-success-light);
+    color: var(--color-success);
   }
 }
 

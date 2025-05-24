@@ -18,25 +18,21 @@
 
     <div class="button-area">
       <button
-        class="transform-btn transform-btn--primary"
+        class="btn btn--primary"
+        :class="{ loading: isExecuting }"
         @click="executeTransform"
         :disabled="isExecuting"
       >
-        <span
-          v-if="isExecuting"
-          class="btn-loading"
-          >⟳</span
-        >
         <span>{{ isExecuting ? '执行中...' : '执行转换' }}</span>
       </button>
       <button
-        class="transform-btn transform-btn--secondary"
+        class="btn btn--secondary"
         @click="formatCode"
       >
         <span>格式化代码</span>
       </button>
       <button
-        class="transform-btn transform-btn--tertiary"
+        class="btn btn--tertiary"
         @click="showCommonCodeDialog = true"
       >
         <span>常用代码</span>
@@ -153,145 +149,58 @@ const handleCodeSelect = (selectedCode) => {
 <style lang="scss" scoped>
 .js-transformer {
   height: 100%;
-  padding: 16px;
+  padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  background: #fafafa;
+  gap: var(--spacing-md);
+  background: var(--bg-tertiary);
 
   .function-header,
   .function-footer {
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
-    color: #64748b;
-    padding: 0 12px;
+    font-family: var(--font-family-mono);
+    color: var(--text-secondary);
+    padding: 0 var(--spacing-md);
     user-select: none;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
   }
 
   .button-area {
-    padding: 12px 0;
+    padding: var(--spacing-md) 0;
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: var(--spacing-md);
     flex-wrap: wrap;
   }
 
-  .transform-btn {
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    border: none;
-    min-width: 100px;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-
-    &:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-
-    &--primary {
-      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-      color: white;
-      box-shadow: 0 2px 8px rgba(30, 58, 138, 0.3);
-
-      &:hover:not(:disabled) {
-        background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
-        box-shadow: 0 4px 12px rgba(30, 58, 138, 0.4);
-        transform: translateY(-1px);
-      }
-
-      &:active:not(:disabled) {
-        transform: translateY(0);
-      }
-    }
-
-    &--secondary {
-      background: white;
-      color: #334155;
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-
-      &:hover {
-        background: rgba(248, 250, 252, 0.8);
-        border-color: rgba(148, 163, 184, 0.5);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(148, 163, 184, 0.2);
-      }
-
-      &:active {
-        transform: translateY(0);
-      }
-    }
-
-    &--tertiary {
-      background: rgba(30, 41, 59, 0.06);
-      color: #334155;
-      border: 1px solid rgba(30, 41, 59, 0.12);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-
-      &:hover {
-        background: rgba(30, 41, 59, 0.1);
-        border-color: rgba(30, 41, 59, 0.18);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(30, 41, 59, 0.15);
-      }
-
-      &:active {
-        transform: translateY(0);
-      }
-    }
-  }
-
-  .btn-loading {
-    animation: spin 1s linear infinite;
-    font-size: 14px;
-  }
-
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
   .error-area {
-    padding: 12px 16px;
-    background: rgba(254, 242, 242, 0.8);
-    border: 1px solid rgba(248, 113, 113, 0.3);
-    border-radius: 8px;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--color-error-light);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--radius-md);
     max-height: 100px;
     overflow-y: auto;
-    backdrop-filter: blur(8px);
+    backdrop-filter: var(--backdrop-blur);
 
     .error-title {
-      color: #dc2626;
-      font-weight: 600;
-      margin-bottom: 6px;
-      font-size: 13px;
+      color: var(--color-error);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-sm);
+      font-size: var(--font-size-base);
     }
 
     .error-content {
-      color: #dc2626;
-      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
-      font-size: 12px;
+      color: var(--color-error);
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-sm);
       white-space: pre-wrap;
       line-height: 1.4;
     }
 
-    /* 自定义滚动条 */
+    /* 自定义滚动条样式 */
     &::-webkit-scrollbar {
-      width: 4px;
+      width: 6px;
+      height: 6px;
     }
 
     &::-webkit-scrollbar-track {
@@ -299,12 +208,13 @@ const handleCodeSelect = (selectedCode) => {
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba(220, 38, 38, 0.3);
-      border-radius: 2px;
+      background: var(--color-error);
+      border-radius: var(--radius-xs);
+      opacity: 0.5;
     }
 
     &::-webkit-scrollbar-thumb:hover {
-      background: rgba(220, 38, 38, 0.5);
+      opacity: 0.8;
     }
   }
 }
@@ -312,33 +222,33 @@ const handleCodeSelect = (selectedCode) => {
 /* 响应式设计 */
 @media (max-width: 768px) {
   .js-transformer {
-    padding: 12px;
-    gap: 10px;
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
 
     .function-header,
     .function-footer {
-      font-size: 13px;
-      padding: 0 8px;
+      font-size: var(--font-size-base);
+      padding: 0 var(--spacing-sm);
     }
 
     .button-area {
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: var(--spacing-sm);
     }
 
-    .transform-btn {
+    .btn {
       width: 200px;
-      padding: 12px 16px;
+      height: var(--button-height-lg);
     }
   }
 }
 
 @media (max-width: 480px) {
   .js-transformer {
-    padding: 8px;
+    padding: var(--spacing-sm);
 
-    .transform-btn {
+    .btn {
       width: 100%;
       max-width: 280px;
     }
