@@ -175,6 +175,7 @@ const props = defineProps({
   html: {
     type: String,
     required: true,
+    default: '',
   },
   closed: {
     type: Boolean,
@@ -240,24 +241,27 @@ const batchSize = 10 // 每批渲染的项目数量
 
 // 检查是否为HTML注释
 const isComment = computed(() => {
+  if (!props.html) return false
   return props.html.trim().startsWith('<!--') && props.html.trim().endsWith('-->')
 })
 
 // 提取注释内容
 const commentContent = computed(() => {
-  if (!isComment.value) return ''
+  if (!isComment.value || !props.html) return ''
   const content = props.html.trim()
   return content.substring(4, content.length - 3)
 })
 
 // 检查是否为文本节点
 const isTextNode = computed(() => {
+  if (!props.html) return true
   // 如果不是以 < 开头，则认为是纯文本节点
   return !props.html.trim().startsWith('<') || props.html.trim() === '<!---->'
 })
 
 // 解析HTML字符串
 const parseHtml = (htmlString) => {
+  if (!htmlString) return []
   // 处理空注释标记
   if (htmlString.trim() === '<!---->') {
     return []
@@ -270,6 +274,16 @@ const parseHtml = (htmlString) => {
 
 // 提取标签信息
 const tagInfo = computed(() => {
+  if (!props.html) {
+    return {
+      name: '',
+      fullTag: '',
+      textContent: '',
+      attributes: [],
+      isSelfClosing: false,
+    }
+  }
+
   // 处理注释或文本节点
   if (isComment.value || isTextNode.value) {
     return {
@@ -387,6 +401,8 @@ const hasCollapsibleAttrs = computed(() => {
 
 // 解析子元素
 const children = computed(() => {
+  if (!props.html) return []
+  
   // 处理注释或文本节点
   if (isComment.value || isTextNode.value) {
     return []
@@ -480,7 +496,8 @@ const generateChildPath = (index) => {
 
 // 复制HTML
 const copyHtml = () => {
-  navigator.clipboard.writeText(props.html).then(() => {
+  const htmlToCopy = props.html || ''
+  navigator.clipboard.writeText(htmlToCopy).then(() => {
     snackbar.value = true
     snackbarText.value = ''
   })

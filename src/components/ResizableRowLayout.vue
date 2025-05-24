@@ -219,7 +219,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   transition: height 0.2s ease;
-  background-color: #f8f9fa;
+  background-color: #fafafa;
   border-bottom: 1px solid #e0e0e0;
 
   &:last-child {
@@ -231,7 +231,7 @@ onUnmounted(() => {
   flex: 1;
   overflow: auto;
   padding: 12px;
-  background-color: #f8f9fa;
+  background-color: #fafafa;
 }
 
 .resize-handle-horizontal {

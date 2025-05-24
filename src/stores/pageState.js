@@ -34,6 +34,7 @@ export const usePageStateStore = defineStore('pageState', () => {
   const htmlPageState = ref({
     htmlInput: defaultHtml,
     html: defaultHtml,
+    transformedHtml: defaultHtml,
     isInitialized: false,
   })
 
@@ -46,9 +47,14 @@ export const usePageStateStore = defineStore('pageState', () => {
   }
 
   // 初始化HTML页面状态
-  const initHtmlPage = (fallbackHtml) => {
+  const initHtmlPage = (fallbackHtml, fallbackTransformedHtml) => {
     if (!htmlPageState.value.isInitialized) {
       // 只有在没有初始化时才使用传入的默认值
+      if (fallbackHtml) {
+        htmlPageState.value.htmlInput = fallbackHtml
+        htmlPageState.value.html = fallbackHtml
+        htmlPageState.value.transformedHtml = fallbackTransformedHtml
+      }
       htmlPageState.value.isInitialized = true
     }
   }
@@ -75,6 +81,10 @@ export const usePageStateStore = defineStore('pageState', () => {
     htmlPageState.value.html = value
   }
 
+  const updateTransformedHtml = (value) => {
+    htmlPageState.value.transformedHtml = value
+  }
+
   // 获取状态的计算属性
   const getJsonPageState = computed(() => jsonPageState.value)
   const getHtmlPageState = computed(() => htmlPageState.value)
@@ -94,6 +104,7 @@ export const usePageStateStore = defineStore('pageState', () => {
     updateTransformedJson,
     updateHtmlInput,
     updateHtml,
+    updateTransformedHtml,
 
     // 计算属性
     getJsonPageState,
