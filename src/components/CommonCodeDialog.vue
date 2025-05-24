@@ -31,27 +31,29 @@
               </div>
               <h3 class="code-title">{{ code.title }}</h3>
             </div>
-            <div class="expand-indicator">
-              <v-icon 
-                :class="{ rotated: expandedItems.includes(index) }"
-                size="20" 
-                color="rgba(30, 41, 59, 0.6)"
-              >
-                mdi-chevron-down
-              </v-icon>
+            <div class="header-actions">
+              <button class="quick-use-btn" @click.stop="selectCode(code)">
+                <v-icon size="14" color="#475569">mdi-check</v-icon>
+                使用
+              </button>
+              <div class="expand-indicator">
+                <v-icon 
+                  :class="{ rotated: expandedItems.includes(index) }"
+                  size="20" 
+                  color="rgba(30, 41, 59, 0.6)"
+                >
+                  mdi-chevron-down
+                </v-icon>
+              </div>
             </div>
           </div>
 
           <!-- 代码内容区域 -->
-          <div class="code-content" v-show="expandedItems.includes(index)">
+          <div class="code-content">
             <div class="code-display">
               <pre><code class="language-javascript" v-html="highlightedCodes[index]"></code></pre>
             </div>
             <div class="code-actions">
-              <button class="use-code-btn" @click="selectCode(code)">
-                <v-icon size="16" color="white">mdi-check</v-icon>
-                使用此代码
-              </button>
               <button class="copy-btn" @click="copyCode(code.code)">
                 <v-icon size="16" color="#334155">mdi-content-copy</v-icon>
                 复制
@@ -230,6 +232,33 @@ const closeDialog = () => {
   line-height: 1.3;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quick-use-btn {
+  background: rgba(132, 147, 169, 0.1);
+  border: 1px solid rgba(94, 114, 142, 0.3);
+  color: #475569;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.quick-use-btn:hover {
+  background: rgba(148, 163, 184, 0.15);
+  border-color: rgba(148, 163, 184, 0.4);
+  color: #334155;
+}
+
 .expand-indicator {
   transition: transform 0.3s ease;
 }
@@ -246,6 +275,16 @@ const closeDialog = () => {
   border-top: 1px solid rgba(148, 163, 184, 0.1);
   position: relative;
   z-index: 1;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+}
+
+.code-item.expanded .code-content {
+  max-height: 1000px;
+  opacity: 1;
 }
 
 .code-display {
@@ -286,27 +325,6 @@ const closeDialog = () => {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
-}
-
-.use-code-btn {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-  border: none;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.3);
-}
-
-.use-code-btn:hover {
-  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
-  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.4);
 }
 
 .copy-btn {
@@ -394,7 +412,6 @@ const closeDialog = () => {
     gap: 8px;
   }
   
-  .use-code-btn,
   .copy-btn {
     width: 100%;
     justify-content: center;
