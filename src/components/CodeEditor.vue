@@ -32,6 +32,13 @@ const editorView = ref(null)
 // 创建编辑器扩展
 const extensions = [
   ...createEditorExtensions(),
+  // 添加更新监听器
+  EditorView.updateListener.of((update) => {
+    if (update.docChanged) {
+      const newCode = update.state.doc.toString()
+      emit('update:modelValue', newCode)
+    }
+  }),
   keymap.of([
     {
       key: 'Enter',
@@ -164,22 +171,6 @@ const setCode = (code) => {
   }
 }
 
-// 监听内容变化
-const setupChangeListener = () => {
-  if (editorView.value) {
-    const updateExtension = EditorView.updateListener.of((update) => {
-      if (update.docChanged) {
-        const newCode = update.state.doc.toString()
-        emit('update:modelValue', newCode)
-      }
-    })
-    
-    editorView.value.dispatch({
-      effects: EditorView.appendConfig.of(updateExtension)
-    })
-  }
-}
-
 // 监听 props 变化
 watch(() => props.modelValue, (newValue) => {
   if (editorView.value && newValue !== getCode()) {
@@ -203,9 +194,6 @@ onMounted(() => {
     }),
     parent: editor.value,
   })
-
-  // 设置内容变化监听
-  setupChangeListener()
 })
 
 onBeforeUnmount(() => {
