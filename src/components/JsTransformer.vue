@@ -41,6 +41,7 @@
 
     <CommonCodeDialog
       v-model="showCommonCodeDialog"
+      type="json"
       @select="handleCodeSelect"
     />
 

@@ -7,7 +7,7 @@
     <!-- 头部 -->
     <template #header>
       <ModalHeader
-        title="常用代码示例"
+        :title="dialogTitle"
         subtitle="选择并快速使用"
         icon="mdi-code-braces"
         @close="closeDialog"
@@ -18,7 +18,7 @@
     <template #content>
       <div class="code-list">
         <div
-          v-for="(code, index) in commonCodes"
+          v-for="(code, index) in currentCodes"
           :key="index"
           class="code-item"
           :class="{ expanded: expandedItems.includes(index) }"
@@ -68,7 +68,7 @@
     <template #footer>
       <footer class="modal-footer">
         <div class="footer-info">
-          <span class="code-count">共 {{ commonCodes.length }} 个代码示例</span>
+          <span class="code-count">共 {{ currentCodes.length }} 个代码示例</span>
         </div>
         <button class="btn btn--secondary" @click="closeDialog">
           关闭
@@ -79,8 +79,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { commonCodes } from '../utils/commonCodes'
+import { ref, computed, onMounted, watch } from 'vue'
+import { getCodesByType } from '../utils/commonCodes'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github.css'
 import BaseModal from './BaseModal.vue'
@@ -91,6 +91,11 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  type: {
+    type: String,
+    default: 'json',
+    validator: (value) => ['json', 'html'].includes(value)
+  }
 })
 
 const emit = defineEmits(['update:modelValue', 'select'])
@@ -103,11 +108,36 @@ const dialog = computed({
 const expandedItems = ref([])
 const highlightedCodes = ref([])
 
+// 根据类型获取当前的代码片段
+const currentCodes = computed(() => {
+  return getCodesByType(props.type)
+})
+
+// 根据类型生成标题
+const dialogTitle = computed(() => {
+  const typeNames = {
+    json: 'JSON处理代码示例',
+    html: 'HTML处理代码示例'
+  }
+  return typeNames[props.type] || '常用代码示例'
+})
+
 // 高亮所有代码
-onMounted(() => {
-  highlightedCodes.value = commonCodes.map((code) => {
+const highlightCodes = () => {
+  highlightedCodes.value = currentCodes.value.map((code) => {
     return hljs.highlight(code.code, { language: 'javascript' }).value
   })
+}
+
+// 监听类型变化，重新高亮代码
+watch(() => props.type, () => {
+  highlightCodes()
+  expandedItems.value = [] // 重置展开状态
+}, { immediate: false })
+
+// 组件挂载时高亮代码
+onMounted(() => {
+  highlightCodes()
 })
 
 const toggleExpand = (index) => {

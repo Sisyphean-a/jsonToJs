@@ -41,6 +41,7 @@
 
     <CommonCodeDialog
       v-model="showCommonCodeDialog"
+      type="html"
       @select="handleCodeSelect"
     />
 
@@ -76,7 +77,7 @@ const showCommonCodeDialog = ref(false)
 
 // 默认代码
 const defaultCode =
-  '// Ctrl + Enter：格式化+执行\n// Ctrl + S：格式化\n// Ctrl + /：注释/取消注释\n// html 是输入的 HTML 字符串\n// 返回处理后的 HTML 字符串\nreturn html.replace(/class="[^"]*"/g, \'class="new-class"\')'
+  '// Ctrl + Enter：格式化+执行\n// Ctrl + S：格式化\n// Ctrl + /：注释/取消注释\nreturn html.replace(/class="[^"]*"/g, \'class="new-class"\')'
 
 // 初始化代码
 code.value = defaultCode
@@ -159,7 +160,7 @@ watch(
     if (newHtml) {
       executeTransform()
     }
-  }
+  },
 )
 </script>
 
@@ -271,4 +272,4 @@ watch(
     }
   }
 }
-</style> 
+</style>
