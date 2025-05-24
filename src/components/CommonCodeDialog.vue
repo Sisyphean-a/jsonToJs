@@ -27,7 +27,7 @@
           <div class="code-header" @click="toggleExpand(index)">
             <div class="code-title-content">
               <div class="code-icon">
-                <v-icon size="16" color="#667eea">mdi-code-tags</v-icon>
+                <v-icon size="16" color="#334155">mdi-code-tags</v-icon>
               </div>
               <h3 class="code-title">{{ code.title }}</h3>
             </div>
@@ -35,7 +35,7 @@
               <v-icon 
                 :class="{ rotated: expandedItems.includes(index) }"
                 size="20" 
-                color="rgba(103, 126, 234, 0.6)"
+                color="rgba(30, 41, 59, 0.6)"
               >
                 mdi-chevron-down
               </v-icon>
@@ -53,7 +53,7 @@
                 使用此代码
               </button>
               <button class="copy-btn" @click="copyCode(code.code)">
-                <v-icon size="16" color="#667eea">mdi-content-copy</v-icon>
+                <v-icon size="16" color="#334155">mdi-content-copy</v-icon>
                 复制
               </button>
             </div>
@@ -155,11 +155,12 @@ const closeDialog = () => {
 
 .code-item {
   background: white;
-  border: 2px solid rgba(148, 163, 184, 0.15);
-  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .code-item::before {
@@ -169,17 +170,16 @@ const closeDialog = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(103, 126, 234, 0.03) 0%, rgba(118, 75, 162, 0.03) 100%);
+  background: rgba(30, 41, 59, 0.02);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
 .code-item:hover {
-  border-color: rgba(103, 126, 234, 0.3);
-  transform: translateY(-1px);
+  border-color: rgba(30, 41, 59, 0.3);
   box-shadow: 
-    0 10px 25px -5px rgba(103, 126, 234, 0.1),
-    0 5px 10px -5px rgba(103, 126, 234, 0.05);
+    0 8px 25px -5px rgba(30, 41, 59, 0.12),
+    0 4px 10px -5px rgba(30, 41, 59, 0.08);
 }
 
 .code-item:hover::before {
@@ -187,7 +187,7 @@ const closeDialog = () => {
 }
 
 .code-item.expanded {
-  border-color: rgba(103, 126, 234, 0.4);
+  border-color: rgba(30, 41, 59, 0.35);
 }
 
 .code-header {
@@ -202,7 +202,7 @@ const closeDialog = () => {
 }
 
 .code-header:hover {
-  background: rgba(103, 126, 234, 0.05);
+  background: rgba(30, 41, 59, 0.05);
 }
 
 .code-title-content {
@@ -214,12 +214,12 @@ const closeDialog = () => {
 .code-icon {
   width: 24px;
   height: 24px;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  background: rgba(30, 41, 59, 0.08);
   border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(3, 105, 161, 0.1);
+  border: 1px solid rgba(30, 41, 59, 0.12);
 }
 
 .code-title {
@@ -276,7 +276,7 @@ const closeDialog = () => {
 }
 
 .code-display pre::-webkit-scrollbar-thumb {
-  background: rgba(103, 126, 234, 0.3);
+  background: rgba(30, 41, 59, 0.3);
   border-radius: 3px;
 }
 
@@ -289,46 +289,44 @@ const closeDialog = () => {
 }
 
 .use-code-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
   border: none;
   color: white;
   padding: 8px 14px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   gap: 5px;
-  box-shadow: 0 2px 8px rgba(103, 126, 234, 0.3);
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.3);
 }
 
 .use-code-btn:hover {
-  background: linear-gradient(135deg, #5a6fd8 0%, #6b4390 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(103, 126, 234, 0.4);
+  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.4);
 }
 
 .copy-btn {
   background: white;
-  border: 2px solid rgba(103, 126, 234, 0.2);
-  color: #667eea;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #334155;
   padding: 8px 14px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   gap: 5px;
 }
 
 .copy-btn:hover {
-  background: rgba(103, 126, 234, 0.05);
-  border-color: rgba(103, 126, 234, 0.4);
-  transform: translateY(-1px);
+  background: rgba(30, 41, 59, 0.05);
+  border-color: rgba(30, 41, 59, 0.3);
 }
 
 /* ========================================
@@ -336,12 +334,13 @@ const closeDialog = () => {
 ======================================== */
 
 .modal-footer {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: rgba(248, 250, 252, 0.8);
   border-top: 1px solid rgba(148, 163, 184, 0.2);
   padding: 16px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  backdrop-filter: blur(8px);
 }
 
 .footer-info {
@@ -357,20 +356,19 @@ const closeDialog = () => {
 
 .close-footer-btn {
   background: white;
-  border: 2px solid rgba(148, 163, 184, 0.3);
-  color: #374151;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #334155;
   padding: 10px 20px;
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .close-footer-btn:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
-  transform: translateY(-1px);
+  background: rgba(248, 250, 252, 0.8);
+  border-color: rgba(148, 163, 184, 0.5);
 }
 
 /* ========================================

@@ -18,8 +18,8 @@
     <!-- 内容 -->
     <template #content>
       <div class="navigation-content">
-        <div 
-          v-for="(routes, category) in groupedRoutes" 
+        <div
+          v-for="(routes, category) in groupedRoutes"
           :key="category"
           class="route-category"
         >
@@ -27,7 +27,7 @@
             <h3 class="category-title">{{ category }}</h3>
             <span class="category-count">{{ routes.length }}</span>
           </div>
-          
+
           <div class="route-grid">
             <div
               v-for="route in routes"
@@ -39,7 +39,10 @@
               @keydown.space="navigateToRoute(route.path)"
             >
               <div class="route-icon">
-                <v-icon :icon="route.icon" size="20"></v-icon>
+                <v-icon
+                  :icon="route.icon"
+                  size="20"
+                ></v-icon>
               </div>
               <div class="route-info">
                 <h4 class="route-title">{{ route.title }}</h4>
@@ -47,7 +50,11 @@
                 <span class="route-path">{{ route.path }}</span>
               </div>
               <div class="route-arrow">
-                <v-icon icon="mdi-arrow-right" size="16" color="rgba(103, 126, 234, 0.6)"></v-icon>
+                <v-icon
+                  icon="mdi-arrow-right"
+                  size="16"
+                  color="rgba(30, 41, 59, 0.6)"
+                ></v-icon>
               </div>
             </div>
           </div>
@@ -68,22 +75,23 @@ const showNavigationDialog = ref(false)
 
 // 从路由配置中自动获取路由列表，包含详细信息
 const routeList = computed(() => {
-  return router.getRoutes()
-    .filter(route => route.name && route.path !== '/:pathMatch(.*)*' && route.meta) // 只显示有 meta 信息的路由
-    .map(route => ({
+  return router
+    .getRoutes()
+    .filter((route) => route.name && route.path !== '/:pathMatch(.*)*' && route.meta) // 只显示有 meta 信息的路由
+    .map((route) => ({
       name: route.name,
       path: route.path,
       title: route.meta?.title || route.name,
       description: route.meta?.description || '暂无描述',
       icon: route.meta?.icon || 'mdi-file',
-      category: route.meta?.category || '其他'
+      category: route.meta?.category || '其他',
     }))
 })
 
 // 按类别分组路由
 const groupedRoutes = computed(() => {
   const groups = {}
-  routeList.value.forEach(route => {
+  routeList.value.forEach((route) => {
     if (!groups[route.category]) {
       groups[route.category] = []
     }
@@ -102,24 +110,23 @@ const handleKeyDown = (event) => {
       closeDialog()
       return
     }
-    
+
     // 如果弹窗没有显示，检查当前焦点是否在输入元素上
     const activeElement = document.activeElement
     const inputElements = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON']
-    
+
     // 如果当前焦点在输入元素上，或者元素有 contenteditable 属性，则不触发
-    if (inputElements.includes(activeElement.tagName) || 
-        activeElement.contentEditable === 'true') {
+    if (inputElements.includes(activeElement.tagName) || activeElement.contentEditable === 'true') {
       return
     }
-    
+
     // 阻止默认的 Tab 行为
     event.preventDefault()
-    
+
     // 显示导航弹窗
     showNavigationDialog.value = true
   }
-  
+
   // 按 Escape 键关闭弹窗
   if (event.key === 'Escape' && showNavigationDialog.value) {
     closeDialog()
@@ -179,20 +186,16 @@ onUnmounted(() => {
   font-weight: 600;
   margin: 0;
   color: #1e293b;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .category-count {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  color: #0369a1;
-  padding: 4px 12px;
-  border-radius: 12px;
+  background: rgba(30, 41, 59, 0.08);
+  color: #334155;
+  padding: 6px 12px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
-  border: 1px solid rgba(3, 105, 161, 0.2);
+  border: 1px solid rgba(30, 41, 59, 0.15);
 }
 
 /* ========================================
@@ -207,17 +210,18 @@ onUnmounted(() => {
 
 .route-card {
   background: white;
-  border: 2px solid rgba(148, 163, 184, 0.15);
-  border-radius: 16px;
-  padding: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  padding: 18px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: flex-start;
-  gap: 16px;
+  gap: 14px;
   position: relative;
   overflow: hidden;
   outline: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .route-card::before {
@@ -227,17 +231,16 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(103, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  background: rgba(30, 41, 59, 0.02);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
 .route-card:hover {
-  border-color: rgba(103, 126, 234, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 
-    0 20px 25px -5px rgba(103, 126, 234, 0.15),
-    0 10px 10px -5px rgba(103, 126, 234, 0.1);
+  border-color: rgba(30, 41, 59, 0.3);
+  box-shadow:
+    0 8px 25px -5px rgba(30, 41, 59, 0.15),
+    0 4px 10px -5px rgba(30, 41, 59, 0.1);
 }
 
 .route-card:hover::before {
@@ -245,10 +248,10 @@ onUnmounted(() => {
 }
 
 .route-card:focus {
-  border-color: rgba(103, 126, 234, 0.6);
-  box-shadow: 
-    0 0 0 3px rgba(103, 126, 234, 0.2),
-    0 20px 25px -5px rgba(103, 126, 234, 0.15);
+  border-color: rgba(30, 41, 59, 0.4);
+  box-shadow:
+    0 0 0 2px rgba(30, 41, 59, 0.2),
+    0 8px 25px -5px rgba(30, 41, 59, 0.15);
 }
 
 .route-card:active {
@@ -258,21 +261,21 @@ onUnmounted(() => {
 .route-icon {
   width: 44px;
   height: 44px;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border-radius: 14px;
+  background: rgba(30, 41, 59, 0.08);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1px solid rgba(3, 105, 161, 0.1);
+  border: 1px solid rgba(30, 41, 59, 0.12);
   position: relative;
   z-index: 1;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .route-card:hover .route-icon {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  transform: scale(1.05);
+  background: rgba(30, 41, 59, 0.12);
+  border-color: rgba(30, 41, 59, 0.18);
 }
 
 .route-info {
@@ -334,20 +337,20 @@ onUnmounted(() => {
   .navigation-content {
     padding: 24px;
   }
-  
+
   .route-grid {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  
+
   .route-card {
     padding: 16px;
   }
-  
+
   .category-header {
     margin-bottom: 12px;
   }
-  
+
   .route-category {
     margin-bottom: 24px;
   }
@@ -358,17 +361,17 @@ onUnmounted(() => {
     gap: 12px;
     padding: 14px;
   }
-  
+
   .route-icon {
     width: 36px;
     height: 36px;
     border-radius: 10px;
   }
-  
+
   .route-title {
     font-size: 15px;
   }
-  
+
   .route-description {
     font-size: 13px;
   }
@@ -392,14 +395,14 @@ onUnmounted(() => {
   .route-card {
     border-color: #000;
   }
-  
+
   .route-card:hover {
     border-color: #0066cc;
   }
-  
+
   .category-title {
     -webkit-text-fill-color: #000;
     color: #000;
   }
 }
-</style> 
+</style>

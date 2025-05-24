@@ -28,7 +28,7 @@
       >
         <!-- 全选功能 -->
         <div class="select-all-section">
-          <div 
+          <div
             class="select-all-item"
             @click="toggleSelectAll"
           >
@@ -175,28 +175,27 @@ const confirmRemove = () => {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 14px;
-      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-      border-radius: 10px;
-      border: 1px solid #0ea5e9;
-      transition: all 0.2s ease;
+      padding: 12px 16px;
+      background: rgba(30, 41, 59, 0.06);
+      border-radius: 8px;
+      border: 1px solid rgba(30, 41, 59, 0.12);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
       user-select: none;
+      backdrop-filter: blur(8px);
 
       &:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 3px 8px rgba(14, 165, 233, 0.12);
-        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        background: rgba(30, 41, 59, 0.1);
+        border-color: rgba(30, 41, 59, 0.18);
       }
 
       &:active {
-        transform: translateY(0);
-        background: linear-gradient(135deg, #bae6fd 0%, #7dd3fc 100%);
+        background: rgba(30, 41, 59, 0.12);
       }
 
       .select-all-label {
         font-weight: 600;
-        color: #0369a1;
+        color: #334155;
         cursor: pointer;
         font-size: 14px;
         flex: 1;
@@ -214,26 +213,27 @@ const confirmRemove = () => {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 12px;
+    padding: 12px 14px;
     background: white;
-    border: 2px solid #e5e7eb;
-    border-radius: 10px;
-    transition: all 0.2s ease;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
     &:hover {
-      border-color: #3b82f6;
-      transform: translateY(-1px);
-      box-shadow: 0 3px 8px rgba(59, 130, 246, 0.12);
+      border-color: rgba(30, 41, 59, 0.3);
+      box-shadow: 0 4px 12px rgba(30, 41, 59, 0.1);
     }
 
     &.selected {
-      border-color: #10b981;
-      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+      border-color: rgba(6, 95, 70, 0.4);
+      background: rgba(236, 253, 245, 0.5);
+      box-shadow: 0 2px 8px rgba(6, 95, 70, 0.1);
 
       .attribute-label {
         .attribute-name {
-          color: #059669;
+          color: #065f46;
           font-weight: 600;
         }
       }
@@ -260,26 +260,25 @@ const confirmRemove = () => {
 .custom-checkbox {
   width: 16px;
   height: 16px;
-  border-radius: 4px;
-  border: 2px solid #d1d5db;
+  border-radius: 3px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
   background: white;
   cursor: pointer;
   position: relative;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:checked {
-    background: #3b82f6;
-    border-color: #3b82f6;
+    background: #1e3a8a;
+    border-color: #1e3a8a;
   }
 
   &:indeterminate {
-    background: #f59e0b;
-    border-color: #f59e0b;
+    background: #92400e;
+    border-color: #92400e;
   }
 
   &:hover {
-    border-color: #3b82f6;
-    transform: scale(1.05);
+    border-color: rgba(30, 58, 138, 0.6);
   }
 }
 
@@ -314,19 +313,19 @@ const confirmRemove = () => {
   }
 
   .confirm-btn {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    background: linear-gradient(135deg, #991b1b 0%, #b91c1c 100%);
     border: none;
     color: white;
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 2px 8px rgba(153, 27, 27, 0.3);
 
     &:hover:not(:disabled) {
-      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+      background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
+      box-shadow: 0 4px 12px rgba(153, 27, 27, 0.4);
     }
 
     &:disabled {
-      background: #d1d5db;
-      color: #9ca3af;
+      background: rgba(148, 163, 184, 0.3);
+      color: rgba(148, 163, 184, 0.6);
       cursor: not-allowed;
       transform: none;
       box-shadow: none;
@@ -343,12 +342,12 @@ const confirmRemove = () => {
 
   .cancel-btn {
     background: white;
-    border: 2px solid #d1d5db;
-    color: #374151;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #334155;
 
     &:hover {
-      background: #f9fafb;
-      border-color: #9ca3af;
+      background: rgba(248, 250, 252, 0.8);
+      border-color: rgba(148, 163, 184, 0.5);
     }
   }
 }

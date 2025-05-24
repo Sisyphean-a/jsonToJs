@@ -1,19 +1,19 @@
 <template>
   <!-- 背景遮罩层 -->
-  <div 
-    v-if="modelValue" 
-    class="base-modal-overlay" 
+  <div
+    v-if="modelValue"
+    class="base-modal-overlay"
     @click="handleOverlayClick"
   >
     <!-- 主弹窗容器 -->
-    <div 
+    <div
       class="base-modal-container"
       :class="[
         `base-modal--${size}`,
         {
           'base-modal--fullscreen': fullscreen,
-          'base-modal--no-padding': noPadding
-        }
+          'base-modal--no-padding': noPadding,
+        },
       ]"
       @click.stop
     >
@@ -21,7 +21,10 @@
       <slot name="header"></slot>
 
       <!-- 内容插槽 -->
-      <main class="base-modal-content" v-if="!hideContent">
+      <main
+        class="base-modal-content"
+        v-if="!hideContent"
+      >
         <slot name="content"></slot>
       </main>
 
@@ -43,28 +46,28 @@ const props = defineProps({
   size: {
     type: String,
     default: 'medium',
-    validator: (value) => ['small', 'medium', 'large', 'extra-large'].includes(value)
+    validator: (value) => ['small', 'medium', 'large', 'extra-large'].includes(value),
   },
   // 是否全屏
   fullscreen: {
     type: Boolean,
-    default: false
+    default: false,
   },
   // 是否禁用点击遮罩关闭
   persistentModal: {
     type: Boolean,
-    default: false
+    default: false,
   },
   // 是否不显示内容区域（有些弹窗可能只有头部和底部）
   hideContent: {
     type: Boolean,
-    default: false
+    default: false,
   },
   // 是否移除内容区域的默认padding
   noPadding: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 const emit = defineEmits(['update:modelValue', 'close'])
@@ -88,9 +91,9 @@ const handleOverlayClick = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -98,13 +101,12 @@ const handleOverlayClick = () => {
   padding: 20px;
   animation: overlayFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .base-modal-container {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border-radius: 24px;
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.5);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow:
+    0 20px 40px -8px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
   width: 100%;
   max-height: 90vh;
   overflow: hidden;
@@ -112,6 +114,7 @@ const handleOverlayClick = () => {
   position: relative;
   display: flex;
   flex-direction: column;
+  border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 /* 不同尺寸的弹窗 */
@@ -159,12 +162,11 @@ const handleOverlayClick = () => {
 }
 
 .base-modal-content::-webkit-scrollbar-thumb {
-  background: rgba(103, 126, 234, 0.3);
+  background: rgba(30, 41, 59, 0.3);
   border-radius: 3px;
 }
-
 .base-modal-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(103, 126, 234, 0.5);
+  background: rgba(30, 41, 59, 0.5);
 }
 
 /* 动画定义 */
@@ -193,20 +195,20 @@ const handleOverlayClick = () => {
   .base-modal-overlay {
     padding: 16px;
   }
-  
+
   .base-modal-container {
     border-radius: 20px;
     max-height: 95vh;
   }
-  
+
   .base-modal--fullscreen {
     border-radius: 16px;
   }
-  
+
   .base-modal-content {
     padding: 20px;
   }
-  
+
   .base-modal--no-padding .base-modal-content {
     padding: 0;
   }
@@ -216,11 +218,11 @@ const handleOverlayClick = () => {
   .base-modal-container {
     border-radius: 16px;
   }
-  
+
   .base-modal-content {
     padding: 16px;
   }
-  
+
   .base-modal--no-padding .base-modal-content {
     padding: 0;
   }
@@ -234,4 +236,4 @@ const handleOverlayClick = () => {
     transition: none;
   }
 }
-</style> 
+</style>
