@@ -410,7 +410,7 @@ const copyKey = (key) => {
 
 <style lang="scss" scoped>
 .json-container {
-  background-color: #f8f9fa;
+  background-color: #fafafa;
   padding: 7px;
   padding-right: 40px;
   border-radius: 6px;

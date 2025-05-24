@@ -15,27 +15,26 @@
     <div class="function-footer">}</div>
 
     <div class="button-area">
-      <v-btn
-        color="primary"
+      <button
+        class="transform-btn transform-btn--primary"
         @click="executeTransform"
-        :loading="isExecuting"
+        :disabled="isExecuting"
       >
-        执行转换
-      </v-btn>
-      <v-btn
-        color="secondary"
+        <span v-if="isExecuting" class="btn-loading">⟳</span>
+        <span>{{ isExecuting ? '执行中...' : '执行转换' }}</span>
+      </button>
+      <button
+        class="transform-btn transform-btn--secondary"
         @click="formatCode"
-        class="ml-2"
       >
-        格式化代码
-      </v-btn>
-      <v-btn
-        color="info"
+        <span>格式化代码</span>
+      </button>
+      <button
+        class="transform-btn transform-btn--tertiary"
         @click="showCommonCodeDialog = true"
-        class="ml-2"
       >
-        常用代码
-      </v-btn>
+        <span>常用代码</span>
+      </button>
     </div>
 
     <CommonCodeDialog
@@ -244,63 +243,235 @@ onBeforeUnmount(() => {
 <style lang="scss" scoped>
 .js-transformer {
   height: 100%;
-  padding: 10px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  background: #fafafa;
 
   .function-header,
   .function-footer {
-    font-family: monospace;
-    color: #666;
-    padding: 0 10px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    color: #64748b;
+    padding: 0 12px;
     user-select: none;
+    font-size: 14px;
+    font-weight: 500;
   }
 
   .code-editor {
     flex: 1;
-    min-height: 100px;
-    border: 1px solid #dcdfe6;
-    border-radius: 4px;
+    min-height: 120px;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 8px;
     overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     &:focus-within {
-      border-color: #409eff;
+      border-color: rgba(30, 41, 59, 0.4);
+      box-shadow: 
+        0 0 0 1px rgba(30, 41, 59, 0.2),
+        0 4px 12px rgba(30, 41, 59, 0.1);
     }
 
     :deep(.cm-editor) {
       height: 100%;
-      font-family: 'Monaco', 'Menlo', 'Consolas', 'SF Mono', monospace;
-      font-size: 16px;
-      line-height: 1.5;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    :deep(.cm-editor.cm-focused) {
+      outline: none;
+    }
+
+    :deep(.cm-scroller) {
+      padding: 12px;
     }
   }
 
   .button-area {
-    padding: 10px;
+    padding: 12px 0;
     display: flex;
     justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .transform-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    min-width: 100px;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    &--primary {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+      color: white;
+      box-shadow: 0 2px 8px rgba(30, 58, 138, 0.3);
+
+      &:hover:not(:disabled) {
+        background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+        box-shadow: 0 4px 12px rgba(30, 58, 138, 0.4);
+        transform: translateY(-1px);
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(0);
+      }
+    }
+
+    &--secondary {
+      background: white;
+      color: #334155;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+      &:hover {
+        background: rgba(248, 250, 252, 0.8);
+        border-color: rgba(148, 163, 184, 0.5);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(148, 163, 184, 0.2);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+
+    &--tertiary {
+      background: rgba(30, 41, 59, 0.06);
+      color: #334155;
+      border: 1px solid rgba(30, 41, 59, 0.12);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+      &:hover {
+        background: rgba(30, 41, 59, 0.1);
+        border-color: rgba(30, 41, 59, 0.18);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(30, 41, 59, 0.15);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+
+  .btn-loading {
+    animation: spin 1s linear infinite;
+    font-size: 14px;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 
   .error-area {
-    padding: 10px;
-    background-color: #fff2f0;
-    border: 1px solid #ffccc7;
-    border-radius: 4px;
-    max-height: 80px;
+    padding: 12px 16px;
+    background: rgba(254, 242, 242, 0.8);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    border-radius: 8px;
+    max-height: 100px;
     overflow-y: auto;
+    backdrop-filter: blur(8px);
 
     .error-title {
-      color: #ff4d4f;
-      font-weight: bold;
-      margin-bottom: 4px;
+      color: #dc2626;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 13px;
     }
 
     .error-content {
-      color: #ff4d4f;
-      font-family: monospace;
+      color: #dc2626;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
       font-size: 12px;
       white-space: pre-wrap;
+      line-height: 1.4;
+    }
+
+    /* 自定义滚动条 */
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(220, 38, 38, 0.3);
+      border-radius: 2px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(220, 38, 38, 0.5);
+    }
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .js-transformer {
+    padding: 12px;
+    gap: 10px;
+
+    .function-header,
+    .function-footer {
+      font-size: 13px;
+      padding: 0 8px;
+    }
+
+    .code-editor {
+      min-height: 100px;
+
+      :deep(.cm-editor) {
+        font-size: 13px;
+      }
+
+      :deep(.cm-scroller) {
+        padding: 10px;
+      }
+    }
+
+    .button-area {
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .transform-btn {
+      width: 200px;
+      padding: 12px 16px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .js-transformer {
+    padding: 8px;
+
+    .transform-btn {
+      width: 100%;
+      max-width: 280px;
     }
   }
 }
