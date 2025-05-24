@@ -216,9 +216,9 @@ onUnmounted(() => {
   position: relative;
   display: flex;
   flex-direction: column;
-  transition: width 0.3s ease;
-  background-color: #f5f5f5;
-  border-right: 1px solid #e0e0e0;
+  transition: width var(--transition-normal);
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-light);
   will-change: width;
 
   &:last-child {
@@ -229,24 +229,24 @@ onUnmounted(() => {
 .column-content {
   flex: 1;
   overflow: auto;
-  padding: 16px;
-  background-color: #fafafa;
-  transition: display 0.3s ease;
+  padding: var(--spacing-lg);
+  background-color: var(--bg-primary);
+  transition: display var(--transition-normal);
   will-change: display;
 }
 
 .resize-handle {
   width: 6px;
-  background-color: #e0e0e0;
+  background-color: var(--border-medium);
   cursor: col-resize;
   height: 100%;
-  transition: background-color 0.2s;
+  transition: background-color var(--transition-fast);
   position: relative;
-  z-index: 1;
+  z-index: var(--z-dropdown);
 
   &:hover,
   &:active {
-    background-color: #1976d2;
+    background-color: var(--color-primary-600);
   }
 }
 

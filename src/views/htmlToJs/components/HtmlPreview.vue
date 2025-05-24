@@ -263,11 +263,11 @@ const processedHtml = computed(() => {
 
 // 整体容器样式
 div {
-  padding: 16px;
-  background-color: #f8f9fa;
-  border-radius: 6px;
+  padding: var(--spacing-lg);
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-sm);
   overflow: auto;
-  font-family: Arial, sans-serif;
+  font-family: var(--font-family-base);
   line-height: 1.4;
 }
 </style>

@@ -611,10 +611,10 @@ watch(
 
 <style lang="scss" scoped>
 .html-container {
-  background-color: #f8f9fa;
-  padding: 7px;
-  padding-right: 40px;
-  border-radius: 6px;
+  background-color: var(--bg-secondary);
+  padding: var(--spacing-sm);
+  padding-right: var(--spacing-4xl);
+  border-radius: var(--radius-sm);
   position: relative;
 }
 
@@ -627,9 +627,9 @@ watch(
   display: block;
   width: 100%;
   white-space: nowrap;
-  padding-left: 20px;
+  padding-left: var(--spacing-xl);
   box-sizing: border-box;
-  font-family: 'Monaco', 'Menlo', 'Consolas', 'SF Mono', monospace;
+  font-family: var(--font-family-mono);
   line-height: 1.5;
 }
 
@@ -641,13 +641,13 @@ watch(
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #495057;
+  color: var(--text-secondary);
   padding: 0;
   width: 16px;
   height: 16px;
-  margin-left: 8px;
+  margin-left: var(--spacing-sm);
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--transition-fast);
 
   /* 根层级永远显示 */
   &.root-level {
@@ -665,17 +665,17 @@ watch(
 }
 
 .html-loading {
-  padding-left: 20px;
-  color: #6c757d;
+  padding-left: var(--spacing-xl);
+  color: var(--text-tertiary);
   font-style: italic;
 }
 
 .collapsed-content {
   cursor: pointer;
   background-color: rgba(0, 0, 0, 0.03);
-  padding: 0 4px;
-  border-radius: 3px;
-  transition: background-color 0.2s ease;
+  padding: 0 var(--spacing-xs);
+  border-radius: var(--radius-xs);
+  transition: background-color var(--transition-fast);
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.08);
@@ -685,9 +685,9 @@ watch(
 .collapsed-attr {
   cursor: pointer;
   background-color: rgba(0, 0, 0, 0.03);
-  padding: 0 4px;
-  border-radius: 3px;
-  transition: background-color 0.2s ease;
+  padding: 0 var(--spacing-xs);
+  border-radius: var(--radius-xs);
+  transition: background-color var(--transition-fast);
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.08);
@@ -713,7 +713,7 @@ watch(
     position: absolute;
     height: 100%;
     width: 0;
-    border-left: 1px solid #dee2e6;
+    border-left: 1px solid var(--border-light);
     top: 0;
     left: 2px;
   }
@@ -736,8 +736,8 @@ watch(
   text-align: center;
   left: 0;
   top: 7px;
-  border-radius: 3px;
-  transition: all 0.2s ease;
+  border-radius: var(--radius-xs);
+  transition: all var(--transition-fast);
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.05);
@@ -750,8 +750,8 @@ watch(
     height: 0;
     border-style: solid;
     border-width: 5px 3px 0 3px;
-    border-color: #495057 transparent transparent transparent;
-    transition: transform 0.2s ease;
+    border-color: var(--text-secondary) transparent transparent transparent;
+    transition: transform var(--transition-fast);
   }
 
   &.closed::before {
@@ -767,13 +767,13 @@ watch(
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #495057;
+  color: var(--text-secondary);
   padding: 0;
   width: 16px;
   height: 16px;
-  margin-left: 8px;
+  margin-left: var(--spacing-sm);
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--transition-fast);
 
   /* 根层级永远显示 */
   &.root-level {
@@ -791,28 +791,28 @@ watch(
 }
 
 .html-tag {
-  color: #0d6efd;
+  color: var(--color-info);
 }
 
 .html-attr {
-  margin-left: 4px;
+  margin-left: var(--spacing-xs);
 
   .attr-name {
     color: #e83e8c;
   }
 
   .attr-value {
-    color: #28a745;
+    color: var(--color-success);
   }
 }
 
 .html-text {
-  color: #212529;
-  margin-left: 4px;
+  color: var(--text-primary);
+  margin-left: var(--spacing-xs);
 }
 
 .html-comment {
-  color: #6c757d;
+  color: var(--text-tertiary);
   font-style: italic;
 }
 </style>

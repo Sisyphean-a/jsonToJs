@@ -27,51 +27,51 @@ defineEmits(['toggle'])
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px 16px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-  background: rgba(248, 250, 252, 0.9);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-bottom: 1px solid var(--border-light);
+  background: rgba(var(--color-gray-50), 0.9);
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: var(--z-sticky);
   cursor: pointer;
   height: 35px;
   box-sizing: border-box;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  transition: all var(--transition-normal);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
 
   &:hover {
-    background: rgba(30, 41, 59, 0.08);
-    border-bottom-color: rgba(30, 41, 59, 0.3);
+    background: rgba(var(--color-gray-800), 0.08);
+    border-bottom-color: var(--border-medium);
   }
 
   &:active {
-    background: rgba(30, 41, 59, 0.12);
+    background: rgba(var(--color-gray-800), 0.12);
   }
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--spacing-sm);
   user-select: none;
 }
 
 .collapse-icon {
-  font-size: 14px;
-  color: #64748b;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-weight: 500;
+  font-size: var(--font-size-md);
+  color: var(--text-secondary);
+  transition: all var(--transition-normal);
+  font-weight: var(--font-weight-medium);
 }
 
 .column-header:hover {
   .collapse-icon {
-    color: #334155;
+    color: var(--text-primary);
     transform: scale(1.1);
   }
 
   .collapse-text {
-    color: #1e293b;
+    color: var(--text-primary);
   }
 }
 
@@ -79,26 +79,26 @@ defineEmits(['toggle'])
 @media (max-width: 768px) {
   .column-header {
     height: 40px;
-    padding: 8px 12px;
+    padding: var(--spacing-sm) var(--spacing-md);
   }
 
   .header-content {
-    gap: 6px;
+    gap: var(--spacing-xs);
   }
 
   .collapse-icon {
-    font-size: 13px;
+    font-size: var(--font-size-base);
   }
 
   .collapse-text {
-    font-size: 12px;
+    font-size: var(--font-size-sm);
   }
 }
 
 @media (max-width: 480px) {
   .column-header {
     height: 36px;
-    padding: 6px 8px;
+    padding: var(--spacing-xs) var(--spacing-sm);
   }
 
   .collapse-text {
@@ -118,15 +118,15 @@ defineEmits(['toggle'])
 /* 高对比度支持 */
 @media (prefers-contrast: high) {
   .column-header {
-    border-bottom-color: #000;
+    border-bottom-color: var(--text-primary);
   }
 
   .collapse-text {
-    color: #000;
+    color: var(--text-primary);
   }
 
   .column-header:hover .collapse-text {
-    color: #000;
+    color: var(--text-primary);
   }
 }
 </style>

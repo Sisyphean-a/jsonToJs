@@ -5,13 +5,13 @@
       <div class="actions">
         <button
           @click="resetContent"
-          class="action-btn"
+          class="btn btn--sm btn--secondary"
         >
           移除注释
         </button>
         <button
           @click="openAttributeSelector"
-          class="action-btn"
+          class="btn btn--sm btn--secondary"
         >
           移除指定属性
         </button>
@@ -124,8 +124,8 @@ watch(
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #f8f9fa;
-  border-radius: 6px;
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-sm);
   overflow: hidden;
   position: relative;
 }
@@ -134,61 +134,62 @@ watch(
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 16px;
-  background-color: #e9ecef;
-  border-bottom: 1px solid #dee2e6;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-light);
 
   h2 {
     margin: 0;
-    font-size: 16px;
-    font-weight: 500;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
   }
 
   .actions {
     display: flex;
-    gap: 8px;
+    gap: var(--spacing-sm);
     flex-wrap: wrap;
-  }
-}
-
-.action-btn {
-  padding: 4px 12px;
-  background-color: #fff;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: #f1f3f5;
-  }
-
-  &:active {
-    background-color: #e9ecef;
   }
 }
 
 .html-textarea {
   flex: 1;
   width: 100%;
-  padding: 12px;
+  padding: var(--spacing-md);
   border: none;
   resize: none;
-  font-family: 'Monaco', 'Menlo', 'Consolas', 'SF Mono', monospace;
-  font-size: 14px;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-md);
   line-height: 1.5;
-  background-color: #f0f0f0;
-  color: #212529;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   outline: none;
-  transition: background-color 0.2s;
+  transition: background-color var(--transition-fast);
 
   &::placeholder {
-    color: #adb5bd;
+    color: var(--text-tertiary);
   }
 
   &:focus {
-    background-color: #e9ecef;
+    background-color: var(--bg-secondary);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    align-items: stretch;
+
+    .actions {
+      justify-content: center;
+    }
+  }
+
+  .html-textarea {
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-base);
   }
 }
 </style>

@@ -87,7 +87,7 @@
       <div class="modal-footer">
         <button
           @click="confirmRemove"
-          class="confirm-btn"
+          class="btn btn--danger"
           :disabled="selectedCount === 0"
         >
           <span class="btn-icon">🗑️</span>
@@ -95,7 +95,7 @@
         </button>
         <button
           @click="$emit('update:modelValue', false)"
-          class="cancel-btn"
+          class="btn btn--secondary"
         >
           取消
         </button>
@@ -204,53 +204,53 @@ const isMidFreqAttribute = (name) => {
 
 .no-attributes {
   text-align: center;
-  color: #6b7280;
-  padding: 40px 20px;
+  color: var(--text-secondary);
+  padding: var(--spacing-4xl) var(--spacing-xl);
 
   .no-attributes-icon {
     font-size: 48px;
-    margin-bottom: 16px;
+    margin-bottom: var(--spacing-lg);
   }
 
   p {
     margin: 0;
-    font-size: 16px;
+    font-size: var(--font-size-xl);
   }
 }
 
 .attribute-content {
   .select-all-section {
-    margin-bottom: 18px;
-    padding-bottom: 14px;
-    border-bottom: 2px solid #e5e7eb;
+    margin-bottom: var(--spacing-2xl);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--border-light);
 
     .select-all-item {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
-      background: rgba(30, 41, 59, 0.06);
-      border-radius: 8px;
-      border: 1px solid rgba(30, 41, 59, 0.12);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      gap: var(--spacing-sm);
+      padding: var(--spacing-md) var(--spacing-lg);
+      background: rgba(var(--color-gray-800), 0.06);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(var(--color-gray-800), 0.12);
+      transition: all var(--transition-normal);
       cursor: pointer;
       user-select: none;
-      backdrop-filter: blur(8px);
+      backdrop-filter: var(--backdrop-blur);
 
       &:hover {
-        background: rgba(30, 41, 59, 0.1);
-        border-color: rgba(30, 41, 59, 0.18);
+        background: rgba(var(--color-gray-800), 0.1);
+        border-color: rgba(var(--color-gray-800), 0.18);
       }
 
       &:active {
-        background: rgba(30, 41, 59, 0.12);
+        background: rgba(var(--color-gray-800), 0.12);
       }
 
       .select-all-label {
-        font-weight: 600;
-        color: #334155;
+        font-weight: var(--font-weight-semibold);
+        color: var(--text-primary);
         cursor: pointer;
-        font-size: 14px;
+        font-size: var(--font-size-md);
         flex: 1;
       }
     }
@@ -259,59 +259,59 @@ const isMidFreqAttribute = (name) => {
   .attribute-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 12px;
+    gap: var(--spacing-md);
   }
 
   .attribute-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
-    background: white;
-    border: 1px solid rgba(148, 163, 184, 0.2);
-    border-radius: 8px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-md);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-normal);
     cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-xs);
 
     &:hover {
-      border-color: rgba(30, 41, 59, 0.3);
-      box-shadow: 0 4px 12px rgba(30, 41, 59, 0.1);
+      border-color: var(--border-medium);
+      box-shadow: var(--shadow-sm);
     }
 
     &.selected {
       border-color: rgba(6, 95, 70, 0.4);
-      background: rgba(236, 253, 245, 0.5);
+      background: var(--color-success-light);
       box-shadow: 0 2px 8px rgba(6, 95, 70, 0.1);
 
       .attribute-label {
         .attribute-name {
           color: #065f46;
-          font-weight: 600;
+          font-weight: var(--font-weight-semibold);
         }
       }
     }
 
     // 高频属性样式（最常用）
     &.attr-high-freq {
-      border-left: 3px solid #3b82f6;
-      background: rgba(239, 246, 255, 0.6);
+      border-left: 3px solid var(--color-info);
+      background: var(--color-info-light);
 
       .attribute-label {
         .attribute-name {
-          color: #1e40af;
-          font-weight: 500;
+          color: var(--color-primary-800);
+          font-weight: var(--font-weight-medium);
         }
       }
 
       &:hover {
-        border-color: #3b82f6;
-        background: rgba(239, 246, 255, 0.8);
+        border-color: var(--color-info);
+        background: rgba(219, 234, 254, 0.8);
       }
 
       &.selected {
         border-color: rgba(6, 95, 70, 0.4);
-        border-left-color: #3b82f6;
+        border-left-color: var(--color-info);
         background: rgba(236, 253, 245, 0.7);
 
         .attribute-label {
@@ -324,24 +324,24 @@ const isMidFreqAttribute = (name) => {
 
     // 中频属性样式（较常用）
     &.attr-mid-freq {
-      border-left: 3px solid #f59e0b;
-      background: rgba(255, 251, 235, 0.6);
+      border-left: 3px solid var(--color-warning);
+      background: var(--color-warning-light);
 
       .attribute-label {
         .attribute-name {
           color: #d97706;
-          font-weight: 500;
+          font-weight: var(--font-weight-medium);
         }
       }
 
       &:hover {
-        border-color: #f59e0b;
+        border-color: var(--color-warning);
         background: rgba(255, 251, 235, 0.8);
       }
 
       &.selected {
         border-color: rgba(6, 95, 70, 0.4);
-        border-left-color: #f59e0b;
+        border-left-color: var(--color-warning);
         background: rgba(236, 253, 245, 0.7);
 
         .attribute-label {
@@ -358,10 +358,10 @@ const isMidFreqAttribute = (name) => {
       overflow: hidden;
 
       .attribute-name {
-        font-size: 13px;
-        font-weight: 500;
-        color: #374151;
-        transition: color 0.2s ease;
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-medium);
+        color: var(--text-primary);
+        transition: color var(--transition-fast);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -373,16 +373,16 @@ const isMidFreqAttribute = (name) => {
 .custom-checkbox {
   width: 16px;
   height: 16px;
-  border-radius: 3px;
-  border: 1px solid rgba(148, 163, 184, 0.4);
-  background: white;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-primary);
   cursor: pointer;
   position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--transition-normal);
 
   &:checked {
-    background: #1e3a8a;
-    border-color: #1e3a8a;
+    background: var(--color-primary-800);
+    border-color: var(--color-primary-800);
   }
 
   &:indeterminate {
@@ -391,77 +391,25 @@ const isMidFreqAttribute = (name) => {
   }
 
   &:hover {
-    border-color: rgba(30, 58, 138, 0.6);
+    border-color: var(--color-primary-600);
   }
 }
 
 .modal-footer {
-  padding: 20px 24px;
-  background: #f8fafc;
-  border-top: 1px solid #e5e7eb;
+  padding: var(--spacing-xl) var(--spacing-2xl);
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-light);
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: var(--spacing-md);
 
-  button {
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  .btn {
     min-width: 120px;
     justify-content: center;
-
-    &:hover {
-      transform: translateY(-1px);
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
   }
 
-  .confirm-btn {
-    background: linear-gradient(135deg, #991b1b 0%, #b91c1c 100%);
-    border: none;
-    color: white;
-    box-shadow: 0 2px 8px rgba(153, 27, 27, 0.3);
-
-    &:hover:not(:disabled) {
-      background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
-      box-shadow: 0 4px 12px rgba(153, 27, 27, 0.4);
-    }
-
-    &:disabled {
-      background: rgba(148, 163, 184, 0.3);
-      color: rgba(148, 163, 184, 0.6);
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-
-      .btn-icon {
-        opacity: 0.5;
-      }
-    }
-
-    .btn-icon {
-      font-size: 16px;
-    }
-  }
-
-  .cancel-btn {
-    background: white;
-    border: 1px solid rgba(148, 163, 184, 0.3);
-    color: #334155;
-
-    &:hover {
-      background: rgba(248, 250, 252, 0.8);
-      border-color: rgba(148, 163, 184, 0.5);
-    }
+  .btn-icon {
+    font-size: var(--font-size-xl);
   }
 }
 
@@ -469,14 +417,14 @@ const isMidFreqAttribute = (name) => {
 @media (max-width: 640px) {
   .attribute-content .attribute-list {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 10px;
+    gap: var(--spacing-sm);
   }
 
   .modal-footer {
     flex-direction: column-reverse;
-    gap: 8px;
+    gap: var(--spacing-sm);
 
-    button {
+    .btn {
       width: 100%;
     }
   }
