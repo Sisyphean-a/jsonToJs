@@ -56,17 +56,24 @@
             v-for="(attr, index) in attributes"
             :key="index"
             class="attribute-item"
-            :class="{ selected: attr.selected }"
+            :class="{
+              selected: attr.selected,
+              'attr-high-freq': isHighFreqAttribute(attr.name),
+              'attr-mid-freq': isMidFreqAttribute(attr.name),
+            }"
+            @click="toggleAttribute(index)"
           >
             <input
               type="checkbox"
               :id="'attr-' + index"
               v-model="attr.selected"
               class="custom-checkbox"
+              @click.stop
             />
             <label
               :for="'attr-' + index"
               class="attribute-label"
+              @click.stop
             >
               <span class="attribute-name">{{ attr.name }}</span>
             </label>
@@ -141,6 +148,52 @@ const toggleSelectAll = () => {
 const confirmRemove = () => {
   const selectedAttrs = props.attributes.filter((attr) => attr.selected).map((attr) => attr.name)
   emit('remove-attributes', selectedAttrs)
+}
+
+// 切换单个属性的选中状态
+const toggleAttribute = (index) => {
+  props.attributes[index].selected = !props.attributes[index].selected
+}
+
+// 高频属性列表（最常用的属性）
+const highFreqAttributes = [
+  'class',
+  'style',
+  'src',
+  'href',
+  'id',
+  'title',
+  'alt',
+  'width',
+  'height',
+]
+
+// 中频属性列表（较常用的属性）
+const midFreqAttributes = [
+  'colspan',
+  'rowspan',
+  'type',
+  'name',
+  'value',
+  'placeholder',
+  'disabled',
+  'readonly',
+  'required',
+  'for',
+  'target',
+  'rel',
+  'role',
+  'tabindex',
+]
+
+// 判断是否为高频属性
+const isHighFreqAttribute = (name) => {
+  return highFreqAttributes.includes(name.toLowerCase())
+}
+
+// 判断是否为中频属性
+const isMidFreqAttribute = (name) => {
+  return midFreqAttributes.includes(name.toLowerCase()) && !isHighFreqAttribute(name)
 }
 </script>
 
@@ -235,6 +288,66 @@ const confirmRemove = () => {
         .attribute-name {
           color: #065f46;
           font-weight: 600;
+        }
+      }
+    }
+
+    // 高频属性样式（最常用）
+    &.attr-high-freq {
+      border-left: 3px solid #3b82f6;
+      background: rgba(239, 246, 255, 0.6);
+
+      .attribute-label {
+        .attribute-name {
+          color: #1e40af;
+          font-weight: 500;
+        }
+      }
+
+      &:hover {
+        border-color: #3b82f6;
+        background: rgba(239, 246, 255, 0.8);
+      }
+
+      &.selected {
+        border-color: rgba(6, 95, 70, 0.4);
+        border-left-color: #3b82f6;
+        background: rgba(236, 253, 245, 0.7);
+
+        .attribute-label {
+          .attribute-name {
+            color: #065f46;
+          }
+        }
+      }
+    }
+
+    // 中频属性样式（较常用）
+    &.attr-mid-freq {
+      border-left: 3px solid #f59e0b;
+      background: rgba(255, 251, 235, 0.6);
+
+      .attribute-label {
+        .attribute-name {
+          color: #d97706;
+          font-weight: 500;
+        }
+      }
+
+      &:hover {
+        border-color: #f59e0b;
+        background: rgba(255, 251, 235, 0.8);
+      }
+
+      &.selected {
+        border-color: rgba(6, 95, 70, 0.4);
+        border-left-color: #f59e0b;
+        background: rgba(236, 253, 245, 0.7);
+
+        .attribute-label {
+          .attribute-name {
+            color: #065f46;
+          }
         }
       }
     }
