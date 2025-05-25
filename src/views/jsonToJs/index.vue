@@ -27,10 +27,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import JsonView from '@/components/JsonView.vue'
-import JsonInputContent from '@/components/JsonInputContent.vue'
+import JsonView from './components/JsonView.vue'
+import JsonInputContent from './components/JsonInputContent.vue'
 import ResizableLayout from '@/components/ResizableLayout.vue'
-import JsTransformer from '@/components/JsTransformer.vue'
+import JsTransformer from './components/JsTransformer.vue'
 import { usePageStateStore } from '@/stores/pageState.js'
 
 const pageStateStore = usePageStateStore()

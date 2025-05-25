@@ -57,8 +57,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import CodeEditor from './CodeEditor.vue'
-import CommonCodeDialog from './CommonCodeDialog.vue'
+import CodeEditor from '@/components/CodeEditor.vue'
+import CommonCodeDialog from '@/components/CommonCodeDialog.vue'
 
 const props = defineProps({
   json: {
