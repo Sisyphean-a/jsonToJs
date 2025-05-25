@@ -15,6 +15,12 @@
         >
           移除指定属性
         </button>
+        <button
+          @click="convertToJson"
+          class="btn btn--sm btn--primary"
+        >
+          转换成JSON
+        </button>
       </div>
     </div>
     <textarea
@@ -31,6 +37,26 @@
       :attributes="attributeList"
       @remove-attributes="handleRemoveAttributes"
     />
+
+    <!-- 成功提示组件 -->
+    <v-snackbar
+      v-model="snackbar"
+      :timeout="2000"
+      color="success"
+      location="top"
+    >
+      {{ snackbarText }}
+    </v-snackbar>
+
+    <!-- 错误提示组件 -->
+    <v-snackbar
+      v-model="errorSnackbar"
+      :timeout="3000"
+      color="error"
+      location="top"
+    >
+      {{ errorSnackbarText }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -50,6 +76,12 @@ const emit = defineEmits(['update:html', 'update:htmlInput'])
 const htmlContent = ref(props.initialHtml)
 const showAttributeModal = ref(false)
 const attributeList = ref([])
+
+// Snackbar 相关变量
+const snackbar = ref(false)
+const snackbarText = ref('')
+const errorSnackbar = ref(false)
+const errorSnackbarText = ref('')
 
 // 当输入变化时更新HTML
 const updateHtml = () => {
@@ -106,6 +138,124 @@ const handleRemoveAttributes = (selectedAttrs) => {
 
   updateHtml()
   showAttributeModal.value = false
+}
+
+// 转换HTML为JSON格式
+const convertToJson = async () => {
+  try {
+    if (!htmlContent.value.trim()) {
+      errorSnackbarText.value = '请先输入HTML内容'
+      errorSnackbar.value = true
+      return
+    }
+
+    const jsonResult = htmlToJson(htmlContent.value)
+    const jsonString = JSON.stringify(jsonResult, null, 2)
+    
+    // 复制到剪切板
+    await navigator.clipboard.writeText(jsonString)
+    snackbarText.value = 'JSON已复制到剪切板'
+    snackbar.value = true
+  } catch (error) {
+    console.error('转换失败:', error)
+    errorSnackbarText.value = '转换失败，请检查HTML格式是否正确'
+    errorSnackbar.value = true
+  }
+}
+
+// HTML转JSON的核心方法
+const htmlToJson = (htmlString) => {
+  // 创建临时DOM元素来解析HTML
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(htmlString, 'text/html')
+  
+  // 如果HTML包含在body中，提取body的内容
+  const bodyContent = doc.body
+  if (bodyContent.children.length === 1) {
+    return processNode(bodyContent.children[0])
+  } else if (bodyContent.children.length > 1) {
+    // 多个根元素的情况
+    return Array.from(bodyContent.children).map(child => processNode(child))
+  } else {
+    // 没有元素节点，可能只有文本
+    return processTextContent(bodyContent)
+  }
+}
+
+// 处理单个节点
+const processNode = (node) => {
+  if (node.nodeType === Node.TEXT_NODE) {
+    const text = node.textContent.trim()
+    return text ? { _text: text } : null
+  }
+  
+  if (node.nodeType === Node.COMMENT_NODE) {
+    return { _comment: node.textContent }
+  }
+  
+  if (node.nodeType !== Node.ELEMENT_NODE) {
+    return null
+  }
+
+  const result = {
+    _tag: node.tagName.toLowerCase()
+  }
+
+  // 处理属性
+  if (node.attributes.length > 0) {
+    result._attrs = {}
+    for (const attr of node.attributes) {
+      result._attrs[attr.name] = attr.value
+    }
+  }
+
+  // 处理子节点
+  let firstTextFound = false
+  let firstCommentFound = false
+  const children = []
+
+  for (const child of node.childNodes) {
+    if (child.nodeType === Node.TEXT_NODE) {
+      const text = child.textContent.trim()
+      if (text) {
+        if (!firstTextFound) {
+          // 首段文本作为_text属性
+          result._text = text
+          firstTextFound = true
+        } else {
+          // 其余文本放入children
+          children.push({ _text: text })
+        }
+      }
+    } else if (child.nodeType === Node.COMMENT_NODE) {
+      if (!firstCommentFound) {
+        // 首条注释作为_comment属性
+        result._comment = child.textContent
+        firstCommentFound = true
+      } else {
+        // 其余注释放入children
+        children.push({ _comment: child.textContent })
+      }
+    } else if (child.nodeType === Node.ELEMENT_NODE) {
+      const processedChild = processNode(child)
+      if (processedChild) {
+        children.push(processedChild)
+      }
+    }
+  }
+
+  // 如果有子节点，添加_children数组
+  if (children.length > 0) {
+    result._children = children
+  }
+
+  return result
+}
+
+// 处理纯文本内容
+const processTextContent = (container) => {
+  const text = container.textContent.trim()
+  return text ? { _text: text } : null
 }
 
 // 监听初始HTML变化，只在值真正不同时才更新

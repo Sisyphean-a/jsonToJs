@@ -262,9 +262,7 @@ const snackbarText = ref('')
 const currentDepth = computed(() => props.depth)
 
 // 展开/折叠状态
-const isExpanded = ref(
-  !(props.closed || props.depth >= props.maxExpandDepth) || hasMultipleRoots.value,
-)
+const isExpanded = ref(!(props.closed || props.depth >= props.maxExpandDepth))
 // 是否需要渲染子节点
 const forceRender = ref(isExpanded.value)
 
@@ -713,6 +711,18 @@ onMounted(() => {
 onUnmounted(() => {
   // 移除之前的事件监听
 })
+
+// 监听多根级元素变化，自动展开
+watch(
+  () => hasMultipleRoots.value,
+  (hasMultiple) => {
+    if (hasMultiple && !isExpanded.value) {
+      isExpanded.value = true
+      forceRender.value = true
+    }
+  },
+  { immediate: true }
+)
 
 // 监听children变化
 watch(
