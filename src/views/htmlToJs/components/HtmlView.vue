@@ -17,10 +17,48 @@
         <span
           @click="toggleExpand"
           :class="['toggle-icon', !isExpanded ? 'closed' : '']"
-          v-if="hasChildren || hasCollapsibleAttrs"
+          v-if="(hasChildren || hasCollapsibleAttrs) && !isVirtualContainer"
         ></span>
         <div class="content-wrap">
-          <p class="first-line">
+          <!-- 虚拟容器不显示标签，只显示按钮 -->
+          <p
+            v-if="isVirtualContainer"
+            class="first-line virtual-container"
+          >
+            <button
+              class="copy-btn"
+              :class="{ 'root-level': isRootLevel }"
+              @click.stop="copyHtml"
+              title="复制HTML"
+            >
+              <img
+                src="@/assets/icons/copy.svg"
+                alt="复制"
+                width="14"
+                height="14"
+              />
+            </button>
+            <button
+              v-if="(isExpanded && hasCollapsedDescendants) || hasCollapsibleAttrs"
+              class="expand-all-btn"
+              :class="{ 'root-level': isRootLevel }"
+              @click.stop="expandAllDescendants"
+              title="展开所有子级"
+            >
+              <img
+                src="@/assets/icons/expand.svg"
+                alt="展开所有"
+                width="14"
+                height="14"
+              />
+            </button>
+          </p>
+
+          <!-- 正常内容显示 -->
+          <p
+            v-else
+            class="first-line"
+          >
             <!-- 处理HTML注释 -->
             <template v-if="isComment">
               <span class="html-comment"> &lt;!--{{ commentContent }}--&gt; </span>
@@ -157,7 +195,14 @@
           </div>
 
           <p
-            v-if="isExpanded && hasChildren && !tagInfo.isSelfClosing && !isTextNode && !isComment"
+            v-if="
+              isExpanded &&
+              hasChildren &&
+              !tagInfo.isSelfClosing &&
+              !isTextNode &&
+              !isComment &&
+              !isVirtualContainer
+            "
             class="last-line"
           >
             <span class="html-tag">&lt;/{{ tagInfo.name }}&gt;</span>
@@ -217,7 +262,9 @@ const snackbarText = ref('')
 const currentDepth = computed(() => props.depth)
 
 // 展开/折叠状态
-const isExpanded = ref(!(props.closed || props.depth >= props.maxExpandDepth))
+const isExpanded = ref(
+  !(props.closed || props.depth >= props.maxExpandDepth) || hasMultipleRoots.value,
+)
 // 是否需要渲染子节点
 const forceRender = ref(isExpanded.value)
 
@@ -291,6 +338,17 @@ const tagInfo = computed(() => {
       fullTag: props.html,
       textContent: props.html,
       attributes: [],
+      isSelfClosing: false,
+    }
+  }
+
+  // 如果有多个根级元素，创建一个虚拟容器
+  if (hasMultipleRoots.value) {
+    return {
+      name: 'div',
+      fullTag: `<div>${props.html}</div>`,
+      textContent: '',
+      attributes: [{ name: 'data-multiple-roots', value: 'true' }],
       isSelfClosing: false,
     }
   }
@@ -399,10 +457,51 @@ const hasCollapsibleAttrs = computed(() => {
   return processedAttributes.value.some((attr) => attr.isCollapsible)
 })
 
+// 检查是否是虚拟的多根容器
+const isVirtualContainer = computed(() => {
+  return (
+    hasMultipleRoots.value &&
+    tagInfo.value.attributes.some((attr) => attr.name === 'data-multiple-roots')
+  )
+})
+
+// 检查是否有多个根级元素
+const hasMultipleRoots = computed(() => {
+  if (!props.html) return false
+
+  // 处理注释或文本节点
+  if (isComment.value || isTextNode.value) {
+    return false
+  }
+
+  try {
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(`<div>${props.html}</div>`, 'text/html')
+    const wrapper = doc.body.firstChild
+
+    // 计算非空白的子节点数量
+    let elementCount = 0
+    for (let i = 0; i < wrapper.childNodes.length; i++) {
+      const child = wrapper.childNodes[i]
+      if (
+        child.nodeType === Node.ELEMENT_NODE ||
+        (child.nodeType === Node.TEXT_NODE && child.textContent.trim() !== '') ||
+        child.nodeType === Node.COMMENT_NODE
+      ) {
+        elementCount++
+      }
+    }
+
+    return elementCount > 1
+  } catch (e) {
+    return false
+  }
+})
+
 // 解析子元素
 const children = computed(() => {
   if (!props.html) return []
-  
+
   // 处理注释或文本节点
   if (isComment.value || isTextNode.value) {
     return []
@@ -437,7 +536,15 @@ const children = computed(() => {
       element = doc.querySelector('table')
     } else {
       const doc = parser.parseFromString(`<div>${props.html}</div>`, 'text/html')
-      element = doc.body.firstChild.firstChild
+
+      // 检查是否有多个根级元素
+      if (hasMultipleRoots.value) {
+        // 如果有多个根级元素，使用包装div作为element
+        element = doc.body.firstChild
+      } else {
+        // 如果只有一个根级元素，使用第一个子元素
+        element = doc.body.firstChild.firstChild
+      }
     }
 
     if (!element) {
@@ -719,6 +826,15 @@ watch(
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+
+  /* 虚拟容器样式 */
+  &.virtual-container {
+    min-height: 0;
+    height: 0;
+    overflow: visible;
+    justify-content: flex-end;
+    padding-right: var(--spacing-sm);
+  }
 }
 
 .html-body {
