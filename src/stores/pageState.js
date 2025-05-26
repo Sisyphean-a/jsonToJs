@@ -2,7 +2,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
 export const usePageStateStore = defineStore('pageState', () => {
-  // 默认数据
+  // Default data for JSON to JS
   const defaultJson = {
     name: '张三',
     age: 18,
@@ -13,14 +13,18 @@ export const usePageStateStore = defineStore('pageState', () => {
       district: '朝阳区',
     },
   }
-
   const defaultTransformedJson = {
     province: '北京',
     city: '北京',
     district: '朝阳区',
   }
 
+  // Default data for HTML to JS
   const defaultHtml = '<button class="a b"><span class="c">按钮</i></button>'
+
+  // Default data for Request to JS
+  const defaultCurlInput = '';
+  const defaultRequestOutput = '';
 
   // JSON转JS页面状态
   const jsonPageState = ref({
@@ -38,18 +42,22 @@ export const usePageStateStore = defineStore('pageState', () => {
     isInitialized: false,
   })
 
-  // 初始化JSON页面状态
+  // Request to JS页面状态
+  const requestToJsPageState = ref({
+    curlCommandInput: defaultCurlInput,
+    requestOutputJson: defaultRequestOutput,
+    isInitialized: false,
+  })
+
+  // --- Initialization Functions ---
   const initJsonPage = (fallbackJson, fallbackTransformedJson) => {
     if (!jsonPageState.value.isInitialized) {
-      // 只有在没有初始化时才使用传入的默认值
       jsonPageState.value.isInitialized = true
     }
   }
 
-  // 初始化HTML页面状态
   const initHtmlPage = (fallbackHtml, fallbackTransformedHtml) => {
     if (!htmlPageState.value.isInitialized) {
-      // 只有在没有初始化时才使用传入的默认值
       if (fallbackHtml) {
         htmlPageState.value.htmlInput = fallbackHtml
         htmlPageState.value.html = fallbackHtml
@@ -59,55 +67,75 @@ export const usePageStateStore = defineStore('pageState', () => {
     }
   }
 
-  // 更新JSON页面状态
+  const initRequestToJsPage = () => {
+    if (!requestToJsPageState.value.isInitialized) {
+      // Initialize with defaults, no fallback needed for now
+      requestToJsPageState.value.curlCommandInput = defaultCurlInput;
+      requestToJsPageState.value.requestOutputJson = defaultRequestOutput;
+      requestToJsPageState.value.isInitialized = true;
+    }
+  }
+
+  // --- Update Functions ---
+  // JSON
   const updateJsonInput = (value) => {
     jsonPageState.value.jsonInput = value
   }
-
   const updateJson = (value) => {
     jsonPageState.value.json = value
   }
-
   const updateTransformedJson = (value) => {
     jsonPageState.value.transformedJson = value
   }
 
-  // 更新HTML页面状态
+  // HTML
   const updateHtmlInput = (value) => {
     htmlPageState.value.htmlInput = value
   }
-
   const updateHtml = (value) => {
     htmlPageState.value.html = value
   }
-
   const updateTransformedHtml = (value) => {
     htmlPageState.value.transformedHtml = value
   }
 
-  // 获取状态的计算属性
+  // RequestToJs
+  const updateCurlCommandInput = (value) => {
+    requestToJsPageState.value.curlCommandInput = value;
+  }
+  const updateRequestOutputJson = (value) => {
+    requestToJsPageState.value.requestOutputJson = value;
+  }
+
+  // --- Getters (Computed Properties) ---
   const getJsonPageState = computed(() => jsonPageState.value)
   const getHtmlPageState = computed(() => htmlPageState.value)
+  const getRequestToJsPageState = computed(() => requestToJsPageState.value);
 
   return {
-    // 状态
+    // State objects (consider if these need to be directly exposed)
     jsonPageState,
     htmlPageState,
+    requestToJsPageState, // Added state
 
-    // 初始化方法
+    // Initialization methods
     initJsonPage,
     initHtmlPage,
+    initRequestToJsPage, // Added init method
 
-    // 更新方法
+    // Update methods
     updateJsonInput,
     updateJson,
     updateTransformedJson,
     updateHtmlInput,
     updateHtml,
     updateTransformedHtml,
+    updateCurlCommandInput, // Added update method
+    updateRequestOutputJson, // Added update method
 
-    // 计算属性
+    // Computed Getters
     getJsonPageState,
     getHtmlPageState,
+    getRequestToJsPageState, // Added getter
   }
 })

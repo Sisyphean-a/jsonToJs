@@ -289,7 +289,108 @@ const htmlCodes = [
       '</div>`\n\n' +
       'return wrapper',
   }
-]
+];
+
+// Request 处理代码片段
+const requestCodes = [
+  {
+    title: 'Basic Fetch GET Request',
+    code:
+`async function fetchData(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(\`HTTP error! status: \${response.status}\`);
+    }
+    const data = await response.json(); // or response.text(), response.blob() etc.
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+}`
+  },
+  {
+    title: 'Fetch POST Request (JSON)',
+    code:
+`async function postData(url, bodyData) {
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+        // Add other headers here if needed (e.g., Authorization)
+      },
+      body: JSON.stringify(bodyData)
+    });
+    if (!response.ok) {
+      throw new Error(\`HTTP error! status: \${response.status}\`);
+    }
+    const data = await response.json();
+    console.log('Success:', data);
+    return data;
+  } catch (error) {
+    console.error('Error posting data:', error);
+  }
+}`
+  },
+  {
+    title: 'Fetch with Custom Headers',
+    code:
+`async function fetchDataWithHeaders(url, customHeaders) {
+  try {
+    const response = await fetch(url, {
+      method: 'GET', // Or any other method
+      headers: {
+        ...customHeaders, // Spread your custom headers object
+        'X-Custom-Header': 'value' // Example of another header
+      }
+    });
+    if (!response.ok) {
+      throw new Error(\`HTTP error! status: \${response.status}\`);
+    }
+    const data = await response.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+}`
+  },
+  {
+    title: 'Handling Different Response Types',
+    code:
+`async function fetchDataAdvanced(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(\`HTTP error! status: \${response.status}\`);
+    }
+
+    const contentType = response.headers.get('content-type');
+    let data;
+
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else if (contentType && contentType.includes('text/html')) {
+      data = await response.text();
+    } else if (contentType && contentType.includes('image/')) {
+      data = await response.blob();
+      // Create an object URL to display the image
+      // const imageUrl = URL.createObjectURL(data);
+      // document.getElementById('myImageElement').src = imageUrl;
+    } else {
+      data = await response.text(); // Default to text
+    }
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+}`
+  }
+];
+
 
 // 根据类型获取代码片段
 export const getCodesByType = (type) => {
@@ -298,8 +399,10 @@ export const getCodesByType = (type) => {
       return jsonCodes
     case 'html':
       return htmlCodes
+    case 'request': // Added case for request codes
+      return requestCodes
     default:
-      return jsonCodes
+      return jsonCodes // Default to jsonCodes if type is unknown
   }
 }
 

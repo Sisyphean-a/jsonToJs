@@ -26,6 +26,17 @@ const router = createRouter({
         category: '处理工具'
       }
     },
+    {
+      path: '/request-to-js',
+      name: 'RequestToJs',
+      component: () => import('../views/requestToJs/index.vue'),
+      meta: {
+        title: '请求转JS',
+        description: '粘贴cURL命令发送请求并生成JS代码片段',
+        icon: 'mdi-transfer',
+        category: '处理工具'
+      }
+    },
   ],
 })
 
