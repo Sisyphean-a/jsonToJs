@@ -1,29 +1,45 @@
-# jsonToJs
+# JSON转JS工具
 
-This template should help get you started developing with Vue 3 in Vite.
+这是一个基于Vue 3的工具集合，用于处理JSON、HTML和HTTP请求数据。
 
-## Recommended IDE Setup
+## 功能特性
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+### 1. JSON转JS (/)
 
-## Customize configuration
+- 将JSON数据转换为JavaScript代码
+- 支持复杂的数据结构处理
+- 提供常用的数据处理代码片段
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### 2. HTML转JS (/html)
 
-## Project Setup
+- 将HTML代码转换为JavaScript操作
+- 支持DOM操作和HTML处理
+- 提供HTML清理和转换工具
 
-```sh
+### 3. 请求转JS (/request-to-js)
+
+- 粘贴cURL命令并发送HTTP请求
+- 支持GET、POST等各种HTTP方法
+- 提供请求和响应的完整信息
+- 生成常用的JavaScript请求代码片段
+
+## 开发
+
+```bash
+# 安装依赖
 npm install
-```
 
-### Compile and Hot-Reload for Development
-
-```sh
+# 启动开发服务器
 npm run dev
-```
 
-### Compile and Minify for Production
-
-```sh
+# 构建生产版本
 npm run build
 ```
+
+## 技术栈
+
+- Vue 3
+- Vuetify 3
+- Pinia (状态管理)
+- CodeMirror 6 (代码编辑器)
+- Vite (构建工具)

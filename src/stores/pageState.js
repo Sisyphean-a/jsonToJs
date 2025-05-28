@@ -23,8 +23,23 @@ export const usePageStateStore = defineStore('pageState', () => {
   const defaultHtml = '<button class="a b"><span class="c">按钮</i></button>'
 
   // Default data for Request to JS
-  const defaultCurlInput = '';
-  const defaultRequestOutput = '';
+  const defaultCurlInput = `curl 'https://jsonplaceholder.typicode.com/posts/1' \\
+  -H 'Accept: application/json' \\
+  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'`;
+  const defaultParsedRequest = {
+    url: 'https://jsonplaceholder.typicode.com/posts/1',
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    },
+    body: null
+  };
+  const defaultTransformedRequest = {
+    message: "请求已准备就绪",
+    requestDetails: defaultParsedRequest,
+    commonCodeSnippets: []
+  };
 
   // JSON转JS页面状态
   const jsonPageState = ref({
@@ -45,7 +60,8 @@ export const usePageStateStore = defineStore('pageState', () => {
   // Request to JS页面状态
   const requestToJsPageState = ref({
     curlCommandInput: defaultCurlInput,
-    requestOutputJson: defaultRequestOutput,
+    parsedRequest: defaultParsedRequest,
+    transformedRequest: defaultTransformedRequest,
     isInitialized: false,
   })
 
@@ -71,7 +87,8 @@ export const usePageStateStore = defineStore('pageState', () => {
     if (!requestToJsPageState.value.isInitialized) {
       // Initialize with defaults, no fallback needed for now
       requestToJsPageState.value.curlCommandInput = defaultCurlInput;
-      requestToJsPageState.value.requestOutputJson = defaultRequestOutput;
+      requestToJsPageState.value.parsedRequest = defaultParsedRequest;
+      requestToJsPageState.value.transformedRequest = defaultTransformedRequest;
       requestToJsPageState.value.isInitialized = true;
     }
   }
@@ -103,14 +120,17 @@ export const usePageStateStore = defineStore('pageState', () => {
   const updateCurlCommandInput = (value) => {
     requestToJsPageState.value.curlCommandInput = value;
   }
-  const updateRequestOutputJson = (value) => {
-    requestToJsPageState.value.requestOutputJson = value;
+  const updateParsedRequest = (value) => {
+    requestToJsPageState.value.parsedRequest = value;
+  }
+  const updateTransformedRequest = (value) => {
+    requestToJsPageState.value.transformedRequest = value;
   }
 
   // --- Getters (Computed Properties) ---
   const getJsonPageState = computed(() => jsonPageState.value)
   const getHtmlPageState = computed(() => htmlPageState.value)
-  const getRequestToJsPageState = computed(() => requestToJsPageState.value);
+  const getRequestToJsPageState = computed(() => requestToJsPageState.value)
 
   return {
     // State objects (consider if these need to be directly exposed)
@@ -131,7 +151,8 @@ export const usePageStateStore = defineStore('pageState', () => {
     updateHtml,
     updateTransformedHtml,
     updateCurlCommandInput, // Added update method
-    updateRequestOutputJson, // Added update method
+    updateParsedRequest, // Added update method
+    updateTransformedRequest, // Added update method
 
     // Computed Getters
     getJsonPageState,

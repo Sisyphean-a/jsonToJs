@@ -288,109 +288,108 @@ const htmlCodes = [
       '  </div>\n' +
       '</div>`\n\n' +
       'return wrapper',
-  }
-];
+  },
+]
 
 // Request 处理代码片段
 const requestCodes = [
   {
-    title: 'Basic Fetch GET Request',
+    title: '基础 GET 请求',
     code:
-`async function fetchData(url) {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(\`HTTP error! status: \${response.status}\`);
-    }
-    const data = await response.json(); // or response.text(), response.blob() etc.
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-}`
+      '// 基础的 GET 请求示例\n' +
+      '// 你可以修改 URL 和 headers\n' +
+      "request.url = 'https://jsonplaceholder.typicode.com/posts/1'\n" +
+      "request.method = 'GET'\n" +
+      "request.headers['Accept'] = 'application/json'\n\n" +
+      'return request',
   },
   {
-    title: 'Fetch POST Request (JSON)',
+    title: '添加认证头',
     code:
-`async function postData(url, bodyData) {
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-        // Add other headers here if needed (e.g., Authorization)
-      },
-      body: JSON.stringify(bodyData)
-    });
-    if (!response.ok) {
-      throw new Error(\`HTTP error! status: \${response.status}\`);
-    }
-    const data = await response.json();
-    console.log('Success:', data);
-    return data;
-  } catch (error) {
-    console.error('Error posting data:', error);
-  }
-}`
+      '// 添加 Authorization 头部\n' +
+      "request.headers['Authorization'] = 'Bearer your-token-here'\n\n" +
+      '// 或者使用 API Key\n' +
+      "// request.headers['X-API-Key'] = 'your-api-key'\n\n" +
+      'return request',
   },
   {
-    title: 'Fetch with Custom Headers',
+    title: 'POST 请求发送 JSON 数据',
     code:
-`async function fetchDataWithHeaders(url, customHeaders) {
-  try {
-    const response = await fetch(url, {
-      method: 'GET', // Or any other method
-      headers: {
-        ...customHeaders, // Spread your custom headers object
-        'X-Custom-Header': 'value' // Example of another header
-      }
-    });
-    if (!response.ok) {
-      throw new Error(\`HTTP error! status: \${response.status}\`);
-    }
-    const data = await response.json();
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-}`
+      '// 设置为 POST 请求并发送 JSON 数据\n' +
+      "request.method = 'POST'\n" +
+      "request.headers['Content-Type'] = 'application/json'\n\n" +
+      '// 设置请求体\n' +
+      'request.body = JSON.stringify({\n' +
+      "  title: '测试标题',\n" +
+      "  body: '测试内容',\n" +
+      '  userId: 1\n' +
+      '})\n\n' +
+      'return request',
   },
   {
-    title: 'Handling Different Response Types',
+    title: '修改请求 URL 参数',
     code:
-`async function fetchDataAdvanced(url) {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(\`HTTP error! status: \${response.status}\`);
-    }
-
-    const contentType = response.headers.get('content-type');
-    let data;
-
-    if (contentType && contentType.includes('application/json')) {
-      data = await response.json();
-    } else if (contentType && contentType.includes('text/html')) {
-      data = await response.text();
-    } else if (contentType && contentType.includes('image/')) {
-      data = await response.blob();
-      // Create an object URL to display the image
-      // const imageUrl = URL.createObjectURL(data);
-      // document.getElementById('myImageElement').src = imageUrl;
-    } else {
-      data = await response.text(); // Default to text
-    }
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-}`
-  }
-];
-
+      '// 解析当前 URL 并添加查询参数\n' +
+      'const url = new URL(request.url)\n' +
+      "url.searchParams.set('page', '1')\n" +
+      "url.searchParams.set('limit', '10')\n" +
+      "url.searchParams.set('sort', 'created_at')\n\n" +
+      'request.url = url.toString()\n\n' +
+      'return request',
+  },
+  {
+    title: '设置自定义 User-Agent',
+    code:
+      '// 设置自定义 User-Agent\n' +
+      "request.headers['User-Agent'] = 'MyApp/1.0 (Custom Bot)'\n\n" +
+      '// 添加其他常用头部\n' +
+      "request.headers['Accept-Language'] = 'zh-CN,zh;q=0.9,en;q=0.8'\n" +
+      "request.headers['Cache-Control'] = 'no-cache'\n\n" +
+      'return request',
+  },
+  {
+    title: '发送表单数据',
+    code:
+      '// 设置为 POST 请求并发送表单数据\n' +
+      "request.method = 'POST'\n" +
+      "request.headers['Content-Type'] = 'application/x-www-form-urlencoded'\n\n" +
+      '// 构建表单数据\n' +
+      'const formData = new URLSearchParams()\n' +
+      "formData.append('username', 'testuser')\n" +
+      "formData.append('password', 'testpass')\n" +
+      "formData.append('remember', 'true')\n\n" +
+      'request.body = formData.toString()\n\n' +
+      'return request',
+  },
+  {
+    title: '条件修改请求',
+    code:
+      '// 根据 URL 条件修改请求\n' +
+      "if (request.url.includes('api.github.com')) {\n" +
+      '  // GitHub API 需要特殊的 Accept 头\n' +
+      "  request.headers['Accept'] = 'application/vnd.github.v3+json'\n" +
+      "  request.headers['User-Agent'] = 'MyApp/1.0'\n" +
+      "} else if (request.url.includes('jsonplaceholder')) {\n" +
+      '  // JSONPlaceholder 测试 API\n' +
+      "  request.headers['Accept'] = 'application/json'\n" +
+      '}\n\n' +
+      '// 为所有请求添加时间戳\n' +
+      'const url = new URL(request.url)\n' +
+      "url.searchParams.set('_t', Date.now().toString())\n" +
+      'request.url = url.toString()\n\n' +
+      'return request',
+  },
+  {
+    title: '请求重试逻辑',
+    code:
+      '// 添加重试标识（这只是示例，实际重试需要在外部实现）\n' +
+      "request.headers['X-Retry-Count'] = '3'\n" +
+      "request.headers['X-Timeout'] = '5000'\n\n" +
+      '// 添加请求ID用于追踪\n' +
+      "request.headers['X-Request-ID'] = 'req_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)\n\n" +
+      'return request',
+  },
+]
 
 // 根据类型获取代码片段
 export const getCodesByType = (type) => {
@@ -399,10 +398,10 @@ export const getCodesByType = (type) => {
       return jsonCodes
     case 'html':
       return htmlCodes
-    case 'request': // Added case for request codes
+    case 'request':
       return requestCodes
     default:
-      return jsonCodes // Default to jsonCodes if type is unknown
+      return jsonCodes
   }
 }
 
