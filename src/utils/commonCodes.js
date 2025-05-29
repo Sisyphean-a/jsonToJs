@@ -56,6 +56,27 @@ const jsonCodes = [
       '})',
   },
   {
+    title: '无视层级获取对象中指定元素的值',
+    code:
+      '// 要获取的目标元素\n' +
+      'const objList = ["_tag", "_text"]\n\n' +
+      'const getValues = (obj, key) => {\n' +
+      '  return Object.entries(obj).flatMap(([k, v]) =>\n' +
+      '    k === key\n' +
+      '      ? [v]\n' +
+      '      : Array.isArray(v)\n' +
+      '        ? v.flatMap(o => getValues(o, key))\n' +
+      '        : typeof v === "object" && v !== null\n' +
+      '          ? getValues(v, key)\n' +
+      '          : []\n' +
+      '  )\n' +
+      '}\n\n' +
+      'return objList.reduce((acc, current) => {\n' +
+      '  acc[current] = getValues(json, current)\n' +
+      '  return acc\n' +
+      '}, {})',
+  },
+  {
     title: '过滤数组中的某些为空元素的对象',
     code:
       '// 获取目标数组\n' +
@@ -118,6 +139,26 @@ const jsonCodes = [
       '    average: stats.count ? stats.num / stats.count : 0,\n' +
       '  }\n' +
       '}',
+  },
+  {
+    title: '常用jsonpath功能（jsonpath已导入）',
+    code:
+      '// $      - 根对象/元素 (查询起点)\n' +
+      '// @      - 当前处理的对象 (常用于过滤条件中)\n' +
+      '// .      - 直接子元素 (等价于 obj.key)\n' +
+      "// []     - 子元素访问 (支持数组索引/key名称，如 [0] 或 ['name'])\n" +
+      '// ..     - 递归查找所有层级 (深度搜索)\n' +
+      '// *      - 通配符 (匹配任意属性/数组元素)\n' +
+      "// [,]    - 多选操作符 (如 ['name','age'] 选择多个字段)\n" +
+      '// [start:end:step] - 数组切片 (类似Python切片语法)\n' +
+      '// ?()    - 过滤表达式 (如 [?(@.price > 10)])\n' +
+      '// ()     - 脚本表达式 (支持JavaScript表达式)\n\n' +
+      '// 示例：\n' +
+      '// $..price          - 查找所有层级的price字段\n' +
+      '// $.store.book[0]   - 获取store下book数组的第一个元素\n' +
+      '// $..book[?(@.isbn)] - 查找所有包含isbn字段的book对象\n\n' +
+      "const idList = jsonpath.query(json, '$..id')\n\n" +
+      'return idList',
   },
 ]
 
@@ -288,7 +329,7 @@ const htmlCodes = [
       '  </div>\n' +
       '</div>`\n\n' +
       'return wrapper',
-  }
+  },
 ]
 
 // 根据类型获取代码片段

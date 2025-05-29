@@ -59,6 +59,7 @@
 import { ref } from 'vue'
 import CodeEditor from '@/components/CodeEditor.vue'
 import CommonCodeDialog from '@/components/CommonCodeDialog.vue'
+import jsonpath from 'jsonpath'
 
 const props = defineProps({
   json: {
@@ -103,6 +104,7 @@ const executeTransform = () => {
 
     const transformFn = new Function(
       'json',
+      'jsonpath',
       `
       function transform(json) {
         ${currentCode}
@@ -111,7 +113,7 @@ const executeTransform = () => {
     `,
     )
 
-    const transformedJson = transformFn(props.json)
+    const transformedJson = transformFn(props.json, jsonpath)
     emit('update:transformedJson', transformedJson)
   } catch (err) {
     error.value = err.message

@@ -721,7 +721,7 @@ watch(
       forceRender.value = true
     }
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 // 监听children变化
