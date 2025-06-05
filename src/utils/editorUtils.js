@@ -1,6 +1,7 @@
 import { EditorView } from '@codemirror/view'
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language'
 import { tags } from '@lezer/highlight'
+import { history } from '@codemirror/commands'
 import * as prettier from 'prettier/standalone'
 import * as prettierPluginBabel from 'prettier/parser-babel'
 import * as prettierPluginEstree from 'prettier/plugins/estree'
@@ -86,7 +87,17 @@ const jsHighlightStyle = HighlightStyle.define([
 
 // 创建编辑器扩展
 export const createEditorExtensions = (readonly = false) => {
-  const extensions = [javascript(), lightTheme, syntaxHighlighting(jsHighlightStyle)]
+  const extensions = [
+    javascript(),
+    lightTheme,
+    syntaxHighlighting(jsHighlightStyle),
+    // 添加历史记录功能
+    history({
+      minDepth: 10, // 最少保持10条历史记录
+      newGroupDelay: 500, // 500ms内的连续编辑会被合并为一个历史记录
+      closeGroupDelay: 2000, // 2秒后自动关闭当前历史记录组
+    }),
+  ]
 
   if (readonly) {
     extensions.push(EditorView.editable.of(false))

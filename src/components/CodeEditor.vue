@@ -11,6 +11,7 @@
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { EditorState } from '@codemirror/state'
 import { EditorView, keymap } from '@codemirror/view'
+import { undo, redo } from '@codemirror/commands'
 import { createEditorExtensions, formatCode as formatCodeUtil } from '../utils/editorUtils'
 
 const props = defineProps({
@@ -50,6 +51,20 @@ const extensions = [
         })
         return true
       },
+    },
+    // 撤销功能 - 最多保留10条历史记录
+    {
+      key: 'Ctrl-z',
+      run: undo,
+    },
+    // 重做功能 - 支持 Ctrl+Y 和 Ctrl+Shift+Z 两种快捷键
+    {
+      key: 'Ctrl-y',
+      run: redo,
+    },
+    {
+      key: 'Ctrl-Shift-z',
+      run: redo,
     },
     {
       key: 'Ctrl-Enter',
@@ -172,11 +187,14 @@ const setCode = (code) => {
 }
 
 // 监听 props 变化
-watch(() => props.modelValue, (newValue) => {
-  if (editorView.value && newValue !== getCode()) {
-    setCode(newValue)
-  }
-})
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (editorView.value && newValue !== getCode()) {
+      setCode(newValue)
+    }
+  },
+)
 
 // 暴露方法给父组件
 defineExpose({
@@ -217,7 +235,7 @@ onBeforeUnmount(() => {
 
   &:focus-within {
     border-color: rgba(30, 41, 59, 0.4);
-    box-shadow: 
+    box-shadow:
       0 0 0 1px rgba(30, 41, 59, 0.2),
       0 4px 12px rgba(30, 41, 59, 0.1);
   }
@@ -252,4 +270,4 @@ onBeforeUnmount(() => {
     }
   }
 }
-</style> 
+</style>
