@@ -67,7 +67,7 @@ const toggleRow = (index) => {
   // 特殊处理：当只有两行时，折叠一行会自动展开另一行
   if (props.rowCount === 2) {
     const otherIndex = index === 0 ? 1 : 0
-    
+
     // 如果要折叠当前行
     if (!isCollapsed.value[index]) {
       // 先展开另一行（如果它是折叠的）
@@ -80,7 +80,7 @@ const toggleRow = (index) => {
       // 如果要展开当前行，直接展开
       isCollapsed.value[index] = false
     }
-    
+
     redistributeHeights()
     return
   }
@@ -132,9 +132,7 @@ const redistributeHeights = () => {
 
     rowHeights.value = Array(props.rowCount)
       .fill(0)
-      .map((_, i) =>
-        isCollapsed.value[i] ? Math.max(0, actualCollapsedHeight) : visibleRowHeight,
-      )
+      .map((_, i) => (isCollapsed.value[i] ? Math.max(0, actualCollapsedHeight) : visibleRowHeight))
   } else {
     rowHeights.value = Array(props.rowCount)
       .fill(0)
@@ -230,7 +228,6 @@ onUnmounted(() => {
 .row-content {
   flex: 1;
   overflow: auto;
-  padding: 12px;
   background-color: #fafafa;
 }
 
@@ -257,4 +254,4 @@ onUnmounted(() => {
   width: 100%;
   background-color: transparent;
 }
-</style> 
+</style>

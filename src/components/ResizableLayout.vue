@@ -68,13 +68,54 @@ const visibleColumnsCount = computed(() => {
 
 // 切换列的折叠状态
 const toggleColumn = (index) => {
-  if (!isCollapsed.value[index] && visibleColumnsCount.value <= 1) {
-    console.warn('Cannot collapse the last visible column.')
-    return
+  // 特殊处理：当只有两列时，折叠一列会自动展开另一列
+  if (props.columnCount === 2) {
+    const otherIndex = index === 0 ? 1 : 0
+
+    // 如果要折叠当前列
+    if (!isCollapsed.value[index]) {
+      // 先展开另一列（如果它是折叠的）
+      if (isCollapsed.value[otherIndex]) {
+        isCollapsed.value[otherIndex] = false
+      }
+      // 然后折叠当前列
+      isCollapsed.value[index] = true
+    } else {
+      // 如果要展开当前列，直接展开
+      isCollapsed.value[index] = false
+    }
+  } else {
+    // 多列情况：智能处理折叠逻辑
+    if (!isCollapsed.value[index]) {
+      // 要折叠当前列
+      // 只有当这是最后一个展开的列时，才需要展开相邻列
+      if (visibleColumnsCount.value <= 1) {
+        // 这是最后一个可见列，需要展开相邻列
+        // 优先选择右侧列，如果没有则选择左侧列
+        let targetIndex = -1
+
+        // 先尝试右侧列
+        if (index < props.columnCount - 1) {
+          targetIndex = index + 1
+        } else if (index > 0) {
+          // 没有右侧列，选择左侧列
+          targetIndex = index - 1
+        }
+
+        // 如果目标列是折叠的，则展开它
+        if (targetIndex !== -1 && isCollapsed.value[targetIndex]) {
+          isCollapsed.value[targetIndex] = false
+        }
+      }
+
+      isCollapsed.value[index] = true
+    } else {
+      // 要展开当前列，直接展开
+      isCollapsed.value[index] = false
+    }
   }
 
   transitioningColumn.value = index
-  isCollapsed.value[index] = !isCollapsed.value[index]
 
   // 清除之前的定时器
   if (transitionTimeout.value) {
