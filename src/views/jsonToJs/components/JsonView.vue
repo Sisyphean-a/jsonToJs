@@ -409,9 +409,12 @@ watch(
 )
 
 const copyKey = (key) => {
-  navigator.clipboard.writeText(key).then(() => {
+  const textToCopy =
+    typeof key === 'string' && key.startsWith('"') && key.endsWith('"') ? key.slice(1, -1) : key
+
+  navigator.clipboard.writeText(textToCopy).then(() => {
     snackbar.value = true
-    snackbarText.value = key
+    snackbarText.value = textToCopy
   })
 }
 </script>
