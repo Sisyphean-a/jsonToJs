@@ -5,26 +5,88 @@ import { createPinia } from 'pinia'
 
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
-import * as components from 'vuetify/components'
+// 按需导入常用组件，减少打包体积
+import {
+  VApp,
+  VMain,
+  VContainer,
+  VRow,
+  VCol,
+  VBtn,
+  VCard,
+  VCardText,
+  VCardTitle,
+  VCardActions,
+  VTextField,
+  VTextarea,
+  VIcon,
+  VToolbar,
+  VAppBar,
+  VNavigationDrawer,
+  VList,
+  VListItem,
+  VListItemTitle,
+  VDivider,
+  VMenu,
+  VDialog,
+  VSheet,
+  VSpacer,
+  VChip,
+  VTooltip,
+  VProgressLinear,
+  VSnackbar,
+  VAlert,
+} from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
-// 引入 MDI 图标
-import { aliases, mdi } from 'vuetify/iconsets/mdi'
-import '@mdi/font/css/materialdesignicons.css' // 确保导入 CSS
+// 使用自定义轻量级图标配置
+import { customSvgIconSet } from './utils/icons.js'
 
 import App from './App.vue'
 import router from './router'
 
 const vuetify = createVuetify({
-  components,
+  components: {
+    VApp,
+    VMain,
+    VContainer,
+    VRow,
+    VCol,
+    VBtn,
+    VCard,
+    VCardText,
+    VCardTitle,
+    VCardActions,
+    VTextField,
+    VTextarea,
+    VIcon,
+    VToolbar,
+    VAppBar,
+    VNavigationDrawer,
+    VList,
+    VListItem,
+    VListItemTitle,
+    VDivider,
+    VMenu,
+    VDialog,
+    VSheet,
+    VSpacer,
+    VChip,
+    VTooltip,
+    VProgressLinear,
+    VSnackbar,
+    VAlert,
+  },
   directives,
-  // 配置图标
+  // 配置图标 - 使用SVG图标而不是字体文件
   icons: {
-    defaultSet: 'mdi',
-    aliases,
+    defaultSet: 'custom',
     sets: {
-      mdi,
+      custom: customSvgIconSet,
     },
+  },
+  theme: {
+    defaultTheme: 'light',
   },
 })
 
