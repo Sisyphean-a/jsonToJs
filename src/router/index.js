@@ -14,17 +14,6 @@ const router = createRouter({
         category: '处理工具',
       },
     },
-    {
-      path: '/html',
-      name: 'Html',
-      component: () => import('../views/htmlToJs/index.vue'),
-      meta: {
-        title: 'HTML转JS',
-        description: '使用JS处理HTML',
-        icon: 'mdi-code-tags',
-        category: '处理工具',
-      },
-    },
   ],
 })
 

@@ -24,22 +24,36 @@
           :class="{ expanded: expandedItems.includes(index) }"
         >
           <!-- 代码标题区域 -->
-          <div class="code-header" @click="toggleExpand(index)">
+          <div
+            class="code-header"
+            @click="toggleExpand(index)"
+          >
             <div class="code-title-content">
               <div class="code-icon">
-                <v-icon size="16" color="#334155">mdi-code-tags</v-icon>
+                <v-icon
+                  size="16"
+                  color="#334155"
+                  >mdi-code-tags</v-icon
+                >
               </div>
               <h3 class="code-title">{{ code.title }}</h3>
             </div>
             <div class="header-actions">
-              <button class="btn btn--sm btn--secondary" @click.stop="selectCode(code)">
-                <v-icon size="14" color="#475569">mdi-check</v-icon>
+              <button
+                class="btn btn--sm btn--secondary"
+                @click.stop="selectCode(code)"
+              >
+                <v-icon
+                  size="14"
+                  color="#475569"
+                  >mdi-check</v-icon
+                >
                 使用
               </button>
               <div class="expand-indicator">
-                <v-icon 
+                <v-icon
                   :class="{ rotated: expandedItems.includes(index) }"
-                  size="20" 
+                  size="20"
                   color="rgba(30, 41, 59, 0.6)"
                 >
                   mdi-chevron-down
@@ -54,8 +68,15 @@
               <pre><code class="language-javascript" v-html="highlightedCodes[index]"></code></pre>
             </div>
             <div class="code-actions">
-              <button class="btn btn--secondary" @click="copyCode(code.code)">
-                <v-icon size="16" color="#334155">mdi-content-copy</v-icon>
+              <button
+                class="btn btn--secondary"
+                @click="copyCode(code.code)"
+              >
+                <v-icon
+                  size="16"
+                  color="#334155"
+                  >mdi-content-copy</v-icon
+                >
                 复制
               </button>
             </div>
@@ -70,7 +91,10 @@
         <div class="footer-info">
           <span class="code-count">共 {{ currentCodes.length }} 个代码示例</span>
         </div>
-        <button class="btn btn--secondary" @click="closeDialog">
+        <button
+          class="btn btn--secondary"
+          @click="closeDialog"
+        >
           关闭
         </button>
       </footer>
@@ -94,8 +118,8 @@ const props = defineProps({
   type: {
     type: String,
     default: 'json',
-    validator: (value) => ['json', 'html'].includes(value)
-  }
+    validator: (value) => ['json', 'html'].includes(value),
+  },
 })
 
 const emit = defineEmits(['update:modelValue', 'select'])
@@ -117,7 +141,6 @@ const currentCodes = computed(() => {
 const dialogTitle = computed(() => {
   const typeNames = {
     json: 'JSON处理代码示例',
-    html: 'HTML处理代码示例'
   }
   return typeNames[props.type] || '常用代码示例'
 })
@@ -130,10 +153,14 @@ const highlightCodes = () => {
 }
 
 // 监听类型变化，重新高亮代码
-watch(() => props.type, () => {
-  highlightCodes()
-  expandedItems.value = [] // 重置展开状态
-}, { immediate: false })
+watch(
+  () => props.type,
+  () => {
+    highlightCodes()
+    expandedItems.value = [] // 重置展开状态
+  },
+  { immediate: false },
+)
 
 // 组件挂载时高亮代码
 onMounted(() => {
@@ -284,8 +311,9 @@ const closeDialog = () => {
   z-index: 1;
   overflow: hidden;
   max-height: 0;
-  transition: max-height var(--transition-normal), 
-              opacity var(--transition-normal);
+  transition:
+    max-height var(--transition-normal),
+    opacity var(--transition-normal);
   opacity: 0;
 }
 
@@ -367,34 +395,34 @@ const closeDialog = () => {
   .code-header {
     padding: var(--spacing-sm) var(--spacing-md);
   }
-  
+
   .code-title {
     font-size: var(--font-size-md);
   }
-  
+
   .code-display pre {
     padding: var(--spacing-md);
   }
-  
+
   .code-actions {
     padding: var(--spacing-sm) var(--spacing-md);
     flex-direction: column;
     gap: var(--spacing-sm);
   }
-  
+
   .btn {
     width: 100%;
     justify-content: center;
     padding: var(--spacing-sm) var(--spacing-md);
   }
-  
+
   .modal-footer {
     padding: var(--spacing-md) var(--spacing-xl);
     flex-direction: column;
     gap: var(--spacing-md);
     text-align: center;
   }
-  
+
   .btn {
     width: 100%;
   }
@@ -404,21 +432,21 @@ const closeDialog = () => {
   .code-header {
     padding: var(--spacing-sm) var(--spacing-md);
   }
-  
+
   .code-icon {
     width: 20px;
     height: 20px;
   }
-  
+
   .code-title {
     font-size: var(--font-size-base);
   }
-  
+
   .code-display pre {
     padding: var(--spacing-md);
     font-size: var(--font-size-base);
   }
-  
+
   .code-actions {
     padding: var(--spacing-sm) var(--spacing-md);
   }
