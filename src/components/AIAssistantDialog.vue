@@ -594,39 +594,4 @@ onMounted(() => {
   color: var(--color-error);
   font-size: var(--font-size-sm);
 }
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .ai-dialog {
-    width: 95vw;
-    height: 90vh;
-  }
-
-  .content-layout {
-    flex-direction: column;
-  }
-
-  .left-panel {
-    border-right: none;
-    border-bottom: 1px solid var(--border-light);
-    max-height: 50%;
-  }
-
-  .right-panel {
-    max-height: 50%;
-  }
-
-  .input-section {
-    padding: var(--spacing-md);
-  }
-
-  .result-header {
-    padding: var(--spacing-md);
-  }
-
-  .result-actions {
-    flex-direction: column;
-    gap: var(--spacing-xs);
-  }
-}
 </style>

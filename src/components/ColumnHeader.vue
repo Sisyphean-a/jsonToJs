@@ -95,17 +95,6 @@ defineEmits(['toggle'])
   }
 }
 
-@media (max-width: 480px) {
-  .column-header {
-    height: 36px;
-    padding: var(--spacing-xs) var(--spacing-sm);
-  }
-
-  .collapse-text {
-    display: none; /* 在很小的屏幕上只显示图标 */
-  }
-}
-
 /* 可访问性增强 */
 @media (prefers-reduced-motion: reduce) {
   .column-header,

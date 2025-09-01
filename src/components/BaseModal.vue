@@ -188,44 +188,6 @@ const handleOverlayClick = () => {
   }
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .base-modal-overlay {
-    padding: var(--spacing-lg);
-  }
-
-  .base-modal-container {
-    border-radius: var(--spacing-xl);
-    max-height: 95vh;
-  }
-
-  .base-modal--fullscreen {
-    border-radius: var(--radius-xl);
-  }
-
-  .base-modal-content {
-    padding: var(--spacing-xl);
-  }
-
-  .base-modal--no-padding .base-modal-content {
-    padding: 0;
-  }
-}
-
-@media (max-width: 480px) {
-  .base-modal-container {
-    border-radius: var(--radius-xl);
-  }
-
-  .base-modal-content {
-    padding: var(--spacing-lg);
-  }
-
-  .base-modal--no-padding .base-modal-content {
-    padding: 0;
-  }
-}
-
 /* 可访问性增强 */
 @media (prefers-reduced-motion: reduce) {
   .base-modal-overlay,

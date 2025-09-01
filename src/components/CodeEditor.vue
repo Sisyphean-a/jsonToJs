@@ -255,19 +255,4 @@ onBeforeUnmount(() => {
     padding: 12px;
   }
 }
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .code-editor {
-    min-height: 100px;
-
-    :deep(.cm-editor) {
-      font-size: 13px;
-    }
-
-    :deep(.cm-scroller) {
-      padding: 10px;
-    }
-  }
-}
 </style>

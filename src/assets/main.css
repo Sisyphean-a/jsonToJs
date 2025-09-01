@@ -20,12 +20,7 @@ a,
   border-radius: var(--radius-xs);
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: var(--color-success-light);
-    color: var(--color-success);
-  }
-}
-
-@media (min-width: 1024px) {
+a:hover {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
 }

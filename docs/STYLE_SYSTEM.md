@@ -20,16 +20,19 @@ src/assets/
 ### 颜色系统
 
 #### 主色调
+
 ```css
 --color-primary-50 到 --color-primary-900  /* 蓝色主色系 */
 ```
 
 #### 灰色系统
+
 ```css
 --color-gray-50 到 --color-gray-900       /* 中性色系 */
 ```
 
 #### 语义化颜色
+
 ```css
 --color-success       /* 成功色 #10b981 */
 --color-warning       /* 警告色 #f59e0b */
@@ -38,6 +41,7 @@ src/assets/
 ```
 
 #### 背景和文本颜色
+
 ```css
 --bg-primary          /* 主背景色 */
 --bg-secondary        /* 次背景色 */
@@ -49,6 +53,7 @@ src/assets/
 ```
 
 ### 间距系统
+
 ```css
 --spacing-xs          /* 4px */
 --spacing-sm          /* 8px */
@@ -62,6 +67,7 @@ src/assets/
 ```
 
 ### 字体系统
+
 ```css
 --font-family-base    /* 基础字体 */
 --font-family-mono    /* 等宽字体 */
@@ -76,6 +82,7 @@ src/assets/
 ```
 
 ### 阴影和过渡
+
 ```css
 --shadow-xs           /* 轻微阴影 */
 --shadow-sm           /* 小阴影 */
@@ -92,6 +99,7 @@ src/assets/
 ### 按钮系统
 
 #### 基础用法
+
 ```html
 <button class="btn btn--primary">主要按钮</button>
 <button class="btn btn--secondary">次要按钮</button>
@@ -102,6 +110,7 @@ src/assets/
 ```
 
 #### 尺寸变体
+
 ```html
 <button class="btn btn--primary btn--sm">小按钮</button>
 <button class="btn btn--primary">默认按钮</button>
@@ -110,35 +119,47 @@ src/assets/
 ```
 
 #### 状态
+
 ```html
-<button class="btn btn--primary" disabled>禁用按钮</button>
+<button
+  class="btn btn--primary"
+  disabled
+>
+  禁用按钮
+</button>
 <button class="btn btn--primary loading">加载中按钮</button>
 ```
 
 ### 表单元素
+
 ```html
-<input type="text" class="form-input" placeholder="输入内容">
-<textarea class="form-textarea" placeholder="多行输入"></textarea>
+<input
+  type="text"
+  class="form-input"
+  placeholder="输入内容"
+/>
+<textarea
+  class="form-textarea"
+  placeholder="多行输入"
+></textarea>
 ```
 
 ### 卡片组件
+
 ```html
 <div class="card">
   <div class="card-header">
     <h3>标题</h3>
   </div>
-  <div class="card-content">
-    内容区域
-  </div>
-  <div class="card-footer">
-    底部操作区域
-  </div>
+  <div class="card-content">内容区域</div>
+  <div class="card-footer">底部操作区域</div>
 </div>
 ```
 
 ## 工具类
 
 ### 间距工具类
+
 ```html
 <div class="p-md">内边距中等</div>
 <div class="m-lg">外边距大</div>
@@ -146,6 +167,7 @@ src/assets/
 ```
 
 ### 文本工具类
+
 ```html
 <span class="text-primary">主要文本色</span>
 <span class="text-secondary">次要文本色</span>
@@ -155,13 +177,13 @@ src/assets/
 ```
 
 ### 布局工具类
+
 ```html
-<div class="flex items-center justify-between gap-md">
-  弹性布局，垂直居中，两端对齐，中等间距
-</div>
+<div class="flex items-center justify-between gap-md">弹性布局，垂直居中，两端对齐，中等间距</div>
 ```
 
 ### 圆角和阴影
+
 ```html
 <div class="rounded-lg shadow-md">圆角大，中等阴影</div>
 ```
@@ -169,6 +191,7 @@ src/assets/
 ## 动画系统
 
 ### 基础动画类
+
 ```html
 <div class="animate-spin">旋转动画</div>
 <div class="animate-pulse">脉冲动画</div>
@@ -177,6 +200,7 @@ src/assets/
 ```
 
 ### 悬停效果
+
 ```html
 <div class="hover-lift">悬停抬起</div>
 <div class="hover-scale">悬停缩放</div>
@@ -184,33 +208,19 @@ src/assets/
 ```
 
 ### 动画修饰符
+
 ```html
-<div class="animate-fade-in animate-delay-200 animate-duration-slow">
-  延迟200ms，慢速淡入
-</div>
+<div class="animate-fade-in animate-delay-200 animate-duration-slow">延迟200ms，慢速淡入</div>
 ```
 
 ### 加载状态
+
 ```html
 <div class="skeleton">骨架屏效果</div>
 <div class="loading-dots">加载点动画</div>
 ```
 
 ## 响应式设计
-
-### 断点系统
-```css
---breakpoint-sm: 480px;
---breakpoint-md: 768px;
---breakpoint-lg: 1024px;
---breakpoint-xl: 1280px;
-```
-
-### 响应式工具类
-```html
-<div class="mobile-hidden">移动端隐藏</div>
-<div class="mobile-full">移动端全宽</div>
-```
 
 ## 暗色主题支持
 
@@ -225,6 +235,7 @@ src/assets/
 ## 可访问性
 
 ### 减少动画运动
+
 ```css
 @media (prefers-reduced-motion: reduce) {
   /* 为有运动敏感的用户减少动画 */
@@ -232,6 +243,7 @@ src/assets/
 ```
 
 ### 高对比度支持
+
 ```css
 @media (prefers-contrast: high) {
   /* 为需要高对比度的用户增强边框 */
@@ -241,6 +253,7 @@ src/assets/
 ## 使用建议
 
 ### 1. 优先使用设计令牌
+
 ```css
 /* ✅ 推荐 */
 .my-component {
@@ -258,6 +271,7 @@ src/assets/
 ```
 
 ### 2. 优先使用公共组件样式
+
 ```html
 <!-- ✅ 推荐 -->
 <button class="btn btn--primary">点击我</button>
@@ -267,6 +281,7 @@ src/assets/
 ```
 
 ### 3. 使用工具类快速布局
+
 ```html
 <!-- ✅ 推荐 -->
 <div class="flex items-center gap-md p-lg">
@@ -276,6 +291,7 @@ src/assets/
 ```
 
 ### 4. 保持一致性
+
 - 使用统一的间距系统
 - 遵循设计令牌的颜色规范
 - 使用预定义的动画效果
@@ -300,4 +316,4 @@ src/assets/
 4. 使用统一的动画和过渡效果
 5. 移除重复的样式定义
 
-这样可以显著减少 CSS 代码量，提高维护性和一致性。 
+这样可以显著减少 CSS 代码量，提高维护性和一致性。

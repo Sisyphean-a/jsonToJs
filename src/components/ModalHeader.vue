@@ -274,66 +274,13 @@ const handleClose = () => {
 
 .close-btn:focus {
   outline: none;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 0 2px rgba(255, 255, 255, 0.3);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 2px rgba(255, 255, 255, 0.3);
 }
 
 .close-btn:active {
   background: rgba(255, 255, 255, 0.15);
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .modal-header {
-    padding: var(--spacing-md) var(--spacing-xl);
-    min-height: 56px;
-  }
-
-  .header-content {
-    gap: var(--spacing-sm);
-  }
-
-  .header-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-sm);
-  }
-
-  .header-title {
-    font-size: var(--font-size-xl);
-    gap: var(--spacing-sm);
-  }
-
-  .header-subtitle {
-    font-size: var(--font-size-sm);
-  }
-
-  .close-btn {
-    width: 28px;
-    height: 28px;
-  }
-}
-
-@media (max-width: 480px) {
-  .modal-header {
-    padding: var(--spacing-md) var(--spacing-lg);
-    min-height: 52px;
-  }
-
-  .header-title {
-    font-size: var(--font-size-lg);
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-xs);
-  }
-
-  .header-subtitle {
-    font-size: var(--font-size-xs);
-  }
-
-  .close-btn {
-    width: 28px;
-    height: 28px;
-  }
 }
 
 /* 简洁模式下的头部标题适配 */

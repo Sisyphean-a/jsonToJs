@@ -224,13 +224,15 @@ onUnmounted(() => {
 .input-container {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-sm, 8px);
   height: 100%;
+  width: 100%;
 }
 
 .json-input-field {
   flex: 1;
   height: 100%;
+  min-width: 0; /* 防止flex子项溢出 */
 
   :deep(.v-field) {
     height: 100%;
@@ -241,36 +243,38 @@ onUnmounted(() => {
     padding-top: 8px;
     padding-bottom: 8px;
   }
+
+  :deep(.v-input__control) {
+    height: 100%;
+  }
+
+  :deep(.v-field__field) {
+    height: 100%;
+  }
 }
 
 .clipboard-btn {
   flex-shrink: 0;
+  flex-grow: 0;
   height: 40px;
+  min-width: auto !important;
+  width: auto !important;
   white-space: nowrap;
 
   &:hover {
     background-color: rgba(var(--color-primary), 0.08);
   }
-}
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .input-area {
-    padding: var(--spacing-xs);
+  /* 覆盖Vuetify的默认样式 */
+  :deep(.v-btn__content) {
+    white-space: nowrap;
   }
 
-  .resize-handle-horizontal {
-    height: 6px;
-  }
-
-  .input-container {
-    gap: var(--spacing-xs);
-  }
-
-  .clipboard-btn {
-    height: 36px;
-    font-size: 12px;
-    padding: 0 8px;
+  :deep(.v-btn) {
+    min-width: auto !important;
+    width: auto !important;
+    flex-shrink: 0;
+    flex-grow: 0;
   }
 }
 </style>

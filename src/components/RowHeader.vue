@@ -68,29 +68,6 @@ defineEmits(['toggle'])
   }
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .row-header {
-    height: 28px;
-    padding: 6px 12px;
-  }
-
-  .header-content {
-    gap: 6px;
-  }
-
-  .collapse-icon {
-    font-size: 13px;
-  }
-}
-
-@media (max-width: 480px) {
-  .row-header {
-    height: 26px;
-    padding: 4px 8px;
-  }
-}
-
 /* 可访问性增强 */
 @media (prefers-reduced-motion: reduce) {
   .row-header,
@@ -113,4 +90,4 @@ defineEmits(['toggle'])
     color: #000;
   }
 }
-</style> 
+</style>

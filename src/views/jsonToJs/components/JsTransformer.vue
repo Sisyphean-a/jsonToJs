@@ -1,60 +1,53 @@
 <template>
   <div class="js-transformer">
     <div class="code-section">
-      <div class="function-header">
-        <span style="color: #2196f3">function </span>
-        <span style="color: #4caf50">transform</span>(<span style="color: #ff9800">json</span>) {
-      </div>
-
-      <CodeEditor
-        ref="codeEditor"
+      <!-- 代码编辑器包装器 -->
+      <CodeEditorWrapper
+        ref="codeEditorWrapper"
         v-model="code"
         :placeholder="defaultCode"
         @ctrl-enter="handleCtrlEnter"
         @ctrl-save="handleCtrlSave"
         @format="handleFormat"
+        @change="handleCodeChange"
+        @ready="handleEditorReady"
       />
 
-      <div class="function-footer">}</div>
+      <!-- 操作按钮 -->
+      <ActionButtons
+        :is-executing="isExecuting"
+        :has-code="hasCode"
+        :has-valid-json="hasValidJson"
+        :show-extra-actions="true"
+        @execute="executeTransform"
+        @format="formatCode"
+        @show-common-code="showCommonCodeDialog = true"
+        @show-ai="showAIDialog = true"
+        @clear="handleClearCode"
+        @copy="handleCopyCode"
+      />
 
-      <div class="button-area">
-        <button
-          class="btn btn--primary"
-          :class="{ loading: isExecuting }"
-          @click="executeTransform"
-          :disabled="isExecuting"
-        >
-          <span>{{ isExecuting ? '执行中...' : '执行转换' }}</span>
-        </button>
-        <button
-          class="btn btn--secondary"
-          @click="formatCode"
-        >
-          <span>格式化代码</span>
-        </button>
-        <button
-          class="btn btn--tertiary"
-          @click="showCommonCodeDialog = true"
-        >
-          <span>常用代码</span>
-        </button>
-        <button
-          class="btn btn--ghost"
-          @click="showAIDialog = true"
-        >
-          <span>🤖 AI</span>
-        </button>
-      </div>
-
-      <div
-        v-if="error"
-        class="error-area"
-      >
-        <div class="error-title">错误信息：</div>
-        <div class="error-content">{{ error }}</div>
-      </div>
+      <!-- 错误显示 -->
+      <ErrorDisplay
+        :errors="errors"
+        :show-details="true"
+        :show-stack="false"
+        variant="default"
+        @clear-all="clearErrors"
+      />
     </div>
 
+    <!-- 代码执行器（隐藏组件，只处理逻辑） -->
+    <CodeExecutor
+      ref="codeExecutor"
+      :code="code"
+      :json="json"
+      @result="handleExecutionResult"
+      @error="handleExecutionError"
+      @executing="handleExecutionStateChange"
+    />
+
+    <!-- 对话框 -->
     <CommonCodeDialog
       v-model="showCommonCodeDialog"
       type="json"
@@ -70,11 +63,15 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import CodeEditor from '@/components/CodeEditor.vue'
+import { ref, computed } from 'vue'
+import CodeEditorWrapper from './CodeEditorWrapper.vue'
+import ActionButtons from './ActionButtons.vue'
+import ErrorDisplay from './ErrorDisplay.vue'
+import CodeExecutor from './CodeExecutor.vue'
 import CommonCodeDialog from '@/components/CommonCodeDialog.vue'
 import AIAssistantDialog from '@/components/AIAssistantDialog.vue'
-import jsonpath from 'jsonpath'
+import { useErrorHandler } from '@/composables/useErrorHandler.js'
+import { EDITOR_CONFIG } from '@/constants/app-config.js'
 
 const props = defineProps({
   json: {
@@ -85,91 +82,127 @@ const props = defineProps({
 
 const emit = defineEmits(['update:transformedJson'])
 
-const codeEditor = ref(null)
+// 组件引用
+const codeEditorWrapper = ref(null)
+const codeExecutor = ref(null)
+
+// 状态
 const code = ref('')
-const error = ref('')
 const isExecuting = ref(false)
 const showCommonCodeDialog = ref(false)
 const showAIDialog = ref(false)
 
+// 使用统一错误处理
+const { handleError, clearErrors, hasErrors, latestError, errors } = useErrorHandler({
+  context: 'JsTransformer',
+  maxErrors: 3,
+  autoHideDelay: 0, // 不自动隐藏，由用户手动清除
+})
+
 // 默认代码
-const defaultCode =
-  '// Ctrl + Enter：格式化+执行\n// Ctrl + S：格式化\n// Ctrl + /：注释/取消注释\nreturn json.address'
+const defaultCode = EDITOR_CONFIG.defaultCode
 
 // 初始化代码
 code.value = defaultCode
 
-// AI代码生成处理
-const handleAICodeGenerated = (generatedCode) => {
-  if (generatedCode) {
-    codeEditor.value?.setCode(generatedCode)
-    error.value = ''
+// 计算属性
+const hasCode = computed(() => code.value && code.value.trim().length > 0)
+const hasValidJson = computed(() => {
+  try {
+    return props.json && typeof props.json === 'object'
+  } catch {
+    return false
   }
+})
+
+// 编辑器事件处理
+const handleEditorReady = (editorInfo) => {
+  console.log('Editor ready:', editorInfo)
 }
 
-const formatCode = async () => {
-  try {
-    await codeEditor.value?.formatCode()
-  } catch (err) {
-    error.value = err.message
-  }
+const handleCodeChange = (newCode, stats) => {
+  code.value = newCode
+  clearErrors()
 }
 
-const executeTransform = () => {
-  isExecuting.value = true
-  error.value = ''
-
-  try {
-    const currentCode = codeEditor.value?.getCode() || code.value
-    if (!currentCode.trim()) {
-      emit('update:transformedJson', props.json)
-      return
+// 执行相关事件处理
+const executeTransform = async () => {
+  if (codeExecutor.value) {
+    try {
+      await codeExecutor.value.executeTransform()
+    } catch (error) {
+      // 错误已经在CodeExecutor中处理
     }
+  }
+}
 
-    const transformFn = new Function(
-      'json',
-      'jsonpath',
-      `
-      function transform(json) {
-        ${currentCode}
-      }
-      return transform(json)
-    `,
-    )
+const handleExecutionResult = (result) => {
+  emit('update:transformedJson', result)
+}
 
-    const transformedJson = transformFn(props.json, jsonpath)
-    emit('update:transformedJson', transformedJson)
-  } catch (err) {
-    error.value = err.message
-    emit('update:transformedJson', props.json)
-  } finally {
-    isExecuting.value = false
+const handleExecutionError = (error) => {
+  // 错误已经在CodeExecutor中处理，这里只需要发送fallback结果
+  emit('update:transformedJson', props.json)
+}
+
+const handleExecutionStateChange = (executing) => {
+  isExecuting.value = executing
+}
+
+// 格式化处理
+const formatCode = async () => {
+  if (codeEditorWrapper.value) {
+    try {
+      await codeEditorWrapper.value.formatCode()
+    } catch (error) {
+      // 错误已经在CodeEditorWrapper中处理
+    }
   }
 }
 
 const handleCtrlEnter = async (formattedCode, formatError) => {
-  if (formatError) {
-    error.value = formatError.message
-  } else {
-    error.value = ''
+  if (!formatError) {
+    executeTransform()
   }
-  executeTransform()
 }
 
 const handleCtrlSave = async (formattedCode, formatError) => {
-  if (formatError) {
-    error.value = formatError.message
-  } else {
-    error.value = ''
+  // 格式化完成，不需要额外操作
+}
+
+const handleFormat = (formattedCode, formatError) => {
+  // 格式化完成，不需要额外操作
+}
+
+// 代码操作
+const handleCodeSelect = (selectedCode) => {
+  if (codeEditorWrapper.value) {
+    codeEditorWrapper.value.setCode(selectedCode)
   }
 }
 
-const handleFormat = (formattedCode) => {
-  error.value = ''
+const handleClearCode = () => {
+  if (codeEditorWrapper.value) {
+    codeEditorWrapper.value.reset()
+  }
 }
 
-const handleCodeSelect = (selectedCode) => {
-  codeEditor.value?.setCode(selectedCode)
+const handleCopyCode = async () => {
+  try {
+    const currentCode = codeEditorWrapper.value?.getCode() || code.value
+    await navigator.clipboard.writeText(currentCode)
+    // 可以添加成功提示
+  } catch (error) {
+    handleError(error, 'Copy Code')
+  }
+}
+
+// AI代码生成处理
+const handleAICodeGenerated = (generatedCode) => {
+  if (generatedCode && codeEditorWrapper.value) {
+    codeEditorWrapper.value.setCode(generatedCode)
+    clearErrors()
+  }
 }
 </script>
 
@@ -214,12 +247,16 @@ const handleCodeSelect = (selectedCode) => {
       max-height: 100px;
       overflow-y: auto;
       backdrop-filter: var(--backdrop-blur);
+      position: relative;
 
       .error-title {
         color: var(--color-error);
         font-weight: var(--font-weight-semibold);
         margin-bottom: var(--spacing-sm);
         font-size: var(--font-size-base);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
 
       .error-content {
@@ -228,6 +265,23 @@ const handleCodeSelect = (selectedCode) => {
         font-size: var(--font-size-sm);
         white-space: pre-wrap;
         line-height: 1.4;
+        margin-bottom: var(--spacing-sm);
+      }
+
+      .error-clear-btn {
+        background: transparent;
+        border: 1px solid var(--color-error);
+        color: var(--color-error);
+        padding: var(--spacing-xs) var(--spacing-sm);
+        border-radius: var(--radius-sm);
+        font-size: var(--font-size-xs);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+
+        &:hover {
+          background: var(--color-error);
+          color: white;
+        }
       }
 
       /* 自定义滚动条样式 */
@@ -248,45 +302,6 @@ const handleCodeSelect = (selectedCode) => {
 
       &::-webkit-scrollbar-thumb:hover {
         opacity: 0.8;
-      }
-    }
-  }
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .js-transformer {
-    .code-section {
-      padding: var(--spacing-md);
-
-      .function-header,
-      .function-footer {
-        font-size: var(--font-size-base);
-        padding: 0 var(--spacing-sm);
-      }
-
-      .button-area {
-        flex-direction: column;
-        align-items: center;
-        gap: var(--spacing-sm);
-      }
-
-      .btn {
-        width: 200px;
-        height: var(--button-height-lg);
-      }
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .js-transformer {
-    .code-section {
-      padding: var(--spacing-sm);
-
-      .btn {
-        width: 100%;
-        max-width: 280px;
       }
     }
   }
