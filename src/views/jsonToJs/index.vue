@@ -1,25 +1,22 @@
 <template>
   <resizable-layout :column-count="columnCount">
     <template #column1>
-      <json-input-content
+      <json-display-with-input
         :initial-json="pageState.jsonInput"
+        :json="pageState.json"
         @update:json="handleJsonUpdate"
         @update:jsonInput="handleJsonInputUpdate"
       />
     </template>
 
     <template #column2>
-      <json-view :json="pageState.json" />
-    </template>
-
-    <template #column3>
       <js-transformer
         :json="pageState.json"
         @update:transformedJson="handleTransformedJsonUpdate"
       />
     </template>
 
-    <template #column4>
+    <template #column3>
       <json-view :json="pageState.transformedJson" />
     </template>
   </resizable-layout>
@@ -28,7 +25,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import JsonView from './components/JsonView.vue'
-import JsonInputContent from './components/JsonInputContent.vue'
+import JsonDisplayWithInput from '@/components/JsonDisplayWithInput.vue'
 import ResizableLayout from '@/components/ResizableLayout.vue'
 import JsTransformer from './components/JsTransformer.vue'
 import { usePageStateStore } from '@/stores/pageState.js'
@@ -53,7 +50,7 @@ const defaultTransformedJson = {
   district: '朝阳区',
 }
 
-const columnCount = ref(4) // 默认4列，可以根据需要调整
+const columnCount = ref(3) // 三列布局：JSON展示+输入列、代码列、结果展示列
 
 // 获取页面状态
 const pageState = pageStateStore.getJsonPageState
