@@ -2,7 +2,7 @@
   <div class="json-display-with-input">
     <!-- JSON展示区域 -->
     <div class="json-display-area">
-      <json-view :json="json" />
+      <json-view :json="jsonState.parsedJson" />
     </div>
 
     <!-- 分割线 -->
@@ -46,84 +46,39 @@
 </template>
 
 <script setup>
-import { ref, watch, onUnmounted } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
+import { useJsonContext } from '@/composables/useJsonContext.js'
 import JsonView from '@/views/jsonToJs/components/JsonView.vue'
 
-const props = defineProps({
-  initialJson: {
-    type: String,
-    required: true,
-  },
-  json: {
-    type: [Object, Array],
-    required: false,
-    default: null,
-  },
-})
+// 使用JSON上下文，不再需要props和emits
+const { jsonState, updateJsonInput, hasValidJson } = useJsonContext()
 
-const emit = defineEmits(['update:json', 'update:jsonInput'])
-
-const localJsonInput = ref(props.initialJson)
-const hasError = ref(false)
+// 本地状态只管理UI相关的
+const localJsonInput = ref('')
 const inputHeight = ref(60) // 默认输入区域高度
 const isResizing = ref(false)
 const startY = ref(0)
 const startHeight = ref(0)
 const isReadingClipboard = ref(false)
 
-// 监听外部JSON变化
+// 监听context状态变化
 watch(
-  () => props.initialJson,
+  () => jsonState.inputJson,
   (newVal) => {
     if (newVal !== localJsonInput.value) {
       localJsonInput.value = newVal
-      hasError.value = false
     }
   },
+  { immediate: true },
 )
 
-// 将JS对象格式转换为标准JSON格式
-const convertJsObjectToJson = (input) => {
-  try {
-    let processed = input.trim()
-
-    if (!processed.startsWith('{') || !processed.endsWith('}')) {
-      return input
-    }
-
-    // 为未加引号的键名添加双引号
-    processed = processed.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g, '$1"$2":')
-    processed = processed.replace(/^(\s*\{\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g, '$1"$2":')
-
-    return processed
-  } catch (e) {
-    return input
-  }
-}
+// 计算是否有错误
+const hasError = computed(() => jsonState.parseErrors.length > 0)
 
 // 处理输入变化
 const handleInput = () => {
-  emit('update:jsonInput', localJsonInput.value)
-
-  try {
-    const parsedJson = JSON.parse(localJsonInput.value)
-    emit('update:json', parsedJson)
-    hasError.value = false
-  } catch (e) {
-    try {
-      const convertedJson = convertJsObjectToJson(localJsonInput.value)
-      const parsedJson = JSON.parse(convertedJson)
-      emit('update:json', parsedJson)
-      hasError.value = false
-    } catch (convertError) {
-      const errorJson = {
-        data: localJsonInput.value,
-        error: convertError.message,
-      }
-      emit('update:json', errorJson)
-      hasError.value = true
-    }
-  }
+  // 使用context更新JSON输入
+  updateJsonInput(localJsonInput.value)
 }
 
 // 读取剪切板内容

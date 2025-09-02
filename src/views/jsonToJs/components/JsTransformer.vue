@@ -41,7 +41,7 @@
     <CodeExecutor
       ref="codeExecutor"
       :code="code"
-      :json="json"
+      :json="jsonState.parsedJson"
       @result="handleExecutionResult"
       @error="handleExecutionError"
       @executing="handleExecutionStateChange"
@@ -56,7 +56,7 @@
 
     <AIAssistantDialog
       v-model="showAIDialog"
-      :json="json"
+      :json="jsonState.parsedJson"
       @codeGenerated="handleAICodeGenerated"
     />
   </div>
@@ -64,6 +64,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useJsonContext } from '@/composables/useJsonContext.js'
 import CodeEditorWrapper from './CodeEditorWrapper.vue'
 import ActionButtons from './ActionButtons.vue'
 import ErrorDisplay from './ErrorDisplay.vue'
@@ -73,14 +74,13 @@ import AIAssistantDialog from '@/components/AIAssistantDialog.vue'
 import { useErrorHandler } from '@/composables/useErrorHandler.js'
 import { EDITOR_CONFIG } from '@/constants/app-config.js'
 
-const props = defineProps({
-  json: {
-    type: Object,
-    required: true,
-  },
-})
-
-const emit = defineEmits(['update:transformedJson'])
+// 使用JSON上下文
+const {
+  jsonState,
+  executeTransform: contextExecuteTransform,
+  hasValidJson,
+  canExecuteTransform,
+} = useJsonContext()
 
 // 组件引用
 const codeEditorWrapper = ref(null)
@@ -88,7 +88,6 @@ const codeExecutor = ref(null)
 
 // 状态
 const code = ref('')
-const isExecuting = ref(false)
 const showCommonCodeDialog = ref(false)
 const showAIDialog = ref(false)
 
@@ -107,13 +106,7 @@ code.value = defaultCode
 
 // 计算属性
 const hasCode = computed(() => code.value && code.value.trim().length > 0)
-const hasValidJson = computed(() => {
-  try {
-    return props.json && typeof props.json === 'object'
-  } catch {
-    return false
-  }
-})
+const isExecuting = computed(() => jsonState.isExecuting)
 
 // 编辑器事件处理
 const handleEditorReady = (editorInfo) => {
@@ -127,26 +120,26 @@ const handleCodeChange = (newCode, stats) => {
 
 // 执行相关事件处理
 const executeTransform = async () => {
-  if (codeExecutor.value) {
-    try {
-      await codeExecutor.value.executeTransform()
-    } catch (error) {
-      // 错误已经在CodeExecutor中处理
-    }
+  try {
+    await contextExecuteTransform(code.value)
+  } catch (error) {
+    handleError(error, '代码执行')
   }
 }
 
 const handleExecutionResult = (result) => {
-  emit('update:transformedJson', result)
+  // 结果已经通过context更新，不需要emit
+  console.log('Execution result:', result)
 }
 
 const handleExecutionError = (error) => {
-  // 错误已经在CodeExecutor中处理，这里只需要发送fallback结果
-  emit('update:transformedJson', props.json)
+  // 错误已经通过context处理
+  console.error('Execution error:', error)
 }
 
 const handleExecutionStateChange = (executing) => {
-  isExecuting.value = executing
+  // 执行状态已经通过context管理
+  console.log('Execution state changed:', executing)
 }
 
 // 格式化处理
