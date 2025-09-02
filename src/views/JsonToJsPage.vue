@@ -15,7 +15,6 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
 import { provideJsonContext } from '@/features/json-processor/composables/useJsonContext.js'
 import { usePageStateStore } from '@/stores/pageState.js'
 import ResizableLayout from '@/components/layout/ResizableLayout.vue'
@@ -23,16 +22,14 @@ import JsonDisplayWithInput from '@/features/json-processor/components/JsonDispl
 import JsTransformer from '@/features/json-processor/components/JsTransformer.vue'
 import JsonResultDisplay from '@/features/json-processor/components/JsonResultDisplay.vue'
 
-// 提供上下文，子组件可以直接使用
-provideJsonContext()
-
 // 使用页面状态store
 const pageStateStore = usePageStateStore()
 
-onMounted(() => {
-  // 初始化页面状态
-  pageStateStore.initJsonPage()
-})
+// 提供上下文，子组件可以直接使用
+const jsonContext = provideJsonContext()
+
+// 立即初始化页面状态，而不是等到mounted
+pageStateStore.initJsonPage()
 </script>
 
 <style lang="scss" scoped>

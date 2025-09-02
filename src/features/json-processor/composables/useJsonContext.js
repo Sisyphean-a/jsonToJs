@@ -1,4 +1,4 @@
-import { inject, provide } from 'vue'
+import { inject, provide, computed } from 'vue'
 import { useJsonProcessorStore } from '@/stores/jsonProcessor.js'
 import { useErrorHandler } from '@/shared/composables/useErrorHandler.js'
 
@@ -98,11 +98,11 @@ export function provideJsonContext() {
     getInputHistory,
     restoreFromHistory,
 
-    // 计算属性
-    hasValidJson: jsonProcessor.hasValidJson,
-    canExecuteTransform: jsonProcessor.canExecuteTransform,
-    hasErrors: jsonProcessor.hasErrors,
-    latestError: jsonProcessor.latestError,
+    // 计算属性 - 重新包装以确保响应性
+    hasValidJson: computed(() => jsonProcessor.hasValidJson.value),
+    canExecuteTransform: computed(() => jsonProcessor.canExecuteTransform.value),
+    hasErrors: computed(() => jsonProcessor.hasErrors.value),
+    latestError: computed(() => jsonProcessor.latestError.value),
   }
 
   provide(JSON_CONTEXT_KEY, context)

@@ -45,31 +45,31 @@
 ```
 src/
 ├── components/                 # 全局可复用组件
-│   ├── base/                  # 基础UI组件
-│   │   ├── BaseModal.vue      # 基础模态框
-│   │   ├── ModalHeader.vue    # 模态框头部
-│   │   └── GlobalErrorDisplay.vue # 全局错误显示
+│   ├── base/                      # 基础UI组件
+│   │   ├── BaseModal.vue            # 基础模态框
+│   │   ├── ModalHeader.vue          # 模态框头部
+│   │   └── GlobalErrorDisplay.vue   # 全局错误显示
 │   ├── layout/                # 布局相关组件
-│   │   ├── ResizableContainer.vue  # 可调整大小容器
-│   │   ├── ResizableLayout.vue     # 水平布局
-│   │   ├── ResizableRowLayout.vue  # 垂直布局
-│   │   ├── ColumnHeader.vue        # 列头组件
-│   │   └── RowHeader.vue          # 行头组件
+│   │   ├── ResizableContainer.vue   # 可调整大小容器
+│   │   ├── ResizableLayout.vue      # 水平布局
+│   │   ├── ResizableRowLayout.vue   # 垂直布局
+│   │   ├── ColumnHeader.vue         # 列头组件
+│   │   └── RowHeader.vue            # 行头组件
 │   └── dialogs/               # 对话框组件
 │       ├── AIAssistantDialog.vue   # AI助手对话框
 │       └── CommonCodeDialog.vue    # 常用代码对话框
 ├── features/                  # 功能模块（按业务域组织）
 │   └── json-processor/        # JSON处理功能模块
 │       ├── components/        # JSON处理相关组件
-│       │   ├── JsonView.vue           # JSON视图显示
-│       │   ├── JsonDisplayWithInput.vue # JSON输入显示组合
-│       │   ├── JsonResultDisplay.vue   # JSON结果显示
-│       │   ├── CodeEditor.vue         # 代码编辑器
-│       │   ├── CodeEditorWrapper.vue  # 代码编辑器包装
-│       │   ├── CodeExecutor.vue       # 代码执行器
-│       │   ├── JsTransformer.vue      # JS转换器（主组件）
-│       │   ├── ActionButtons.vue      # 操作按钮
-│       │   └── ErrorDisplay.vue       # 错误显示
+│       │   ├── JsonView.vue              # JSON视图显示
+│       │   ├── JsonDisplayWithInput.vue  # JSON输入显示组合
+│       │   ├── JsonResultDisplay.vue     # JSON结果显示
+│       │   ├── CodeEditor.vue            # 代码编辑器
+│       │   ├── CodeEditorWrapper.vue     # 代码编辑器包装
+│       │   ├── CodeExecutor.vue          # 代码执行器
+│       │   ├── JsTransformer.vue         # JS转换器（主组件）
+│       │   ├── ActionButtons.vue         # 操作按钮
+│       │   └── ErrorDisplay.vue          # 错误显示
 │       └── composables/       # JSON处理相关组合式函数
 │           └── useJsonContext.js      # JSON上下文管理
 ├── shared/                    # 共享资源
@@ -85,9 +85,9 @@ src/
 │       └── icons.js           # 图标配置
 ├── stores/                    # 状态管理
 │   ├── jsonProcessor.js       # JSON处理状态
-│   └── pageState.js          # 页面状态
+│   └── pageState.js           # 页面状态
 ├── views/                     # 页面组件
-│   └── JsonToJsPage.vue      # 主页面
+│   └── JsonToJsPage.vue       # 主页面
 ├── assets/                    # 静态资源
 ├── styles/                    # 样式文件
 ├── router/                    # 路由配置

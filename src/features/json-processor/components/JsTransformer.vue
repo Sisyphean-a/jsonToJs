@@ -18,6 +18,7 @@
         :is-executing="isExecuting"
         :has-code="hasCode"
         :has-valid-json="hasValidJson"
+        :disabled="false"
         :show-extra-actions="true"
         @execute="executeTransform"
         @format="formatCode"
@@ -56,7 +57,7 @@
 
     <AIAssistantDialog
       v-model="showAIDialog"
-      :json="jsonState.parsedJson"
+      :json="jsonState.parsedJson || {}"
       @codeGenerated="handleAICodeGenerated"
     />
   </div>

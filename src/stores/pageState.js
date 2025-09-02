@@ -66,7 +66,8 @@ export const usePageStateStore = defineStore('pageState', () => {
       loadPreferences()
 
       // 设置默认JSON数据
-      jsonProcessor.setInputJson(JSON.stringify(defaultJson, null, 2))
+      const defaultJsonString = JSON.stringify(defaultJson, null, 2)
+      jsonProcessor.setInputJson(defaultJsonString)
 
       // 设置默认转换结果
       const defaultTransformedJson = {
