@@ -68,6 +68,14 @@ export const usePageStateStore = defineStore('pageState', () => {
       // 设置默认JSON数据
       jsonProcessor.setInputJson(JSON.stringify(defaultJson, null, 2))
 
+      // 设置默认转换结果
+      const defaultTransformedJson = {
+        province: '北京',
+        city: '北京',
+        district: '朝阳区',
+      }
+      jsonProcessor.setTransformedJson(defaultTransformedJson)
+
       uiState.isInitialized = true
     }
   }

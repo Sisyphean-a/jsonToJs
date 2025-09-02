@@ -21,9 +21,9 @@
 
 <script setup>
 import { ref, computed, watch, nextTick } from 'vue'
-import CodeEditor from '@/components/CodeEditor.vue'
-import { useErrorHandler } from '@/composables/useErrorHandler.js'
-import { EDITOR_CONFIG } from '@/constants/app-config.js'
+import CodeEditor from './CodeEditor.vue'
+import { useErrorHandler } from '@/shared/composables/useErrorHandler.js'
+import { EDITOR_CONFIG } from '@/shared/constants/app-config.js'
 
 const props = defineProps({
   modelValue: {

@@ -6,8 +6,8 @@
 
 <script setup>
 import { ref, computed, readonly } from 'vue'
-import { useErrorHandler } from '@/composables/useErrorHandler.js'
-import { SECURITY_CONFIG, EDITOR_CONFIG } from '@/constants/app-config.js'
+import { useErrorHandler } from '@/shared/composables/useErrorHandler.js'
+import { SECURITY_CONFIG, EDITOR_CONFIG } from '@/shared/constants/app-config.js'
 import jsonpath from 'jsonpath'
 
 const props = defineProps({

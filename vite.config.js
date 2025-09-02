@@ -20,6 +20,9 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
+        '@/components': fileURLToPath(new URL('./src/components', import.meta.url)),
+        '@/features': fileURLToPath(new URL('./src/features', import.meta.url)),
+        '@/shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
       },
     },
     build: {

@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import ResizableContainer from '@/components/ResizableContainer.vue'
+import ResizableContainer from './ResizableContainer.vue'
 
 const props = defineProps({
   columnCount: {

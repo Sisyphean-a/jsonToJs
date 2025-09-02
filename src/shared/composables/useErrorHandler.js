@@ -4,7 +4,7 @@
  */
 
 import { ref, reactive, computed, readonly } from 'vue'
-import { ERROR_CONFIG } from '@/constants/app-config.js'
+import { ERROR_CONFIG } from '@/shared/constants/app-config.js'
 
 // 全局错误状态
 const globalErrors = ref([])

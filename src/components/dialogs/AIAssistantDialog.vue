@@ -157,7 +157,7 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue'
-import ModalHeader from '@/components/ModalHeader.vue'
+import ModalHeader from '@/components/base/ModalHeader.vue'
 
 const props = defineProps({
   modelValue: {

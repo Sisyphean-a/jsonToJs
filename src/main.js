@@ -40,7 +40,7 @@ import {
 import * as directives from 'vuetify/directives'
 
 // 使用自定义轻量级图标配置
-import { customSvgIconSet } from './utils/icons.js'
+import { customSvgIconSet } from '@/shared/utils/icons.js'
 
 import App from './App.vue'
 import router from './router'

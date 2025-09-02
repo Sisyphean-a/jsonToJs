@@ -34,9 +34,9 @@
 
 <script setup>
 import { ref, onUnmounted, computed } from 'vue'
-import ColumnHeader from '@/components/ColumnHeader.vue'
-import RowHeader from '@/components/RowHeader.vue'
-import { UI_CONFIG } from '@/constants/ui-config.js'
+import ColumnHeader from './ColumnHeader.vue'
+import RowHeader from './RowHeader.vue'
+import { UI_CONFIG } from '@/shared/constants/ui-config.js'
 
 // 注册组件
 const components = {

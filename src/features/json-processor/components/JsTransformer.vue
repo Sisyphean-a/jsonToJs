@@ -64,15 +64,15 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useJsonContext } from '@/composables/useJsonContext.js'
+import { useJsonContext } from '../composables/useJsonContext.js'
 import CodeEditorWrapper from './CodeEditorWrapper.vue'
 import ActionButtons from './ActionButtons.vue'
 import ErrorDisplay from './ErrorDisplay.vue'
 import CodeExecutor from './CodeExecutor.vue'
-import CommonCodeDialog from '@/components/CommonCodeDialog.vue'
-import AIAssistantDialog from '@/components/AIAssistantDialog.vue'
-import { useErrorHandler } from '@/composables/useErrorHandler.js'
-import { EDITOR_CONFIG } from '@/constants/app-config.js'
+import CommonCodeDialog from '@/components/dialogs/CommonCodeDialog.vue'
+import AIAssistantDialog from '@/components/dialogs/AIAssistantDialog.vue'
+import { useErrorHandler } from '@/shared/composables/useErrorHandler.js'
+import { EDITOR_CONFIG } from '@/shared/constants/app-config.js'
 
 // 使用JSON上下文
 const {

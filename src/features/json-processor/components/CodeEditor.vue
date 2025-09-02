@@ -12,7 +12,7 @@ import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { EditorState } from '@codemirror/state'
 import { EditorView, keymap } from '@codemirror/view'
 import { undo, redo } from '@codemirror/commands'
-import { createEditorExtensions, formatCode as formatCodeUtil } from '../utils/editorUtils'
+import { createEditorExtensions, formatCode as formatCodeUtil } from '@/shared/utils/editorUtils'
 
 const props = defineProps({
   modelValue: {

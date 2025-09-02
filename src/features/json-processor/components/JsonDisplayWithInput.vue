@@ -47,8 +47,8 @@
 
 <script setup>
 import { ref, computed, watch, onUnmounted } from 'vue'
-import { useJsonContext } from '@/composables/useJsonContext.js'
-import JsonView from '@/views/jsonToJs/components/JsonView.vue'
+import { useJsonContext } from '../composables/useJsonContext.js'
+import JsonView from './JsonView.vue'
 
 // 使用JSON上下文，不再需要props和emits
 const { jsonState, updateJsonInput, hasValidJson } = useJsonContext()

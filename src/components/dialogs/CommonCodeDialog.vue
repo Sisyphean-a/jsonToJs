@@ -104,11 +104,11 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { getCodesByType } from '../utils/commonCodes'
+import { getCodesByType } from '@/shared/utils/commonCodes'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github.css'
-import BaseModal from './BaseModal.vue'
-import ModalHeader from './ModalHeader.vue'
+import BaseModal from '@/components/base/BaseModal.vue'
+import ModalHeader from '@/components/base/ModalHeader.vue'
 
 const props = defineProps({
   modelValue: {

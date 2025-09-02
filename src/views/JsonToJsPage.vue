@@ -16,12 +16,12 @@
 
 <script setup>
 import { onMounted } from 'vue'
-import { provideJsonContext } from '@/composables/useJsonContext.js'
+import { provideJsonContext } from '@/features/json-processor/composables/useJsonContext.js'
 import { usePageStateStore } from '@/stores/pageState.js'
-import ResizableLayout from '@/components/ResizableLayout.vue'
-import JsonDisplayWithInput from '@/components/JsonDisplayWithInput.vue'
-import JsTransformer from './components/JsTransformer.vue'
-import JsonResultDisplay from './components/JsonResultDisplay.vue'
+import ResizableLayout from '@/components/layout/ResizableLayout.vue'
+import JsonDisplayWithInput from '@/features/json-processor/components/JsonDisplayWithInput.vue'
+import JsTransformer from '@/features/json-processor/components/JsTransformer.vue'
+import JsonResultDisplay from '@/features/json-processor/components/JsonResultDisplay.vue'
 
 // 提供上下文，子组件可以直接使用
 provideJsonContext()

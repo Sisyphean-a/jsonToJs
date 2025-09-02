@@ -6,7 +6,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'Home',
-      component: () => import('../views/jsonToJs/index.vue'),
+      component: () => import('../views/JsonToJsPage.vue'),
       meta: {
         title: 'JSON转JS',
         description: '使用JS处理JSON',

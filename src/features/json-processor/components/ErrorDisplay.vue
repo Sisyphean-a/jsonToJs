@@ -83,19 +83,17 @@
               <div class="error-detail-item">
                 <strong>时间:</strong> {{ formatTime(latestError.timestamp) }}
               </div>
-              <div class="error-detail-item">
-                <strong>类型:</strong> {{ latestError.type }}
-              </div>
+              <div class="error-detail-item"><strong>类型:</strong> {{ latestError.type }}</div>
               <div class="error-detail-item">
                 <strong>上下文:</strong> {{ latestError.context }}
               </div>
               <div class="error-detail-item">
-                <strong>严重程度:</strong> 
+                <strong>严重程度:</strong>
                 <span :class="`severity-${latestError.severity}`">
                   {{ getSeverityText(latestError.severity) }}
                 </span>
               </div>
-              
+
               <div
                 v-if="latestError.stack && showStack"
                 class="error-detail-item"
@@ -103,13 +101,15 @@
                 <strong>堆栈信息:</strong>
                 <pre class="error-stack">{{ latestError.stack }}</pre>
               </div>
-              
+
               <div
                 v-if="latestError.metadata && Object.keys(latestError.metadata).length"
                 class="error-detail-item"
               >
                 <strong>元数据:</strong>
-                <pre class="error-metadata">{{ JSON.stringify(latestError.metadata, null, 2) }}</pre>
+                <pre class="error-metadata">{{
+                  JSON.stringify(latestError.metadata, null, 2)
+                }}</pre>
               </div>
             </div>
           </div>
@@ -121,7 +121,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { ERROR_CONFIG } from '@/constants/app-config.js'
+import { ERROR_CONFIG } from '@/shared/constants/app-config.js'
 
 const props = defineProps({
   errors: {
@@ -167,7 +167,7 @@ const errorClasses = computed(() => {
 // 方法
 const getErrorIcon = (error) => {
   if (!error) return 'mdi-alert-circle'
-  
+
   switch (error.type) {
     case ERROR_CONFIG.types.PARSE_ERROR:
       return 'mdi-code-braces'
@@ -184,7 +184,7 @@ const getErrorIcon = (error) => {
 
 const getErrorColor = (error) => {
   if (!error) return 'error'
-  
+
   switch (error.severity) {
     case 'high':
       return 'error'
@@ -199,7 +199,7 @@ const getErrorColor = (error) => {
 
 const getErrorTitle = (error) => {
   if (!error) return '错误'
-  
+
   switch (error.type) {
     case ERROR_CONFIG.types.PARSE_ERROR:
       return '解析错误'
@@ -273,7 +273,7 @@ defineExpose({
     .error-header {
       padding: var(--spacing-sm, 8px) var(--spacing-md, 12px);
     }
-    
+
     .error-content {
       padding: 0 var(--spacing-md, 12px) var(--spacing-sm, 8px);
     }
@@ -282,11 +282,11 @@ defineExpose({
   &--minimal {
     border: none;
     background: transparent;
-    
+
     .error-header {
       padding: var(--spacing-xs, 4px) 0;
     }
-    
+
     .error-content {
       padding: 0;
     }
@@ -336,11 +336,11 @@ defineExpose({
   border-radius: var(--radius-sm, 4px);
   color: var(--color-error, #ef4444);
   transition: all var(--transition-fast, 0.15s);
-  
+
   &:hover {
     background: rgba(239, 68, 68, 0.1);
   }
-  
+
   &.error-clear-btn:hover {
     background: var(--color-error, #ef4444);
     color: white;
@@ -381,7 +381,7 @@ defineExpose({
   border-radius: var(--radius-sm, 4px);
   margin-bottom: var(--spacing-xs, 4px);
   background: rgba(239, 68, 68, 0.05);
-  
+
   &--latest {
     background: rgba(239, 68, 68, 0.1);
     border: 1px solid rgba(239, 68, 68, 0.2);
@@ -422,7 +422,7 @@ defineExpose({
 
 .error-detail-item {
   margin-bottom: var(--spacing-xs, 4px);
-  
+
   strong {
     color: var(--text-primary, #1f2937);
   }

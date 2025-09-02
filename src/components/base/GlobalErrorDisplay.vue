@@ -52,9 +52,9 @@
                 </button>
               </div>
             </div>
-            
+
             <div class="error-message">{{ error.message }}</div>
-            
+
             <transition name="error-details">
               <div
                 v-if="showDetails[error.id]"
@@ -63,12 +63,8 @@
                 <div class="error-detail-item">
                   <strong>时间:</strong> {{ formatTime(error.timestamp) }}
                 </div>
-                <div class="error-detail-item">
-                  <strong>类型:</strong> {{ error.type }}
-                </div>
-                <div class="error-detail-item">
-                  <strong>严重程度:</strong> {{ error.severity }}
-                </div>
+                <div class="error-detail-item"><strong>类型:</strong> {{ error.type }}</div>
+                <div class="error-detail-item"><strong>严重程度:</strong> {{ error.severity }}</div>
                 <div
                   v-if="error.stack"
                   class="error-detail-item"
@@ -88,7 +84,7 @@
           </div>
         </div>
       </transition-group>
-      
+
       <div
         v-if="hasMoreErrors"
         class="error-summary"
@@ -107,8 +103,8 @@
 
 <script setup>
 import { ref, computed, reactive } from 'vue'
-import { useGlobalErrors } from '@/composables/useErrorHandler.js'
-import { ERROR_CONFIG } from '@/constants/app-config.js'
+import { useGlobalErrors } from '@/shared/composables/useErrorHandler.js'
+import { ERROR_CONFIG } from '@/shared/constants/app-config.js'
 
 const props = defineProps({
   position: {
@@ -152,10 +148,7 @@ const hiddenErrorsCount = computed(() => {
 })
 
 const containerClasses = computed(() => {
-  return [
-    'global-error-container',
-    `global-error-container--${props.position}`,
-  ]
+  return ['global-error-container', `global-error-container--${props.position}`]
 })
 
 // 方法
@@ -220,18 +213,18 @@ const toggleDetails = (errorId) => {
 
 const removeError = (errorId) => {
   // 从全局错误中移除
-  const index = globalErrors.value.findIndex(error => error.id === errorId)
+  const index = globalErrors.value.findIndex((error) => error.id === errorId)
   if (index !== -1) {
     globalErrors.value.splice(index, 1)
   }
-  
+
   // 清理详情显示状态
   delete showDetails[errorId]
 }
 
 const clearAllErrors = () => {
   clearGlobalErrors()
-  Object.keys(showDetails).forEach(key => {
+  Object.keys(showDetails).forEach((key) => {
     delete showDetails[key]
   })
   showAllErrors.value = false
@@ -252,22 +245,22 @@ defineExpose({
   max-height: 80vh;
   overflow-y: auto;
   pointer-events: none;
-  
+
   &--top-right {
     top: var(--spacing-lg, 16px);
     right: var(--spacing-lg, 16px);
   }
-  
+
   &--top-left {
     top: var(--spacing-lg, 16px);
     left: var(--spacing-lg, 16px);
   }
-  
+
   &--bottom-right {
     bottom: var(--spacing-lg, 16px);
     right: var(--spacing-lg, 16px);
   }
-  
+
   &--bottom-left {
     bottom: var(--spacing-lg, 16px);
     left: var(--spacing-lg, 16px);
@@ -287,19 +280,19 @@ defineExpose({
   border-left: 4px solid var(--color-error, #ef4444);
   pointer-events: auto;
   transition: all var(--transition-normal, 0.3s);
-  
+
   &--high {
     border-left-color: var(--color-error, #ef4444);
   }
-  
+
   &--medium {
     border-left-color: var(--color-warning, #f59e0b);
   }
-  
+
   &--low {
     border-left-color: var(--color-info, #3b82f6);
   }
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-xl, 0 20px 40px rgba(0, 0, 0, 0.2));
@@ -353,12 +346,12 @@ defineExpose({
   border-radius: var(--radius-sm, 4px);
   color: var(--text-secondary, #6b7280);
   transition: all var(--transition-fast, 0.15s);
-  
+
   &:hover {
     background: var(--bg-secondary, #f3f4f6);
     color: var(--text-primary, #1f2937);
   }
-  
+
   &.error-close-btn:hover {
     background: var(--color-error-light, #fef2f2);
     color: var(--color-error, #ef4444);
@@ -381,7 +374,7 @@ defineExpose({
 .error-detail-item {
   margin-bottom: var(--spacing-xs, 4px);
   font-size: var(--font-size-xs, 12px);
-  
+
   strong {
     color: var(--text-primary, #1f2937);
   }
