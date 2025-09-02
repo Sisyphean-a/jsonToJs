@@ -1,5 +1,5 @@
 // 只导入项目中实际使用的图标，减少打包体积
-import { h } from 'vue'
+import { h, defineComponent } from 'vue'
 import {
   mdiHome,
   mdiCodeTags,
@@ -57,22 +57,36 @@ export const icons = {
 
 // SVG图标集配置
 export const customSvgIconSet = {
-  component: (props) => {
-    const iconPath = icons[props.icon] || icons['mdi-help-circle']
-    if (!iconPath) {
-      console.warn(`图标 ${props.icon} 未找到`)
-      return null
-    }
+  component: defineComponent({
+    name: 'CustomIcon',
+    props: {
+      icon: String,
+      size: [String, Number],
+    },
+    setup(props) {
+      return () => {
+        const iconPath = icons[props.icon] || icons['mdi-help-circle']
+        if (!iconPath) {
+          console.warn(`图标 ${props.icon} 未找到`)
+          return null
+        }
 
-    return h(
-      'svg',
-      {
-        width: '24',
-        height: '24',
-        viewBox: '0 0 24 24',
-        fill: 'currentColor',
-      },
-      [h('path', { d: iconPath })],
-    )
-  },
+        const size = props.size || '24'
+        return h(
+          'svg',
+          {
+            width: size,
+            height: size,
+            viewBox: '0 0 24 24',
+            fill: 'currentColor',
+            style: {
+              display: 'inline-block',
+              verticalAlign: 'middle',
+            },
+          },
+          [h('path', { d: iconPath })],
+        )
+      }
+    },
+  }),
 }
