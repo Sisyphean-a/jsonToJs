@@ -68,9 +68,8 @@
   --spacing-5xl: 48px;
 
   /* 字体系统 */
-  --font-family-base:
-    Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
-    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-family-base: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   --font-family-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'SF Mono', monospace;
 
   --font-size-xs: 11px;
@@ -93,8 +92,6 @@
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 8px 25px -5px rgba(30, 41, 59, 0.12), 0 4px 10px -5px rgba(30, 41, 59, 0.08);
   --shadow-xl: 0 20px 40px -8px rgba(0, 0, 0, 0.3);
-  --shadow-button: 0 2px 8px rgba(30, 58, 138, 0.3);
-  --shadow-button-hover: 0 4px 12px rgba(30, 58, 138, 0.4);
 
   /* 边框圆角 */
   --radius-xs: 3px;
@@ -123,11 +120,6 @@
   --breakpoint-xl: 1280px;
 
   /* 组件特定尺寸 */
-  --button-height-sm: 28px;
-  --button-height-md: 32px;
-  --button-height-lg: 36px;
-  --button-height-xl: 40px;
-
   --input-height-sm: 32px;
   --input-height-md: 36px;
   --input-height-lg: 40px;
