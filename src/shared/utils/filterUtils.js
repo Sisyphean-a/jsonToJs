@@ -241,7 +241,7 @@ export function generateFilterCode(filterConfig) {
 }
 
 /**
- * 执行筛选代码
+ * 安全执行筛选代码 - Chrome扩展兼容版本
  * @param {string} code - 要执行的JavaScript代码
  * @param {any} json - JSON数据
  * @returns {Promise<any>} 执行结果
@@ -249,26 +249,256 @@ export function generateFilterCode(filterConfig) {
 export async function executeFilterCode(code, json) {
   return new Promise((resolve, reject) => {
     try {
-      // 创建安全的执行环境
-      const func = new Function(
-        'json',
-        'jsonpath',
-        `
-        try {
-          ${code}
-        } catch (error) {
-          throw new Error('筛选执行错误: ' + error.message);
-        }
-      `,
-      )
-
-      // 执行代码
-      const result = func(json, window.jsonpath)
+      // 解析生成的代码，提取关键信息
+      const result = executeFilterCodeSafely(code, json)
       resolve(result)
     } catch (error) {
-      reject(error)
+      reject(new Error('筛选执行错误: ' + error.message))
     }
   })
+}
+
+/**
+ * 安全执行筛选代码的实现
+ * @param {string} code - 生成的筛选代码
+ * @param {any} json - JSON数据
+ * @returns {any} 执行结果
+ */
+function executeFilterCodeSafely(code, json) {
+  // 解析代码中的关键参数
+  const codeAnalysis = analyzeFilterCode(code)
+
+  if (codeAnalysis.type === 'specified') {
+    return executeSpecifiedLevelFilter(codeAnalysis, json)
+  } else if (codeAnalysis.type === 'recursive') {
+    return executeRecursiveFilter(codeAnalysis, json)
+  } else {
+    throw new Error('无法识别的筛选代码类型')
+  }
+}
+
+/**
+ * 分析筛选代码，提取执行参数
+ * @param {string} code - 筛选代码
+ * @returns {Object} 分析结果
+ */
+function analyzeFilterCode(code) {
+  // 提取keys数组
+  const keysMatch = code.match(/const keys = \[(.*?)\]/)
+  if (!keysMatch) {
+    throw new Error('无法解析筛选字段')
+  }
+
+  const keys = keysMatch[1]
+    .split(',')
+    .map(key => key.trim().replace(/['"]/g, ''))
+    .filter(key => key.length > 0)
+
+  // 判断是否为递归筛选
+  if (code.includes('function findAllValues') || code.includes('function collectAllValues')) {
+    const isGrouped = code.includes('keys.reduce((acc, key)')
+    return {
+      type: 'recursive',
+      keys,
+      outputFormat: isGrouped ? 'grouped' : 'object'
+    }
+  }
+
+  // 指定层级筛选
+  const targetDataMatch = code.match(/const targetData = (.+)/)
+  let targetPath = 'json'
+  if (targetDataMatch) {
+    targetPath = targetDataMatch[1].trim()
+  }
+
+  const isGrouped = code.includes('collectFieldValues')
+  return {
+    type: 'specified',
+    keys,
+    targetPath,
+    outputFormat: isGrouped ? 'grouped' : 'object'
+  }
+}
+
+/**
+ * 执行指定层级筛选
+ * @param {Object} analysis - 代码分析结果
+ * @param {any} json - JSON数据
+ * @returns {any} 筛选结果
+ */
+function executeSpecifiedLevelFilter(analysis, json) {
+  const { keys, targetPath, outputFormat } = analysis
+
+  // 获取目标数据
+  const targetData = getDataByPath(json, targetPath)
+
+  if (outputFormat === 'grouped') {
+    return keys.reduce((acc, key) => {
+      acc[key] = collectFieldValues(targetData, key)
+      return acc
+    }, {})
+  }
+
+  // 对象格式
+  if (Array.isArray(targetData)) {
+    return targetData.map((item) => {
+      const result = {}
+      keys.forEach((key) => {
+        if (item && typeof item === 'object' && key in item) {
+          result[key] = item[key]
+        }
+      })
+      return result
+    })
+  }
+
+  if (targetData && typeof targetData === 'object') {
+    const result = {}
+    keys.forEach((key) => {
+      if (key in targetData) {
+        result[key] = targetData[key]
+      }
+    })
+    return [result]
+  }
+
+  return []
+}
+
+/**
+ * 执行递归筛选
+ * @param {Object} analysis - 代码分析结果
+ * @param {any} json - JSON数据
+ * @returns {any} 筛选结果
+ */
+function executeRecursiveFilter(analysis, json) {
+  const { keys, outputFormat } = analysis
+
+  if (outputFormat === 'grouped') {
+    return keys.reduce((acc, key) => {
+      acc[key] = findAllValues(json, key)
+      return acc
+    }, {})
+  }
+
+  // 对象格式
+  const results = []
+  const visited = new Set()
+
+  function collectObjects(data, path = '') {
+    if (!data || typeof data !== 'object' || visited.has(data)) {
+      return
+    }
+    visited.add(data)
+
+    if (Array.isArray(data)) {
+      data.forEach((item, index) => {
+        collectObjects(item, `${path}[${index}]`)
+      })
+    } else {
+      const hasTargetKeys = keys.some(key => key in data)
+      if (hasTargetKeys) {
+        const result = {}
+        keys.forEach(key => {
+          if (key in data) {
+            result[key] = data[key]
+          }
+        })
+        if (Object.keys(result).length > 0) {
+          results.push(result)
+        }
+      }
+
+      Object.keys(data).forEach(key => {
+        collectObjects(data[key], path ? `${path}.${key}` : key)
+      })
+    }
+  }
+
+  collectObjects(json)
+  return results
+}
+
+/**
+ * 根据路径获取数据
+ * @param {any} data - 源数据
+ * @param {string} path - 访问路径
+ * @returns {any} 目标数据
+ */
+function getDataByPath(data, path) {
+  if (path === 'json') {
+    return data
+  }
+
+  // 解析路径（简化版本，支持基本的属性访问）
+  const cleanPath = path.replace(/^json\.?/, '')
+  if (!cleanPath) {
+    return data
+  }
+
+  const parts = cleanPath.split('.')
+  let current = data
+
+  for (const part of parts) {
+    if (current == null) {
+      return null
+    }
+    current = current[part]
+  }
+
+  return current
+}
+
+/**
+ * 收集字段值
+ * @param {any} data - 数据源
+ * @param {string} fieldName - 字段名
+ * @returns {Array} 字段值数组
+ */
+function collectFieldValues(data, fieldName) {
+  if (!data) return []
+
+  if (Array.isArray(data)) {
+    return data.flatMap(item =>
+      item && typeof item === 'object' && fieldName in item ? [item[fieldName]] : []
+    )
+  }
+
+  if (typeof data === 'object' && fieldName in data) {
+    return [data[fieldName]]
+  }
+
+  return []
+}
+
+/**
+ * 递归查找所有指定字段的值
+ * @param {any} data - 数据源
+ * @param {string} key - 要查找的字段名
+ * @returns {Array} 找到的所有值
+ */
+function findAllValues(data, key) {
+  const results = []
+  const visited = new Set()
+
+  function search(obj) {
+    if (!obj || typeof obj !== 'object' || visited.has(obj)) {
+      return
+    }
+    visited.add(obj)
+
+    if (Array.isArray(obj)) {
+      obj.forEach(item => search(item))
+    } else {
+      if (key in obj) {
+        results.push(obj[key])
+      }
+      Object.values(obj).forEach(value => search(value))
+    }
+  }
+
+  search(data)
+  return results
 }
 
 /**
