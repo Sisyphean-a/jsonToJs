@@ -68,7 +68,7 @@ const { jsonState, updateJsonInput, addSelectedKey } = useJsonContext()
 
 // 本地状态只管理UI相关的
 const localJsonInput = ref('')
-const inputHeight = ref(200) // 默认输入区域高度
+const inputHeight = ref(300) // 默认输入区域高度
 const isResizing = ref(false)
 const startY = ref(0)
 const startHeight = ref(0)

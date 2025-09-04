@@ -19,6 +19,7 @@ export const useJsonProcessorStore = defineStore('jsonProcessor', () => {
     // 筛选配置
     filterConfig: {
       method: 'recursive', // 'specified' | 'recursive' - 默认使用递归筛选，更适合对象结构
+      outputFormat: 'object', // 'object' | 'grouped' - 输出格式：对象格式或字段分组格式
       listPath: 'json', // 数组路径
       selectedKeys: [], // 已选字段
       autoExecute: true, // 自动执行

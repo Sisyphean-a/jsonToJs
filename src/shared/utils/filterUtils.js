@@ -57,18 +57,47 @@ export function generatePathAccessCode(path) {
  * 生成指定层级筛选的JavaScript代码
  * @param {string} listPath - 数组路径，如 'json.data'
  * @param {string[]} selectedKeys - 要提取的字段列表
+ * @param {string} outputFormat - 输出格式 'object' | 'grouped'
  * @returns {string} 生成的JavaScript代码
  */
-export function generateSpecifiedLevelFilterCode(listPath, selectedKeys) {
+export function generateSpecifiedLevelFilterCode(listPath, selectedKeys, outputFormat = 'object') {
   if (!selectedKeys || selectedKeys.length === 0) {
-    return 'return []'
+    return outputFormat === 'object' ? 'return []' : 'return {}'
   }
 
   const keysArray = selectedKeys.map((key) => `'${key}'`).join(', ')
-
-  // 解析路径，生成正确的访问代码
   const listAccessCode = generatePathAccessCode(listPath || 'json')
 
+  if (outputFormat === 'grouped') {
+    // 字段分组格式：从指定路径收集字段值
+    return `
+const targetData = ${listAccessCode}
+const keys = [${keysArray}]
+
+const collectFieldValues = (data, fieldName) => {
+  if (!data) return []
+
+  if (Array.isArray(data)) {
+    return data.flatMap(item =>
+      item && typeof item === 'object' && fieldName in item ? [item[fieldName]] : []
+    )
+  }
+
+  if (typeof data === 'object' && fieldName in data) {
+    return [data[fieldName]]
+  }
+
+  return []
+}
+
+return keys.reduce((acc, key) => {
+  acc[key] = collectFieldValues(targetData, key)
+  return acc
+}, {})
+    `.trim()
+  }
+
+  // 对象格式：保持原有逻辑
   return `
 const targetData = ${listAccessCode}
 const keys = [${keysArray}]
@@ -105,15 +134,60 @@ throw new Error('指定的路径既不是数组也不是对象类型')
 /**
  * 生成递归深度筛选的JavaScript代码
  * @param {string[]} selectedKeys - 要搜索的字段列表
+ * @param {string} outputFormat - 输出格式 'object' | 'grouped'
  * @returns {string} 生成的JavaScript代码
  */
-export function generateRecursiveFilterCode(selectedKeys) {
+export function generateRecursiveFilterCode(selectedKeys, outputFormat = 'grouped') {
   if (!selectedKeys || selectedKeys.length === 0) {
-    return 'return {}'
+    return outputFormat === 'object' ? 'return []' : 'return {}'
   }
 
   const keysArray = selectedKeys.map((key) => `'${key}'`).join(', ')
 
+  if (outputFormat === 'object') {
+    // 对象格式：递归查找并构造对象数组
+    return `
+const keys = [${keysArray}]
+
+const findObjectsWithKeys = (obj, targetKeys, path = '') => {
+  if (!obj || typeof obj !== 'object') return []
+
+  const results = []
+
+  // 检查当前对象是否包含所需字段
+  const hasTargetKeys = targetKeys.some(key => key in obj)
+  if (hasTargetKeys) {
+    const result = {}
+    targetKeys.forEach(key => {
+      if (key in obj) {
+        result[key] = obj[key]
+      }
+    })
+    // 只有当结果对象不为空时才添加
+    if (Object.keys(result).length > 0) {
+      results.push(result)
+    }
+  }
+
+  // 递归搜索子对象和数组
+  Object.values(obj).forEach(value => {
+    if (Array.isArray(value)) {
+      value.forEach(item => {
+        results.push(...findObjectsWithKeys(item, targetKeys, path))
+      })
+    } else if (value && typeof value === 'object') {
+      results.push(...findObjectsWithKeys(value, targetKeys, path))
+    }
+  })
+
+  return results
+}
+
+return findObjectsWithKeys(json, keys)
+    `.trim()
+  }
+
+  // 字段分组格式：保持原有逻辑
   return `
 const objList = [${keysArray}]
 
@@ -121,7 +195,7 @@ const getValues = (obj, key) => {
   if (!obj || typeof obj !== 'object') {
     return []
   }
-  
+
   return Object.entries(obj).flatMap(([k, v]) =>
     k === key
       ? [v]
@@ -144,12 +218,13 @@ return objList.reduce((acc, current) => {
  * 根据筛选配置生成对应的JavaScript代码
  * @param {Object} filterConfig - 筛选配置
  * @param {string} filterConfig.method - 筛选方式 'specified' | 'recursive'
+ * @param {string} filterConfig.outputFormat - 输出格式 'object' | 'grouped'
  * @param {string} filterConfig.listPath - 数组路径（仅指定层级筛选使用）
  * @param {string[]} filterConfig.selectedKeys - 已选字段
  * @returns {string} 生成的JavaScript代码
  */
 export function generateFilterCode(filterConfig) {
-  const { method, listPath, selectedKeys } = filterConfig
+  const { method, outputFormat = 'grouped', listPath, selectedKeys } = filterConfig
 
   if (!selectedKeys || selectedKeys.length === 0) {
     return 'return null // 请先选择要筛选的字段'
@@ -157,9 +232,9 @@ export function generateFilterCode(filterConfig) {
 
   switch (method) {
     case 'specified':
-      return generateSpecifiedLevelFilterCode(listPath || 'json', selectedKeys)
+      return generateSpecifiedLevelFilterCode(listPath || 'json', selectedKeys, outputFormat)
     case 'recursive':
-      return generateRecursiveFilterCode(selectedKeys)
+      return generateRecursiveFilterCode(selectedKeys, outputFormat)
     default:
       throw new Error(`未知的筛选方式: ${method}`)
   }
@@ -209,11 +284,16 @@ export function validateFilterConfig(filterConfig) {
     return { isValid: false, errors }
   }
 
-  const { method, listPath, selectedKeys } = filterConfig
+  const { method, outputFormat, listPath, selectedKeys } = filterConfig
 
   // 验证筛选方式
   if (!['specified', 'recursive'].includes(method)) {
     errors.push('筛选方式必须是 "specified" 或 "recursive"')
+  }
+
+  // 验证输出格式
+  if (outputFormat && !['object', 'grouped'].includes(outputFormat)) {
+    errors.push('输出格式必须是 "object" 或 "grouped"')
   }
 
   // 验证已选字段
@@ -243,13 +323,13 @@ export function getFilterMethodInfo(method) {
   const methodInfo = {
     specified: {
       name: '指定层级筛选',
-      description: '从指定的数组路径中提取字段，保持原数组格式',
+      description: '从指定的数组路径中提取字段',
       example: '适用于有明确数组结构的JSON数据',
       needsPath: true,
     },
     recursive: {
       name: '递归深度筛选',
-      description: '递归搜索整个JSON中的指定字段，以统计格式输出',
+      description: '递归搜索整个JSON中的指定字段',
       example: '适用于复杂嵌套结构中收集同名字段',
       needsPath: false,
     },
@@ -261,6 +341,34 @@ export function getFilterMethodInfo(method) {
       description: '',
       example: '',
       needsPath: false,
+    }
+  )
+}
+
+/**
+ * 获取输出格式的描述信息
+ * @param {string} outputFormat - 输出格式
+ * @returns {Object} 描述信息
+ */
+export function getOutputFormatInfo(outputFormat) {
+  const formatInfo = {
+    object: {
+      name: '对象格式',
+      description: '保持原始对象结构，输出对象数组',
+      example: '[{name: "张三", age: 25}, {name: "李四", age: 30}]',
+    },
+    grouped: {
+      name: '字段分组格式',
+      description: '按字段分组，输出字段值数组',
+      example: '{name: ["张三", "李四"], age: [25, 30]}',
+    },
+  }
+
+  return (
+    formatInfo[outputFormat] || {
+      name: '未知输出格式',
+      description: '',
+      example: '',
     }
   )
 }

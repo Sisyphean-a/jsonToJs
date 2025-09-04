@@ -5,70 +5,97 @@
       elevation="2"
     >
       <v-card-text class="filter-content">
-        <!-- 筛选方式选择 -->
-        <div class="filter-method-section">
-          <div class="method-row">
-            <span class="section-label">筛选方式：</span>
-            <div class="method-buttons">
+        <!-- 筛选配置区域 -->
+        <div class="filter-config-section">
+          <div class="config-row">
+            <span class="config-label">筛选</span>
+            <v-btn-toggle
+              v-model="methodToggle"
+              mandatory
+              density="compact"
+              color="primary"
+              class="config-toggle"
+            >
               <v-btn
-                :variant="localFilterConfig.method === 'specified' ? 'flat' : 'outlined'"
-                :color="localFilterConfig.method === 'specified' ? 'primary' : 'default'"
-                @click="updateFilterMethod('specified')"
+                value="specified"
                 size="small"
-                density="compact"
-                class="method-btn"
               >
-                指定层级筛选
+                指定
               </v-btn>
               <v-btn
-                :variant="localFilterConfig.method === 'recursive' ? 'flat' : 'outlined'"
-                :color="localFilterConfig.method === 'recursive' ? 'primary' : 'default'"
-                @click="updateFilterMethod('recursive')"
+                value="recursive"
                 size="small"
-                density="compact"
-                class="method-btn"
               >
-                递归深度筛选
+                递归
               </v-btn>
-            </div>
+            </v-btn-toggle>
+
+            <span class="config-label">格式</span>
+            <v-btn-toggle
+              v-model="formatToggle"
+              mandatory
+              density="compact"
+              color="primary"
+              class="config-toggle"
+            >
+              <v-btn
+                value="object"
+                size="small"
+              >
+                对象
+              </v-btn>
+              <v-btn
+                value="grouped"
+                size="small"
+              >
+                分组
+              </v-btn>
+            </v-btn-toggle>
           </div>
         </div>
 
         <!-- 数组路径配置 (仅指定层级筛选时显示) -->
-        <div
+        <v-row
           v-if="localFilterConfig.method === 'specified'"
+          dense
           class="array-path-section"
         >
-          <div class="section-label">数组路径</div>
-          <v-text-field
-            v-model="localFilterConfig.listPath"
-            @update:model-value="updateListPath"
-            placeholder="json"
-            density="compact"
-            variant="outlined"
-            hint="指定要处理的数组位置，如 json.data"
-            persistent-hint
-          ></v-text-field>
-
-          <!-- 智能推荐 -->
-          <div
-            v-if="smartRecommendation && smartRecommendation.suggestedPaths.length > 1"
-            class="path-suggestions"
+          <v-col cols="auto">
+            <span class="config-label">路径</span>
+          </v-col>
+          <v-col
+            cols="auto"
+            style="min-width: 200px"
           >
-            <div class="suggestion-label">推荐路径：</div>
-            <div class="suggestion-chips">
-              <v-chip
-                v-for="path in smartRecommendation.suggestedPaths"
-                :key="path"
-                @click="selectSuggestedPath(path)"
-                size="small"
-                variant="outlined"
-                color="primary"
-                class="suggestion-chip"
-              >
-                {{ path }}
-              </v-chip>
-            </div>
+            <v-text-field
+              v-model="localFilterConfig.listPath"
+              @update:model-value="updateListPath"
+              placeholder="json"
+              density="compact"
+              variant="outlined"
+              hide-details
+            ></v-text-field>
+          </v-col>
+        </v-row>
+
+        <!-- 智能推荐 -->
+        <div
+          v-if="smartRecommendation && smartRecommendation.suggestedPaths.length > 1"
+          class="path-suggestions"
+        >
+          <div class="suggestion-label">推荐路径：</div>
+          <div class="suggestion-chips">
+            <v-chip
+              v-for="path in smartRecommendation.suggestedPaths"
+              :key="path"
+              @click="selectSuggestedPath(path)"
+              size="small"
+              variant="outlined"
+              color="primary"
+              class="suggestion-chip"
+            >
+              {{ path }}
+            </v-chip>
           </div>
         </div>
 
@@ -149,6 +176,7 @@ const { jsonState, updateFilterConfig, addSelectedKey, removeSelectedKey, clearS
 // 本地状态
 const localFilterConfig = reactive({
   method: jsonState.filterConfig.method,
+  outputFormat: jsonState.filterConfig.outputFormat,
   listPath: jsonState.filterConfig.listPath,
   selectedKeys: [...jsonState.filterConfig.selectedKeys],
 })
@@ -163,11 +191,29 @@ const smartRecommendation = computed(() => {
   return null
 })
 
+// 按钮组状态 - 直接使用computed，简化逻辑
+const methodToggle = computed({
+  get: () => localFilterConfig.method,
+  set: (value) => {
+    localFilterConfig.method = value
+    updateFilterConfig({ method: value })
+  },
+})
+
+const formatToggle = computed({
+  get: () => localFilterConfig.outputFormat,
+  set: (value) => {
+    localFilterConfig.outputFormat = value
+    updateFilterConfig({ outputFormat: value })
+  },
+})
+
 // 监听store状态变化，同步到本地状态
 watch(
   () => jsonState.filterConfig,
   (newConfig) => {
     localFilterConfig.method = newConfig.method
+    localFilterConfig.outputFormat = newConfig.outputFormat
     localFilterConfig.listPath = newConfig.listPath
     localFilterConfig.selectedKeys = [...newConfig.selectedKeys]
   },
@@ -189,10 +235,7 @@ watch(
   { immediate: true },
 )
 
-// 更新筛选方式
-const updateFilterMethod = (method) => {
-  updateFilterConfig({ method })
-}
+// 这些函数已经不需要了，因为使用了computed的setter
 
 // 更新数组路径
 const updateListPath = (listPath) => {
@@ -229,77 +272,143 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
 
 <style lang="scss" scoped>
 .filter-panel {
-  padding: var(--spacing-md);
+  padding: 4px;
 }
 
 .filter-card {
-  border-radius: var(--radius-md);
+  border-radius: 8px;
 }
 
 .filter-content {
-  padding: var(--spacing-md);
+  padding: 16px;
 }
 
-.section-label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-secondary);
-  margin-bottom: var(--spacing-sm);
-  display: inline-block;
-  flex-shrink: 0;
-  white-space: nowrap;
-  min-width: auto;
-  width: auto;
+.filter-config-section {
+  margin-bottom: 16px;
 }
 
-.filter-method-section {
-  margin-bottom: var(--spacing-md);
+.config-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 
-  .method-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-  }
-
-  .section-label {
-    width: 70px;
+  /* 防止子元素过度拉伸 */
+  > * {
     flex-shrink: 0;
-    white-space: nowrap;
-  }
-
-  .method-buttons {
-    display: flex;
-    gap: 4px;
-    flex-shrink: 0;
-  }
-
-  .method-btn {
-    font-size: 12px !important;
-    width: 90px !important;
-    min-width: 90px !important;
-    max-width: 90px !important;
-    padding: 0 4px !important;
-    white-space: nowrap !important;
-    flex-shrink: 0 !important;
-    height: 28px !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
   }
 }
 
 .array-path-section {
-  margin-bottom: var(--spacing-md);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.config-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+  min-width: fit-content;
+  margin-right: 8px;
+  padding: 4px 0;
+
+  /* 添加一些视觉层次 */
+  position: relative;
+
+  &::after {
+    content: ':';
+    margin-left: 2px;
+    color: #9ca3af;
+  }
+}
+
+.config-toggle {
+  /* 确保v-btn-toggle正确显示 */
+  display: inline-flex !important;
+  width: auto !important;
+
+  .v-btn-group {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    border-radius: 6px !important;
+    width: auto !important;
+    overflow: hidden;
+  }
+
+  .v-btn {
+    min-width: 48px !important;
+    max-width: 80px !important;
+    width: auto !important;
+    height: 32px !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    flex: none !important;
+    border-radius: 0 !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+
+    /* 未选中状态 */
+    background-color: #f9fafb !important;
+    color: #6b7280 !important;
+    border: 1px solid #e5e7eb !important;
+
+    &:hover:not(.v-btn--active) {
+      background-color: #f3f4f6 !important;
+      color: #374151 !important;
+    }
+
+    /* 选中状态 */
+    &.v-btn--active {
+      background-color: #3b82f6 !important;
+      color: white !important;
+      border-color: #3b82f6 !important;
+      box-shadow: 0 1px 2px rgba(59, 130, 246, 0.2) !important;
+      z-index: 1;
+      position: relative;
+    }
+
+    /* 第一个按钮 */
+    &:first-child {
+      border-top-left-radius: 6px !important;
+      border-bottom-left-radius: 6px !important;
+    }
+
+    /* 最后一个按钮 */
+    &:last-child {
+      border-top-right-radius: 6px !important;
+      border-bottom-right-radius: 6px !important;
+    }
+
+    /* 中间按钮的边框处理 */
+    &:not(:first-child) {
+      border-left: none !important;
+    }
+
+    &.v-btn--active + .v-btn {
+      border-left: 1px solid #3b82f6 !important;
+    }
+  }
 }
 
 .selected-fields-section {
+  margin-bottom: 16px;
+
   .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--spacing-md);
-    gap: var(--spacing-sm);
+    margin-bottom: 12px;
+    gap: 8px;
     min-height: 32px;
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #666;
+      margin-bottom: 0;
+    }
   }
 
   .clear-btn {
@@ -314,12 +423,12 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: 16px;
   min-height: 32px;
   padding: 8px;
-  border: 1px dashed var(--border-light);
-  border-radius: var(--radius-sm);
-  background: rgba(var(--color-gray-50), 0.3);
+  border: 1px dashed #ddd;
+  border-radius: 4px;
+  background: #f9f9f9;
   align-items: flex-start;
 }
 
@@ -328,11 +437,11 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
   align-items: center;
   gap: 4px;
   padding: 4px 8px;
-  background-color: rgba(var(--color-primary), 0.1);
-  border: 1px solid rgba(var(--color-primary), 0.3);
+  background-color: #e3f2fd;
+  border: 1px solid #90caf9;
   border-radius: 12px;
   font-size: 12px;
-  color: var(--text-primary);
+  color: #333;
   flex-shrink: 0;
   max-width: 200px;
 }
@@ -343,6 +452,7 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
   text-overflow: ellipsis;
   flex: 1;
   min-width: 0;
+  font-weight: 500;
 }
 
 .field-remove {
@@ -352,9 +462,9 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
   width: 16px;
   height: 16px;
   border: none;
-  background: rgba(var(--color-primary), 0.2);
+  background: #bbdefb;
   border-radius: 50%;
-  color: var(--text-primary);
+  color: #f44336;
   cursor: pointer;
   font-size: 12px;
   line-height: 1;
@@ -362,52 +472,40 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(var(--color-primary), 0.3);
+    background: #ffcdd2;
     transform: scale(1.1);
   }
 }
 
 .manual-add-section {
-  margin-top: var(--spacing-md);
+  margin-top: 16px;
 }
 
 .path-suggestions {
-  margin-top: var(--spacing-md);
+  margin-top: 16px;
 
   .suggestion-label {
-    font-size: var(--font-size-xs);
-    color: var(--text-tertiary);
-    margin-bottom: var(--spacing-xs);
+    font-size: 11px;
+    color: #999;
+    margin-bottom: 6px;
   }
 
   .suggestion-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--spacing-xs);
+    gap: 6px;
   }
 
   .suggestion-chip {
+    font-size: 11px !important;
+    height: 20px !important;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: all 0.2s ease;
 
     &:hover {
-      background-color: rgba(var(--color-primary), 0.1);
+      background-color: #e3f2fd;
+      transform: translateY(-1px);
     }
-  }
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .filter-panel {
-    padding: var(--spacing-sm);
-  }
-
-  .filter-content {
-    padding: var(--spacing-md);
-  }
-
-  .fields-list {
-    gap: var(--spacing-xs);
   }
 }
 </style>

@@ -145,6 +145,7 @@ export function provideJsonContext() {
     () => [
       jsonProcessor.state.filterConfig.selectedKeys,
       jsonProcessor.state.filterConfig.method,
+      jsonProcessor.state.filterConfig.outputFormat,
       jsonProcessor.state.filterConfig.listPath,
       jsonProcessor.state.parsedJson,
     ],
