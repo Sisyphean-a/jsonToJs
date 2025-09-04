@@ -283,8 +283,12 @@ function executeFilterCodeSafely(code, json) {
  * @returns {Object} 分析结果
  */
 function analyzeFilterCode(code) {
-  // 提取keys数组
-  const keysMatch = code.match(/const keys = \[(.*?)\]/)
+  // 提取keys数组 - 支持两种变量名：keys 和 objList
+  let keysMatch = code.match(/const keys = \[(.*?)\]/)
+  if (!keysMatch) {
+    keysMatch = code.match(/const objList = \[(.*?)\]/)
+  }
+
   if (!keysMatch) {
     throw new Error('无法解析筛选字段')
   }
@@ -295,8 +299,8 @@ function analyzeFilterCode(code) {
     .filter(key => key.length > 0)
 
   // 判断是否为递归筛选
-  if (code.includes('function findAllValues') || code.includes('function collectAllValues')) {
-    const isGrouped = code.includes('keys.reduce((acc, key)')
+  if (code.includes('function findAllValues') || code.includes('function collectAllValues') || code.includes('const getValues = (obj, key)') || code.includes('const findObjectsWithKeys')) {
+    const isGrouped = code.includes('keys.reduce((acc, key)') || code.includes('objList.reduce((acc, current)')
     return {
       type: 'recursive',
       keys,

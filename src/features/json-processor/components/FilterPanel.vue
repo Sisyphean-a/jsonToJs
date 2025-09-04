@@ -70,17 +70,18 @@
             <v-text-field
               v-model="localFilterConfig.listPath"
               @update:model-value="updateListPath"
-              placeholder="json"
+              placeholder="$"
               density="compact"
               variant="outlined"
               hide-details
+              class="compact-input"
             ></v-text-field>
           </v-col>
         </v-row>
 
         <!-- 智能推荐 -->
         <div
-          v-if="smartRecommendation && smartRecommendation.suggestedPaths.length > 1"
+          v-if="localFilterConfig.method === 'specified' && smartRecommendation && smartRecommendation.suggestedPaths.length > 1"
           class="path-suggestions"
         >
           <div class="suggestion-label">推荐路径：</div>
@@ -101,23 +102,6 @@
 
         <!-- 已选字段管理 -->
         <div class="selected-fields-section">
-          <div class="section-header">
-            <span class="section-label"
-              >已选字段 ({{ localFilterConfig.selectedKeys.length }})</span
-            >
-            <v-btn
-              v-if="localFilterConfig.selectedKeys.length > 0"
-              @click="clearAllFields"
-              size="x-small"
-              variant="text"
-              color="error"
-              density="compact"
-              class="clear-btn"
-            >
-              清空
-            </v-btn>
-          </div>
-
           <!-- 字段列表 -->
           <div class="fields-list">
             <div
@@ -134,6 +118,16 @@
                 ×
               </button>
             </div>
+            <!-- 清空按钮 -->
+            <button
+              v-if="localFilterConfig.selectedKeys.length > 0"
+              @click="clearAllFields"
+              class="clear-all-btn"
+              type="button"
+              title="清空所有字段"
+            >
+              🗑️
+            </button>
           </div>
 
           <!-- 手动添加字段 -->
@@ -145,6 +139,7 @@
               density="compact"
               variant="outlined"
               hide-details
+              class="compact-input"
             >
               <template #append-inner>
                 <v-btn
@@ -394,30 +389,6 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
 
 .selected-fields-section {
   margin-bottom: 16px;
-
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-    gap: 8px;
-    min-height: 32px;
-
-    .section-label {
-      font-size: 13px;
-      font-weight: 500;
-      min-width: 100px;
-      color: #666;
-      margin-bottom: 0;
-    }
-  }
-
-  .clear-btn {
-    flex-shrink: 0;
-    min-width: auto !important;
-    padding: 4px 8px !important;
-    height: 24px !important;
-  }
 }
 
 .fields-list {
@@ -475,6 +446,46 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
   &:hover {
     background: #ffcdd2;
     transform: scale(1.1);
+  }
+}
+
+.clear-all-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: #ffebee;
+  border-radius: 50%;
+  color: #f44336;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  margin-left: auto;
+
+  &:hover {
+    background: #ffcdd2;
+    transform: scale(1.1);
+  }
+}
+
+.compact-input {
+  :deep(.v-field) {
+    min-height: 28px !important;
+
+    .v-field__input {
+      min-height: 28px !important;
+      padding-top: 4px !important;
+      padding-bottom: 4px !important;
+    }
+
+    .v-field__append-inner {
+      padding-top: 4px !important;
+      padding-bottom: 4px !important;
+    }
   }
 }
 
