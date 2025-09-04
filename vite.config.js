@@ -70,15 +70,7 @@ export default defineConfig(({ mode }) => {
               // 将大型库分离成独立的chunk
               'vue-vendor': ['vue', 'vue-router', 'pinia'],
               vuetify: ['vuetify'],
-              codemirror: [
-                'codemirror',
-                '@codemirror/state',
-                '@codemirror/view',
-                '@codemirror/commands',
-                '@codemirror/lang-javascript',
-                '@codemirror/theme-one-dark',
-                '@lezer/highlight',
-              ],
+
               'babel-utils': ['@babel/parser', '@babel/types'],
               highlight: ['highlight.js'],
               jsonpath: ['jsonpath'],

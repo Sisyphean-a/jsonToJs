@@ -31,51 +31,6 @@ export function provideJsonContext() {
     }
   }
 
-  const executeTransform = async (code) => {
-    try {
-      jsonProcessor.setExecuting(true)
-      jsonProcessor.setTransformCode(code)
-
-      // 执行转换逻辑
-      const result = await executeCode(code, jsonProcessor.state.parsedJson)
-      jsonProcessor.setTransformedJson(result)
-
-      return result
-    } catch (error) {
-      jsonProcessor.addTransformError(error)
-      handleError(error, '代码执行')
-      throw error
-    } finally {
-      jsonProcessor.setExecuting(false)
-    }
-  }
-
-  // 代码执行函数
-  const executeCode = async (code, json) => {
-    return new Promise((resolve, reject) => {
-      try {
-        // 创建安全的执行环境
-        const func = new Function(
-          'json',
-          'jsonpath',
-          `
-          try {
-            ${code}
-          } catch (error) {
-            throw new Error('代码执行错误: ' + error.message);
-          }
-        `,
-        )
-
-        // 执行代码
-        const result = func(json, window.jsonpath)
-        resolve(result)
-      } catch (error) {
-        reject(error)
-      }
-    })
-  }
-
   const clearAllErrors = () => {
     jsonProcessor.clearErrors()
   }
@@ -163,7 +118,6 @@ export function provideJsonContext() {
 
     // 方法
     updateJsonInput,
-    executeTransform,
     executeFilter,
     clearAllErrors,
     getInputHistory,

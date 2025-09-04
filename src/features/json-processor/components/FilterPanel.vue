@@ -406,6 +406,7 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
     .section-label {
       font-size: 13px;
       font-weight: 500;
+      min-width: 100px;
       color: #666;
       margin-bottom: 0;
     }
