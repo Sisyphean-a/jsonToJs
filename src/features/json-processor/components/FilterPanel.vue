@@ -4,40 +4,33 @@
       class="filter-card"
       elevation="2"
     >
-      <v-card-title class="filter-title">
-        <v-icon
-          class="mr-2"
-          size="20"
-          >mdi-filter</v-icon
-        >
-        筛选配置
-      </v-card-title>
-
       <v-card-text class="filter-content">
         <!-- 筛选方式选择 -->
         <div class="filter-method-section">
-          <div class="section-label">筛选方式</div>
-          <div class="radio-group">
-            <v-btn-toggle
-              v-model="localFilterConfig.method"
-              @update:model-value="updateFilterMethod"
-              mandatory
-              variant="outlined"
-              density="compact"
-            >
+          <div class="method-row">
+            <span class="section-label">筛选方式：</span>
+            <div class="method-buttons">
               <v-btn
-                value="specified"
+                :variant="localFilterConfig.method === 'specified' ? 'flat' : 'outlined'"
+                :color="localFilterConfig.method === 'specified' ? 'primary' : 'default'"
+                @click="updateFilterMethod('specified')"
                 size="small"
+                density="compact"
+                class="method-btn"
               >
                 指定层级筛选
               </v-btn>
               <v-btn
-                value="recursive"
+                :variant="localFilterConfig.method === 'recursive' ? 'flat' : 'outlined'"
+                :color="localFilterConfig.method === 'recursive' ? 'primary' : 'default'"
+                @click="updateFilterMethod('recursive')"
                 size="small"
+                density="compact"
+                class="method-btn"
               >
                 递归深度筛选
               </v-btn>
-            </v-btn-toggle>
+            </div>
           </div>
         </div>
 
@@ -100,37 +93,20 @@
 
           <!-- 字段列表 -->
           <div class="fields-list">
-            <v-chip
-              v-for="(field, index) in localFilterConfig.selectedKeys"
+            <div
+              v-for="field in localFilterConfig.selectedKeys"
               :key="field"
-              class="field-chip"
-              closable
-              @click:close="removeField(field)"
-              color="primary"
-              variant="outlined"
+              class="field-tag"
             >
               <span class="field-name">{{ field }}</span>
-              <template #append>
-                <div class="field-actions">
-                  <v-btn
-                    @click.stop="moveFieldUp(index)"
-                    :disabled="index === 0"
-                    size="x-small"
-                    variant="text"
-                    icon="mdi-arrow-up"
-                    density="compact"
-                  ></v-btn>
-                  <v-btn
-                    @click.stop="moveFieldDown(index)"
-                    :disabled="index === localFilterConfig.selectedKeys.length - 1"
-                    size="x-small"
-                    variant="text"
-                    icon="mdi-arrow-down"
-                    density="compact"
-                  ></v-btn>
-                </div>
-              </template>
-            </v-chip>
+              <button
+                @click="removeField(field)"
+                class="field-remove"
+                type="button"
+              >
+                ×
+              </button>
+            </div>
           </div>
 
           <!-- 手动添加字段 -->
@@ -242,24 +218,6 @@ const clearAllFields = () => {
   clearSelectedKeys()
 }
 
-// 字段上移
-const moveFieldUp = (index) => {
-  if (index > 0) {
-    const newKeys = [...localFilterConfig.selectedKeys]
-    ;[newKeys[index - 1], newKeys[index]] = [newKeys[index], newKeys[index - 1]]
-    updateFilterConfig({ selectedKeys: newKeys })
-  }
-}
-
-// 字段下移
-const moveFieldDown = (index) => {
-  if (index < localFilterConfig.selectedKeys.length - 1) {
-    const newKeys = [...localFilterConfig.selectedKeys]
-    ;[newKeys[index], newKeys[index + 1]] = [newKeys[index + 1], newKeys[index]]
-    updateFilterConfig({ selectedKeys: newKeys })
-  }
-}
-
 // 选择推荐路径
 const selectSuggestedPath = (path) => {
   updateFilterConfig({ listPath: path })
@@ -278,16 +236,8 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
   border-radius: var(--radius-md);
 }
 
-.filter-title {
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: rgba(var(--color-primary), 0.05);
-  border-bottom: 1px solid var(--border-light);
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-medium);
-}
-
 .filter-content {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
 }
 
 .section-label {
@@ -295,17 +245,51 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
   font-weight: var(--font-weight-medium);
   color: var(--text-secondary);
   margin-bottom: var(--spacing-sm);
-  display: block;
-  flex: 1;
+  display: inline-block;
+  flex-shrink: 0;
   white-space: nowrap;
+  min-width: auto;
+  width: auto;
 }
 
 .filter-method-section {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+
+  .method-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .section-label {
+    width: 70px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .method-buttons {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .method-btn {
+    font-size: 12px !important;
+    width: 90px !important;
+    min-width: 90px !important;
+    max-width: 90px !important;
+    padding: 0 4px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    height: 28px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
 }
 
 .array-path-section {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
 }
 
 .selected-fields-section {
@@ -329,24 +313,57 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
 .fields-list {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-sm);
+  gap: 6px;
   margin-bottom: var(--spacing-md);
-  min-height: 40px;
-  padding: var(--spacing-sm);
+  min-height: 32px;
+  padding: 8px;
   border: 1px dashed var(--border-light);
   border-radius: var(--radius-sm);
   background: rgba(var(--color-gray-50), 0.3);
+  align-items: flex-start;
 }
 
-.field-chip {
-  .field-name {
-    font-size: var(--font-size-sm);
-  }
+.field-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background-color: rgba(var(--color-primary), 0.1);
+  border: 1px solid rgba(var(--color-primary), 0.3);
+  border-radius: 12px;
+  font-size: 12px;
+  color: var(--text-primary);
+  flex-shrink: 0;
+  max-width: 200px;
+}
 
-  .field-actions {
-    display: flex;
-    gap: 2px;
-    margin-left: var(--spacing-xs);
+.field-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.field-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: none;
+  background: rgba(var(--color-primary), 0.2);
+  border-radius: 50%;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(var(--color-primary), 0.3);
+    transform: scale(1.1);
   }
 }
 
