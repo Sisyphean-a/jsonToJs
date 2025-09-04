@@ -2,7 +2,11 @@
   <div class="json-display-with-input">
     <!-- JSON展示区域 -->
     <div class="json-display-area">
-      <json-view :json="jsonState.parsedJson" />
+      <json-view
+        :json="jsonState.parsedJson"
+        click-mode="filter"
+        @field-click="handleFieldClick"
+      />
     </div>
 
     <!-- 分割线 -->
@@ -11,35 +15,43 @@
       @mousedown="startResize"
     ></div>
 
-    <!-- 输入区域 -->
+    <!-- 下部分：输入区域和筛选面板 -->
     <div
-      class="input-area"
+      class="bottom-area"
       :style="{ height: `${inputHeight}px` }"
     >
-      <div class="input-container">
-        <v-text-field
-          v-model="localJsonInput"
-          label="输入JSON数据"
-          variant="outlined"
-          density="compact"
-          hide-details
-          @input="handleInput"
-          :error="hasError"
-          :error-messages="hasError ? '解析错误' : ''"
-          class="json-input-field"
-        />
-        <v-btn
-          size="small"
-          variant="outlined"
-          color="primary"
-          class="clipboard-btn"
-          @click="readFromClipboard"
-          :loading="isReadingClipboard"
-          :disabled="isReadingClipboard"
-          title="读取剪切板"
-        >
-          读取剪切板
-        </v-btn>
+      <!-- 输入区域 -->
+      <div class="input-section">
+        <div class="input-container">
+          <v-text-field
+            v-model="localJsonInput"
+            label="输入JSON数据"
+            variant="outlined"
+            density="compact"
+            hide-details
+            @input="handleInput"
+            :error="hasError"
+            :error-messages="hasError ? '解析错误' : ''"
+            class="json-input-field"
+          />
+          <v-btn
+            size="small"
+            variant="outlined"
+            color="primary"
+            class="clipboard-btn"
+            @click="readFromClipboard"
+            :loading="isReadingClipboard"
+            :disabled="isReadingClipboard"
+            title="读取剪切板"
+          >
+            读取剪切板
+          </v-btn>
+        </div>
+      </div>
+
+      <!-- 筛选面板 -->
+      <div class="filter-section">
+        <filter-panel @field-click="handleFieldClick" />
       </div>
     </div>
   </div>
@@ -49,13 +61,14 @@
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { useJsonContext } from '../composables/useJsonContext.js'
 import JsonView from './JsonView.vue'
+import FilterPanel from './FilterPanel.vue'
 
 // 使用JSON上下文，不再需要props和emits
-const { jsonState, updateJsonInput, hasValidJson } = useJsonContext()
+const { jsonState, updateJsonInput, addSelectedKey } = useJsonContext()
 
 // 本地状态只管理UI相关的
 const localJsonInput = ref('')
-const inputHeight = ref(60) // 默认输入区域高度
+const inputHeight = ref(200) // 默认输入区域高度
 const isResizing = ref(false)
 const startY = ref(0)
 const startHeight = ref(0)
@@ -79,6 +92,11 @@ const hasError = computed(() => jsonState.parseErrors.length > 0)
 const handleInput = () => {
   // 使用context更新JSON输入
   updateJsonInput(localJsonInput.value)
+}
+
+// 处理字段点击事件
+const handleFieldClick = (fieldName) => {
+  addSelectedKey(fieldName)
 }
 
 // 读取剪切板内容
@@ -112,7 +130,11 @@ const startResize = (event) => {
 
   document.addEventListener('mousemove', handleMouseMove)
   document.addEventListener('mouseup', stopResize)
+
+  // 防止文本选择和默认行为
   event.preventDefault()
+  document.body.style.userSelect = 'none'
+  document.body.style.cursor = 'row-resize'
 }
 
 // 处理鼠标移动
@@ -120,7 +142,9 @@ const handleMouseMove = (event) => {
   if (!isResizing.value) return
 
   const deltaY = event.clientY - startY.value
-  const newHeight = Math.max(40, Math.min(200, startHeight.value + deltaY))
+  // 修正拖拽逻辑：向上拖拽（deltaY为负）应该增加下方区域高度，向下拖拽（deltaY为正）应该减少下方区域高度
+  // 这样与左右拖拽逻辑保持一致：往哪边拖拽，哪边的区域减少
+  const newHeight = Math.max(150, Math.min(500, startHeight.value - deltaY))
   inputHeight.value = newHeight
 }
 
@@ -129,6 +153,10 @@ const stopResize = () => {
   isResizing.value = false
   document.removeEventListener('mousemove', handleMouseMove)
   document.removeEventListener('mouseup', stopResize)
+
+  // 恢复默认样式
+  document.body.style.userSelect = ''
+  document.body.style.cursor = ''
 }
 
 // 组件卸载时清理事件监听
@@ -153,27 +181,65 @@ onUnmounted(() => {
 }
 
 .resize-handle-horizontal {
-  height: 4px;
+  height: 6px;
   background: var(--border-light);
   cursor: row-resize;
-  transition: background-color var(--transition-normal);
+  transition: all var(--transition-normal);
+  position: relative;
+  user-select: none;
 
   &:hover {
     background: var(--color-primary);
+    height: 8px;
   }
 
   &:active {
     background: var(--color-primary-dark);
+    height: 8px;
+  }
+
+  /* 添加一个中心指示器 */
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 2px;
+    background: var(--text-tertiary);
+    border-radius: 1px;
+    opacity: 0.5;
+    transition: opacity var(--transition-normal);
+  }
+
+  &:hover::after {
+    opacity: 1;
+    background: white;
   }
 }
 
-.input-area {
+.bottom-area {
   flex-shrink: 0;
-  padding: var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
   border-top: 1px solid var(--border-light);
   background: var(--bg-secondary);
-  min-height: 40px;
-  max-height: 200px;
+  min-height: 150px;
+  max-height: 500px;
+  overflow: hidden;
+}
+
+.input-section {
+  flex-shrink: 0;
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.filter-section {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .input-container {

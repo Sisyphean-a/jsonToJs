@@ -6,7 +6,7 @@
       color="success"
       location="top"
     >
-      复制成功 {{ snackbarText }}
+      {{ snackbarText }}
     </v-snackbar>
     <div class="json-content">
       <div
@@ -24,7 +24,7 @@
             <span
               v-if="jsonKey"
               class="json-key clickable"
-              @click.stop="copyKey(jsonKey)"
+              @click.stop="handleKeyClick(jsonKey)"
               >"{{ jsonKey }}":</span
             >
             <span v-if="length">
@@ -91,6 +91,8 @@
                 :depth="currentDepth + 1"
                 :maxExpandDepth="maxExpandDepth"
                 :jsonPath="generateChildPath(item.key, index)"
+                :clickMode="clickMode"
+                @field-click="(fieldName) => emit('field-click', fieldName)"
               ></json-view>
               <p
                 class="json-item"
@@ -98,7 +100,7 @@
               >
                 <span
                   class="json-key clickable"
-                  @click.stop="copyKey(item.key)"
+                  @click.stop="handleKeyClick(item.key)"
                 >
                   {{ isArray ? '' : '"' + item.key + '"' }}
                 </span>
@@ -187,7 +189,16 @@ const props = defineProps({
     type: String,
     default: () => Math.random().toString(36).substr(2, 9),
   },
+  // 点击模式：'copy' 复制模式 | 'filter' 筛选模式
+  clickMode: {
+    type: String,
+    default: 'copy',
+    validator: (value) => ['copy', 'filter'].includes(value),
+  },
 })
+
+// 定义事件
+const emit = defineEmits(['field-click'])
 
 const snackbar = ref(false)
 const snackbarText = ref('')
@@ -408,6 +419,25 @@ watch(
   },
 )
 
+const handleKeyClick = (key) => {
+  const cleanKey =
+    typeof key === 'string' && key.startsWith('"') && key.endsWith('"') ? key.slice(1, -1) : key
+
+  if (props.clickMode === 'filter') {
+    // 筛选模式：发出字段点击事件
+    emit('field-click', cleanKey)
+    snackbar.value = true
+    snackbarText.value = `已添加字段: ${cleanKey}`
+  } else {
+    // 复制模式：复制到剪切板
+    navigator.clipboard.writeText(cleanKey).then(() => {
+      snackbar.value = true
+      snackbarText.value = `复制成功: ${cleanKey}`
+    })
+  }
+}
+
+// 保持向后兼容的copyKey函数
 const copyKey = (key) => {
   const textToCopy =
     typeof key === 'string' && key.startsWith('"') && key.endsWith('"') ? key.slice(1, -1) : key

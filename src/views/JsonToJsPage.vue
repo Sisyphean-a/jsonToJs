@@ -1,13 +1,10 @@
 <template>
   <div class="json-to-js-page">
-    <resizable-layout :column-count="3">
+    <resizable-layout :column-count="2">
       <template #column1>
         <json-display-with-input />
       </template>
       <template #column2>
-        <js-transformer />
-      </template>
-      <template #column3>
         <JsonResultDisplay />
       </template>
     </resizable-layout>
@@ -19,7 +16,6 @@ import { provideJsonContext } from '@/features/json-processor/composables/useJso
 import { usePageStateStore } from '@/stores/pageState.js'
 import ResizableLayout from '@/components/layout/ResizableLayout.vue'
 import JsonDisplayWithInput from '@/features/json-processor/components/JsonDisplayWithInput.vue'
-import JsTransformer from '@/features/json-processor/components/JsTransformer.vue'
 import JsonResultDisplay from '@/features/json-processor/components/JsonResultDisplay.vue'
 
 // 使用页面状态store
