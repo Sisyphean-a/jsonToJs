@@ -68,7 +68,7 @@ const { jsonState, updateJsonInput, addSelectedKey } = useJsonContext()
 
 // 本地状态只管理UI相关的
 const localJsonInput = ref('')
-const inputHeight = ref(300) // 默认输入区域高度
+const inputHeight = ref(200) // 默认输入区域高度，减少默认高度以节省空间
 const isResizing = ref(false)
 const startY = ref(0)
 const startHeight = ref(0)
@@ -82,7 +82,7 @@ watch(
       localJsonInput.value = newVal
     }
   },
-  { immediate: true },
+  { immediate: true }
 )
 
 // 计算是否有错误
@@ -144,7 +144,7 @@ const handleMouseMove = (event) => {
   const deltaY = event.clientY - startY.value
   // 修正拖拽逻辑：向上拖拽（deltaY为负）应该增加下方区域高度，向下拖拽（deltaY为正）应该减少下方区域高度
   // 这样与左右拖拽逻辑保持一致：往哪边拖拽，哪边的区域减少
-  const newHeight = Math.max(150, Math.min(500, startHeight.value - deltaY))
+  const newHeight = Math.max(120, Math.min(400, startHeight.value - deltaY))
   inputHeight.value = newHeight
 }
 
@@ -181,7 +181,7 @@ onUnmounted(() => {
 }
 
 .resize-handle-horizontal {
-  height: 6px;
+  height: 4px;
   background: var(--border-light);
   cursor: row-resize;
   transition: all var(--transition-normal);
@@ -190,12 +190,12 @@ onUnmounted(() => {
 
   &:hover {
     background: var(--color-primary);
-    height: 8px;
+    height: 6px;
   }
 
   &:active {
     background: var(--color-primary-dark);
-    height: 8px;
+    height: 6px;
   }
 
   /* 添加一个中心指示器 */
@@ -225,14 +225,14 @@ onUnmounted(() => {
   flex-direction: column;
   border-top: 1px solid var(--border-light);
   background: var(--bg-secondary);
-  min-height: 150px;
-  max-height: 500px;
+  min-height: 120px;
+  max-height: 400px;
   overflow: hidden;
 }
 
 .input-section {
   flex-shrink: 0;
-  padding: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
   border-bottom: 1px solid var(--border-light);
 }
 
@@ -245,7 +245,7 @@ onUnmounted(() => {
 .input-container {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm, 8px);
+  gap: var(--spacing-sm);
   height: 100%;
   width: 100%;
 }
@@ -260,9 +260,9 @@ onUnmounted(() => {
   }
 
   :deep(.v-field__input) {
-    min-height: auto;
-    padding-top: 8px;
-    padding-bottom: 8px;
+    min-height: 24px;
+    padding-top: 6px;
+    padding-bottom: 6px;
   }
 
   :deep(.v-input__control) {
@@ -277,7 +277,7 @@ onUnmounted(() => {
 .clipboard-btn {
   flex-shrink: 0;
   flex-grow: 0;
-  height: 40px;
+  height: 36px;
   min-width: auto !important;
   width: auto !important;
   white-space: nowrap;

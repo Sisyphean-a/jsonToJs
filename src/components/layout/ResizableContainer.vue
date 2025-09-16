@@ -94,8 +94,8 @@ const containerClass = computed(() => {
 
 const containerStyle = computed(() => {
   return props.direction === 'horizontal'
-    ? 'height: 100vh; width: 100vw'
-    : 'height: 100%; width: 100%'
+    ? 'height: 100vh; width: 100vw; overflow: hidden;'
+    : 'height: 100%; width: 100%; overflow: hidden;'
 })
 
 const itemClass = computed(() => {

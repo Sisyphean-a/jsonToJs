@@ -81,22 +81,23 @@
 
         <!-- 智能推荐 -->
         <div
-          v-if="localFilterConfig.method === 'specified' && smartRecommendation && smartRecommendation.suggestedPaths.length > 1"
+          v-if="
+            localFilterConfig.method === 'specified' &&
+            smartRecommendation &&
+            smartRecommendation.suggestedPaths.length > 1
+          "
           class="path-suggestions"
         >
           <div class="suggestion-label">推荐路径：</div>
           <div class="suggestion-chips">
-            <v-chip
+            <div
               v-for="path in smartRecommendation.suggestedPaths"
               :key="path"
               @click="selectSuggestedPath(path)"
-              size="small"
-              variant="outlined"
-              color="primary"
               class="suggestion-chip"
             >
               {{ path }}
-            </v-chip>
+            </div>
           </div>
         </div>
 
@@ -212,7 +213,7 @@ watch(
     localFilterConfig.listPath = newConfig.listPath
     localFilterConfig.selectedKeys = [...newConfig.selectedKeys]
   },
-  { deep: true },
+  { deep: true }
 )
 
 // 监听智能推荐变化，自动应用推荐配置
@@ -227,7 +228,7 @@ watch(
       })
     }
   },
-  { immediate: true },
+  { immediate: true }
 )
 
 // 这些函数已经不需要了，因为使用了computed的setter
@@ -388,16 +389,16 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
 }
 
 .selected-fields-section {
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .fields-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 16px;
-  min-height: 32px;
-  padding: 8px;
+  gap: 4px;
+  margin-bottom: 8px;
+  min-height: 24px;
+  padding: 4px;
   border: 1px dashed #ddd;
   border-radius: 4px;
   background: #f9f9f9;
@@ -407,12 +408,12 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
 .field-tag {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
+  gap: 3px;
+  padding: 2px 6px;
   background-color: #e3f2fd;
   border: 1px solid #90caf9;
-  border-radius: 12px;
-  font-size: 12px;
+  border-radius: 10px;
+  font-size: 11px;
   color: #333;
   flex-shrink: 0;
   max-width: 200px;
@@ -490,33 +491,53 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
 }
 
 .manual-add-section {
-  margin-top: 16px;
+  margin-top: 8px;
 }
 
 .path-suggestions {
-  margin-top: 16px;
+  margin-top: 12px;
+  margin-bottom: 12px;
 
   .suggestion-label {
     font-size: 11px;
-    color: #999;
+    color: #666;
     margin-bottom: 6px;
+    font-weight: 500;
   }
 
   .suggestion-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 4px;
   }
 
   .suggestion-chip {
-    font-size: 11px !important;
-    height: 20px !important;
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    background-color: #f0f8ff;
+    border: 1px solid #b3d9ff;
+    border-radius: 10px;
+    font-size: 11px;
+    color: #0066cc;
     cursor: pointer;
     transition: all 0.2s ease;
+    flex-shrink: 0;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     &:hover {
-      background-color: #e3f2fd;
+      background-color: #e6f3ff;
+      border-color: #80bfff;
       transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 102, 204, 0.1);
+    }
+
+    &:active {
+      transform: translateY(0);
+      background-color: #cce7ff;
     }
   }
 }

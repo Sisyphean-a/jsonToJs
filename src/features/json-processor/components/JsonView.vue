@@ -232,6 +232,7 @@ const copyJson = () => {
   const jsonStr = JSON.stringify(props.json, null, 2)
   navigator.clipboard.writeText(jsonStr).then(() => {
     snackbar.value = true
+    snackbarText.value = 'JSON复制成功'
   })
 }
 
@@ -375,7 +376,7 @@ const hasCollapsedDescendants = computed(() => {
 const expandAllDescendants = () => {
   nextTick(() => {
     const currentElement = document.querySelector(
-      `[data-path="${props.componentId}-${props.jsonPath}"]`,
+      `[data-path="${props.componentId}-${props.jsonPath}"]`
     )
     if (!currentElement) return
 
@@ -416,7 +417,7 @@ watch(
 
       startRender()
     }
-  },
+  }
 )
 
 const handleKeyClick = (key) => {
@@ -552,9 +553,9 @@ const copyKey = (key) => {
 
 .json-item {
   margin: 0;
-  padding-left: var(--spacing-xl);
-  line-height: 1.5;
-  min-height: 22px;
+  padding-left: var(--spacing-2xl);
+  line-height: 1.4;
+  min-height: 20px;
 
   .json-key + span {
     margin: 0 var(--spacing-xs) 0 0;
@@ -564,8 +565,8 @@ const copyKey = (key) => {
 .first-line {
   padding: 0;
   margin: 0;
-  line-height: 1.6;
-  min-height: 24px;
+  line-height: 1.4;
+  min-height: 22px;
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
@@ -589,7 +590,7 @@ const copyKey = (key) => {
 .last-line {
   padding: 0;
   margin: 0;
-  min-height: 22px;
+  min-height: 20px;
 }
 
 .toggle-icon {

@@ -48,8 +48,8 @@
   /* 基础样式 */
   width: 100%;
   height: auto;
-  min-height: 80px;
-  padding: var(--spacing-md);
+  min-height: 60px;
+  padding: var(--spacing-sm);
 
   /* 字体 */
   font-family: var(--font-family-base);
@@ -101,22 +101,22 @@
 }
 
 .card-header {
-  padding: var(--spacing-lg) var(--spacing-2xl);
+  padding: var(--spacing-md) var(--spacing-lg);
   border-bottom: 1px solid var(--border-light);
   background: var(--bg-secondary);
 }
 
 .card-content {
-  padding: var(--spacing-2xl);
+  padding: var(--spacing-lg);
 }
 
 .card-footer {
-  padding: var(--spacing-lg) var(--spacing-2xl);
+  padding: var(--spacing-md) var(--spacing-lg);
   border-top: 1px solid var(--border-light);
   background: var(--bg-secondary);
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
 }
 
 /* ========================================

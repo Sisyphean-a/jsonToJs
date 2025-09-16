@@ -25,12 +25,8 @@ export const APP_CONFIG = {
       },
     },
 
-    // 默认转换结果
-    defaultTransformed: {
-      province: '北京',
-      city: '北京',
-      district: '朝阳区',
-    },
+    // 默认转换结果（置空）
+    defaultTransformed: null,
 
     // JSON视图配置
     view: {
