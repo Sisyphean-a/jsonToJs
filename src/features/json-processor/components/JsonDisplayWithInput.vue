@@ -38,7 +38,7 @@
             size="small"
             variant="outlined"
             color="primary"
-            class="clipboard-btn"
+            class="btn-standard"
             @click="readFromClipboard"
             :loading="isReadingClipboard"
             :disabled="isReadingClipboard"
@@ -274,28 +274,5 @@ onUnmounted(() => {
   }
 }
 
-.clipboard-btn {
-  flex-shrink: 0;
-  flex-grow: 0;
-  height: 36px;
-  min-width: auto !important;
-  width: auto !important;
-  white-space: nowrap;
-
-  &:hover {
-    background-color: rgba(var(--color-primary), 0.08);
-  }
-
-  /* 覆盖Vuetify的默认样式 */
-  :deep(.v-btn__content) {
-    white-space: nowrap;
-  }
-
-  :deep(.v-btn) {
-    min-width: auto !important;
-    width: auto !important;
-    flex-shrink: 0;
-    flex-grow: 0;
-  }
-}
+/* 按钮样式已使用全局统一样式系统 */
 </style>

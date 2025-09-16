@@ -101,6 +101,114 @@
           </div>
         </div>
 
+        <!-- 高级筛选选项 -->
+        <v-expansion-panels
+          v-model="advancedPanel"
+          variant="accordion"
+          class="advanced-panel"
+        >
+          <v-expansion-panel>
+            <v-expansion-panel-title>
+              <span class="advanced-title">高级选项</span>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <!-- 去重配置 -->
+              <div class="advanced-option">
+                <v-checkbox
+                  v-model="localFilterConfig.advanced.deduplication.enabled"
+                  @update:model-value="updateAdvancedConfig"
+                  label="结果去重"
+                  density="compact"
+                  hide-details
+                />
+                <v-select
+                  v-if="localFilterConfig.advanced.deduplication.enabled"
+                  v-model="localFilterConfig.advanced.deduplication.fields"
+                  @update:model-value="updateAdvancedConfig"
+                  :items="localFilterConfig.selectedKeys"
+                  label="选择需要去重的字段"
+                  multiple
+                  chips
+                  density="compact"
+                  variant="outlined"
+                  hide-details
+                  class="mt-2"
+                />
+              </div>
+
+              <!-- 字段过滤 -->
+              <div class="advanced-option">
+                <div class="filter-header">
+                  <span class="filter-label">字段过滤条件</span>
+                  <v-btn
+                    @click="addFieldFilter"
+                    size="small"
+                    variant="outlined"
+                    color="primary"
+                    class="btn-compact"
+                  >
+                    添加条件
+                  </v-btn>
+                </div>
+
+                <div
+                  v-for="(filter, index) in localFilterConfig.advanced.fieldFilters"
+                  :key="index"
+                  class="filter-row"
+                >
+                  <v-select
+                    v-model="filter.field"
+                    @update:model-value="updateAdvancedConfig"
+                    :items="localFilterConfig.selectedKeys"
+                    label="字段"
+                    density="compact"
+                    variant="outlined"
+                    hide-details
+                    class="filter-field"
+                  />
+                  <v-select
+                    v-model="filter.type"
+                    @update:model-value="updateAdvancedConfig"
+                    :items="filterTypes"
+                    label="条件"
+                    density="compact"
+                    variant="outlined"
+                    hide-details
+                    class="filter-type"
+                  />
+                  <v-text-field
+                    v-model="filter.value"
+                    @update:model-value="updateAdvancedConfig"
+                    label="值"
+                    density="compact"
+                    variant="outlined"
+                    hide-details
+                    class="filter-value"
+                  />
+                  <v-checkbox
+                    v-model="filter.caseSensitive"
+                    @update:model-value="updateAdvancedConfig"
+                    label="区分大小写"
+                    density="compact"
+                    hide-details
+                    class="filter-case"
+                  />
+                  <v-btn
+                    @click="removeFieldFilter(index)"
+                    icon
+                    size="small"
+                    variant="text"
+                    color="error"
+                    class="btn-icon"
+                  >
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
+                </div>
+              </div>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
+
         <!-- 已选字段管理 -->
         <div class="selected-fields-section">
           <!-- 字段列表 -->
@@ -150,6 +258,7 @@
                   variant="text"
                   icon="mdi-plus"
                   density="compact"
+                  class="btn-inline"
                 ></v-btn>
               </template>
             </v-text-field>
@@ -175,9 +284,26 @@ const localFilterConfig = reactive({
   outputFormat: jsonState.filterConfig.outputFormat,
   listPath: jsonState.filterConfig.listPath,
   selectedKeys: [...jsonState.filterConfig.selectedKeys],
+  advanced: {
+    deduplication: {
+      enabled: jsonState.filterConfig.advanced.deduplication.enabled,
+      fields: [...jsonState.filterConfig.advanced.deduplication.fields],
+    },
+    fieldFilters: [...jsonState.filterConfig.advanced.fieldFilters.map((f) => ({ ...f }))],
+  },
 })
 
 const newFieldName = ref('')
+
+// 高级选项相关
+const advancedPanel = ref([]) // 控制折叠面板展开状态
+const filterTypes = [
+  { title: '包含', value: 'contains' },
+  { title: '等于', value: 'equals' },
+  { title: '开头是', value: 'startsWith' },
+  { title: '结尾是', value: 'endsWith' },
+  { title: '正则表达式', value: 'regex' },
+]
 
 // 智能推荐
 const smartRecommendation = computed(() => {
@@ -212,6 +338,13 @@ watch(
     localFilterConfig.outputFormat = newConfig.outputFormat
     localFilterConfig.listPath = newConfig.listPath
     localFilterConfig.selectedKeys = [...newConfig.selectedKeys]
+    localFilterConfig.advanced = {
+      deduplication: {
+        enabled: newConfig.advanced.deduplication.enabled,
+        fields: [...newConfig.advanced.deduplication.fields],
+      },
+      fieldFilters: [...newConfig.advanced.fieldFilters.map((f) => ({ ...f }))],
+    }
   },
   { deep: true }
 )
@@ -260,6 +393,34 @@ const clearAllFields = () => {
 // 选择推荐路径
 const selectSuggestedPath = (path) => {
   updateFilterConfig({ listPath: path })
+}
+
+// 高级选项相关方法
+const updateAdvancedConfig = () => {
+  updateFilterConfig({
+    advanced: {
+      deduplication: {
+        enabled: localFilterConfig.advanced.deduplication.enabled,
+        fields: [...localFilterConfig.advanced.deduplication.fields],
+      },
+      fieldFilters: [...localFilterConfig.advanced.fieldFilters.map((f) => ({ ...f }))],
+    },
+  })
+}
+
+const addFieldFilter = () => {
+  localFilterConfig.advanced.fieldFilters.push({
+    field: localFilterConfig.selectedKeys[0] || '',
+    type: 'contains',
+    value: '',
+    caseSensitive: false,
+  })
+  updateAdvancedConfig()
+}
+
+const removeFieldFilter = (index) => {
+  localFilterConfig.advanced.fieldFilters.splice(index, 1)
+  updateAdvancedConfig()
 }
 
 // 定义事件
@@ -539,6 +700,76 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
       transform: translateY(0);
       background-color: #cce7ff;
     }
+  }
+}
+
+/* 统一按钮样式已移至全局 components.css */
+
+/* 高级选项样式 */
+.advanced-panel {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.advanced-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.advanced-option {
+  margin-bottom: 16px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.filter-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap; /* 防止文字换行 */
+}
+
+/* 使用统一按钮样式系统后，不再需要单独的按钮样式 */
+
+.filter-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.5fr auto auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 8px;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+}
+
+.filter-field,
+.filter-type,
+.filter-value {
+  min-width: 0;
+}
+
+.filter-case {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* filter-remove 样式已合并到全局 btn-icon */
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .filter-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
   }
 }
 </style>

@@ -23,6 +23,24 @@ export const useJsonProcessorStore = defineStore('jsonProcessor', () => {
       listPath: 'json', // 数组路径
       selectedKeys: [], // 已选字段
       autoExecute: true, // 自动执行
+
+      // 高级筛选选项
+      advanced: {
+        // 去重配置
+        deduplication: {
+          enabled: false,
+          fields: [], // 需要去重的字段列表
+        },
+        // 字段过滤配置
+        fieldFilters: [
+          // {
+          //   field: 'name',
+          //   type: 'contains', // 'contains' | 'equals' | 'startsWith' | 'endsWith' | 'regex'
+          //   value: '',
+          //   caseSensitive: false
+          // }
+        ],
+      },
     },
 
     // 执行状态
@@ -134,7 +152,7 @@ export const useJsonProcessorStore = defineStore('jsonProcessor', () => {
   const hasValidJson = computed(() => state.parsedJson !== null && state.parseErrors.length === 0)
 
   const canExecuteFilter = computed(
-    () => hasValidJson.value && state.filterConfig.selectedKeys.length > 0,
+    () => hasValidJson.value && state.filterConfig.selectedKeys.length > 0
   )
 
   const hasErrors = computed(() => state.parseErrors.length > 0 || state.transformErrors.length > 0)

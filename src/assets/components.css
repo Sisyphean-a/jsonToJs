@@ -2,8 +2,6 @@
    公共组件样式 - 统一的组件设计
 ======================================== */
 
-
-
 /* ========================================
    表单元素
 ======================================== */
@@ -262,8 +260,6 @@
   font-weight: var(--font-weight-bold);
 }
 
-
-
 /* 布局工具类 */
 .flex {
   display: flex;
@@ -319,6 +315,116 @@
 }
 .shadow-lg {
   box-shadow: var(--shadow-lg);
+}
+
+/* ========================================
+   统一按钮样式系统
+   
+   使用指南：
+   
+   1. btn-compact - 紧凑按钮 (28px高度)
+      适用场景：空间受限的地方，如筛选面板、工具栏
+      示例：<v-btn class="btn-compact" variant="outlined">添加条件</v-btn>
+      
+   2. btn-standard - 标准按钮 (32px高度)  
+      适用场景：常规操作按钮，如主要功能按钮
+      示例：<v-btn class="btn-standard" variant="outlined">读取剪切板</v-btn>
+      
+   3. btn-icon - 图标按钮 (28x28px)
+      适用场景：只有图标的操作按钮，如删除、编辑
+      示例：<v-btn class="btn-icon" icon variant="text"><v-icon>mdi-delete</v-icon></v-btn>
+      
+   4. btn-inline - 内联按钮 (24px高度)
+      适用场景：输入框内部、文本行内的小按钮
+      示例：<v-btn class="btn-inline" icon variant="text">+</v-btn>
+      
+   注意：
+   - 所有按钮都会自动应用 min-width: auto, white-space: nowrap
+   - 不需要额外的样式配置，直接使用对应的class即可
+   - 按钮会自动适应内容宽度，不会浪费空间
+======================================== */
+
+/* 基础按钮样式 - 所有自定义按钮的基础 */
+.btn-base {
+  min-width: auto !important;
+  width: auto !important;
+  flex-shrink: 0;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.btn-base :deep(.v-btn__content) {
+  white-space: nowrap;
+}
+
+/* 紧凑按钮 - 用于空间有限的地方 */
+.btn-compact {
+  min-width: auto !important;
+  width: auto !important;
+  flex-shrink: 0;
+  height: 28px !important;
+  padding: 0 12px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.btn-compact :deep(.v-btn__content) {
+  white-space: nowrap;
+}
+
+/* 标准按钮 - 常规使用 */
+.btn-standard {
+  min-width: auto !important;
+  width: auto !important;
+  flex-shrink: 0;
+  height: 32px !important;
+  padding: 0 16px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.btn-standard :deep(.v-btn__content) {
+  white-space: nowrap;
+}
+
+/* 图标按钮 - 只有图标的按钮 */
+.btn-icon {
+  min-width: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  flex-shrink: 0;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.btn-icon :deep(.v-btn__content) {
+  white-space: nowrap;
+}
+
+/* 内联按钮 - 在文本或输入框内的按钮 */
+.btn-inline {
+  min-width: auto !important;
+  width: auto !important;
+  height: 24px !important;
+  padding: 0 8px !important;
+  flex-shrink: 0;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.btn-inline :deep(.v-btn__content) {
+  white-space: nowrap;
 }
 
 /* ========================================
