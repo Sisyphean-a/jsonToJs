@@ -1,6 +1,6 @@
 <template>
   <div class="json-display-with-input">
-    <!-- JSON展示区域 -->
+    <!-- 上部分：JSON展示区域 (自适应剩余空间) -->
     <div class="json-display-area">
       <json-view
         :json="jsonState.parsedJson"
@@ -9,17 +9,8 @@
       />
     </div>
 
-    <!-- 分割线 -->
-    <div
-      class="resize-handle-horizontal"
-      @mousedown="startResize"
-    ></div>
-
-    <!-- 下部分：输入区域和筛选面板 -->
-    <div
-      class="bottom-area"
-      :style="{ height: `${inputHeight}px` }"
-    >
+    <!-- 下部分：输入区域和筛选面板 (内容自适应高度) -->
+    <div class="bottom-area">
       <!-- 输入区域 -->
       <div class="input-section">
         <div class="input-container">
@@ -58,7 +49,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onUnmounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useJsonContext } from '../composables/useJsonContext.js'
 import JsonView from './JsonView.vue'
 import FilterPanel from './FilterPanel.vue'
@@ -68,10 +59,6 @@ const { jsonState, updateJsonInput, addSelectedKey } = useJsonContext()
 
 // 本地状态只管理UI相关的
 const localJsonInput = ref('')
-const inputHeight = ref(200) // 默认输入区域高度，减少默认高度以节省空间
-const isResizing = ref(false)
-const startY = ref(0)
-const startHeight = ref(0)
 const isReadingClipboard = ref(false)
 
 // 监听context状态变化
@@ -121,49 +108,6 @@ const readFromClipboard = async () => {
     isReadingClipboard.value = false
   }
 }
-
-// 开始调整大小
-const startResize = (event) => {
-  isResizing.value = true
-  startY.value = event.clientY
-  startHeight.value = inputHeight.value
-
-  document.addEventListener('mousemove', handleMouseMove)
-  document.addEventListener('mouseup', stopResize)
-
-  // 防止文本选择和默认行为
-  event.preventDefault()
-  document.body.style.userSelect = 'none'
-  document.body.style.cursor = 'row-resize'
-}
-
-// 处理鼠标移动
-const handleMouseMove = (event) => {
-  if (!isResizing.value) return
-
-  const deltaY = event.clientY - startY.value
-  // 修正拖拽逻辑：向上拖拽（deltaY为负）应该增加下方区域高度，向下拖拽（deltaY为正）应该减少下方区域高度
-  // 这样与左右拖拽逻辑保持一致：往哪边拖拽，哪边的区域减少
-  const newHeight = Math.max(120, Math.min(400, startHeight.value - deltaY))
-  inputHeight.value = newHeight
-}
-
-// 停止调整大小
-const stopResize = () => {
-  isResizing.value = false
-  document.removeEventListener('mousemove', handleMouseMove)
-  document.removeEventListener('mouseup', stopResize)
-
-  // 恢复默认样式
-  document.body.style.userSelect = ''
-  document.body.style.cursor = ''
-}
-
-// 组件卸载时清理事件监听
-onUnmounted(() => {
-  document.removeEventListener('mousemove', handleMouseMove)
-  document.removeEventListener('mouseup', stopResize)
-})
 </script>
 
 <style lang="scss" scoped>
@@ -172,62 +116,26 @@ onUnmounted(() => {
   flex-direction: column;
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 
 .json-display-area {
-  flex: 1;
+  flex: 1; /* 占据剩余所有空间 */
   overflow: auto;
   min-height: 0;
-}
-
-.resize-handle-horizontal {
-  height: 4px;
-  background: var(--border-light);
-  cursor: row-resize;
-  transition: all var(--transition-normal);
   position: relative;
-  user-select: none;
-
-  &:hover {
-    background: var(--color-primary);
-    height: 6px;
-  }
-
-  &:active {
-    background: var(--color-primary-dark);
-    height: 6px;
-  }
-
-  /* 添加一个中心指示器 */
-  &::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 40px;
-    height: 2px;
-    background: var(--text-tertiary);
-    border-radius: 1px;
-    opacity: 0.5;
-    transition: opacity var(--transition-normal);
-  }
-
-  &:hover::after {
-    opacity: 1;
-    background: white;
-  }
 }
 
 .bottom-area {
-  flex-shrink: 0;
+  flex: 0 0 auto; /* 不伸缩，高度完全由内容决定 */
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--border-light);
   background: var(--bg-secondary);
-  min-height: 120px;
-  max-height: 400px;
+  max-height: 60vh; /* 防止下方区域过高，最大占屏60% */
   overflow: hidden;
+  position: relative;
+  z-index: 10;
 }
 
 .input-section {
@@ -237,42 +145,27 @@ onUnmounted(() => {
 }
 
 .filter-section {
-  flex: 1;
+  flex: 0 0 auto; /* 改为 auto，不让它自动撑满父容器 */
   overflow-y: auto;
   min-height: 0;
+  max-height: 100%;
 }
 
 .input-container {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  height: 100%;
   width: 100%;
 }
 
 .json-input-field {
   flex: 1;
-  height: 100%;
-  min-width: 0; /* 防止flex子项溢出 */
-
-  :deep(.v-field) {
-    height: 100%;
-  }
+  min-width: 0;
 
   :deep(.v-field__input) {
     min-height: 24px;
     padding-top: 6px;
     padding-bottom: 6px;
   }
-
-  :deep(.v-input__control) {
-    height: 100%;
-  }
-
-  :deep(.v-field__field) {
-    height: 100%;
-  }
 }
-
-/* 按钮样式已使用全局统一样式系统 */
 </style>

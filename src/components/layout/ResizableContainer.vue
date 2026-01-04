@@ -67,6 +67,11 @@ const props = defineProps({
     type: Number,
     default: () => UI_CONFIG.dimensions.collapsedWidth.minExpanded, // 展开时的最小大小百分比
   },
+  initialSizes: {
+    type: Array,
+    default: () => [],
+    validator: (value) => value.every((n) => typeof n === 'number' && n >= 0 && n <= 100),
+  },
 })
 
 // 过渡状态控制
@@ -74,7 +79,11 @@ const transitioningItem = ref(null)
 const transitionTimeout = ref(null)
 
 // 尺寸百分比（宽度或高度）
-const itemSizes = ref(Array(props.itemCount).fill(100 / props.itemCount))
+const itemSizes = ref(
+  props.initialSizes.length === props.itemCount
+    ? [...props.initialSizes]
+    : Array(props.itemCount).fill(100 / props.itemCount)
+)
 const resizingIndex = ref(null)
 const startPosition = ref(0)
 const startSizes = ref([])
