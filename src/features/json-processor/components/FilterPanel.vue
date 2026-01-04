@@ -772,4 +772,57 @@ defineEmits(['field-added', 'field-removed', 'config-changed'])
     gap: 4px;
   }
 }
+
+/* 按钮样式内联 */
+/* 基础按钮样式 - 所有自定义按钮的基础 */
+/* 紧凑按钮 - 用于空间有限的地方 */
+.btn-compact {
+  min-width: auto !important;
+  width: auto !important;
+  flex-shrink: 0;
+  height: 28px !important;
+  padding: 0 12px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.btn-compact :deep(.v-btn__content) {
+  white-space: nowrap;
+}
+
+/* 图标按钮 - 只有图标的按钮 */
+.btn-icon {
+  min-width: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  flex-shrink: 0;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.btn-icon :deep(.v-btn__content) {
+  white-space: nowrap;
+}
+
+/* 内联按钮 - 在文本或输入框内的按钮 */
+.btn-inline {
+  min-width: auto !important;
+  width: auto !important;
+  height: 24px !important;
+  padding: 0 8px !important;
+  flex-shrink: 0;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.btn-inline :deep(.v-btn__content) {
+  white-space: nowrap;
+}
 </style>

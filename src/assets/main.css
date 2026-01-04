@@ -1,6 +1,5 @@
 @import './base.css';
 @import './design-tokens.css';
-@import './components.css';
 @import './animations.css';
 
 #app {

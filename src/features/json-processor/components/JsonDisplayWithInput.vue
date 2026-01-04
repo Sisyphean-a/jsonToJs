@@ -168,4 +168,21 @@ const readFromClipboard = async () => {
     padding-bottom: 6px;
   }
 }
+
+/* 按钮样式内联 */
+.btn-standard {
+  min-width: auto !important;
+  width: auto !important;
+  flex-shrink: 0;
+  height: 32px !important;
+  padding: 0 16px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.btn-standard :deep(.v-btn__content) {
+  white-space: nowrap;
+}
 </style>
