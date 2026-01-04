@@ -3,189 +3,6 @@
 ======================================== */
 
 /* ========================================
-   按钮系统
-======================================== */
-
-.btn {
-  /* 基础样式 */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
-
-  /* 尺寸 */
-  height: var(--button-height-md);
-  padding: 0 var(--spacing-lg);
-  min-width: 100px;
-
-  /* 字体 */
-  font-family: var(--font-family-base);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  text-decoration: none;
-
-  /* 边框和圆角 */
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-
-  /* 交互 */
-  cursor: pointer;
-  transition: all var(--transition-normal);
-  user-select: none;
-
-  /* 布局 */
-  position: relative;
-  overflow: hidden;
-
-  /* 禁用状态 */
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-    pointer-events: none;
-  }
-
-  /* 加载状态 */
-  &.loading {
-    color: transparent;
-
-    &::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 16px;
-      height: 16px;
-      margin: -8px 0 0 -8px;
-      border: 2px solid currentColor;
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: btn-spin 0.8s linear infinite;
-    }
-  }
-}
-
-/* 按钮尺寸变体 */
-.btn--sm {
-  height: var(--button-height-sm);
-  padding: 0 var(--spacing-md);
-  font-size: var(--font-size-sm);
-  min-width: 80px;
-}
-
-.btn--lg {
-  height: var(--button-height-lg);
-  padding: 0 var(--spacing-xl);
-  font-size: var(--font-size-lg);
-  min-width: 120px;
-}
-
-.btn--xl {
-  height: var(--button-height-xl);
-  padding: 0 var(--spacing-2xl);
-  font-size: var(--font-size-xl);
-  min-width: 140px;
-}
-
-/* 按钮样式变体 */
-.btn--primary {
-  background: linear-gradient(135deg, var(--color-primary-800) 0%, var(--color-primary-700) 100%);
-  color: var(--text-inverse);
-  box-shadow: var(--shadow-button);
-
-  &:hover:not(:disabled) {
-    background: linear-gradient(135deg, var(--color-primary-700) 0%, var(--color-primary-600) 100%);
-    box-shadow: var(--shadow-button-hover);
-    transform: translateY(-1px);
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: var(--shadow-sm);
-  }
-}
-
-.btn--secondary {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  border-color: var(--border-medium);
-  box-shadow: var(--shadow-sm);
-
-  &:hover:not(:disabled) {
-    background: var(--bg-secondary);
-    border-color: var(--border-strong);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: var(--shadow-xs);
-  }
-}
-
-.btn--tertiary {
-  background: rgba(var(--color-gray-800), 0.06);
-  color: var(--text-primary);
-  border-color: rgba(var(--color-gray-800), 0.12);
-  box-shadow: var(--shadow-xs);
-
-  &:hover:not(:disabled) {
-    background: rgba(var(--color-gray-800), 0.1);
-    border-color: rgba(var(--color-gray-800), 0.18);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
-  }
-}
-
-.btn--ghost {
-  background: transparent;
-  color: var(--text-secondary);
-
-  &:hover:not(:disabled) {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-  }
-}
-
-.btn--danger {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  color: var(--text-inverse);
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
-
-  &:hover:not(:disabled) {
-    background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
-    transform: translateY(-1px);
-  }
-}
-
-.btn--success {
-  background: linear-gradient(135deg, var(--color-success) 0%, #059669 100%);
-  color: var(--text-inverse);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-
-  &:hover:not(:disabled) {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
-    transform: translateY(-1px);
-  }
-}
-
-/* 按钮动画 */
-@keyframes btn-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ========================================
    表单元素
 ======================================== */
 
@@ -229,8 +46,8 @@
   /* 基础样式 */
   width: 100%;
   height: auto;
-  min-height: 80px;
-  padding: var(--spacing-md);
+  min-height: 60px;
+  padding: var(--spacing-sm);
 
   /* 字体 */
   font-family: var(--font-family-base);
@@ -282,22 +99,22 @@
 }
 
 .card-header {
-  padding: var(--spacing-lg) var(--spacing-2xl);
+  padding: var(--spacing-md) var(--spacing-lg);
   border-bottom: 1px solid var(--border-light);
   background: var(--bg-secondary);
 }
 
 .card-content {
-  padding: var(--spacing-2xl);
+  padding: var(--spacing-lg);
 }
 
 .card-footer {
-  padding: var(--spacing-lg) var(--spacing-2xl);
+  padding: var(--spacing-md) var(--spacing-lg);
   border-top: 1px solid var(--border-light);
   background: var(--bg-secondary);
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
 }
 
 /* ========================================
@@ -443,10 +260,6 @@
   font-weight: var(--font-weight-bold);
 }
 
-.font-mono {
-  font-family: var(--font-family-mono);
-}
-
 /* 布局工具类 */
 .flex {
   display: flex;
@@ -502,6 +315,116 @@
 }
 .shadow-lg {
   box-shadow: var(--shadow-lg);
+}
+
+/* ========================================
+   统一按钮样式系统
+   
+   使用指南：
+   
+   1. btn-compact - 紧凑按钮 (28px高度)
+      适用场景：空间受限的地方，如筛选面板、工具栏
+      示例：<v-btn class="btn-compact" variant="outlined">添加条件</v-btn>
+      
+   2. btn-standard - 标准按钮 (32px高度)  
+      适用场景：常规操作按钮，如主要功能按钮
+      示例：<v-btn class="btn-standard" variant="outlined">读取剪切板</v-btn>
+      
+   3. btn-icon - 图标按钮 (28x28px)
+      适用场景：只有图标的操作按钮，如删除、编辑
+      示例：<v-btn class="btn-icon" icon variant="text"><v-icon>mdi-delete</v-icon></v-btn>
+      
+   4. btn-inline - 内联按钮 (24px高度)
+      适用场景：输入框内部、文本行内的小按钮
+      示例：<v-btn class="btn-inline" icon variant="text">+</v-btn>
+      
+   注意：
+   - 所有按钮都会自动应用 min-width: auto, white-space: nowrap
+   - 不需要额外的样式配置，直接使用对应的class即可
+   - 按钮会自动适应内容宽度，不会浪费空间
+======================================== */
+
+/* 基础按钮样式 - 所有自定义按钮的基础 */
+.btn-base {
+  min-width: auto !important;
+  width: auto !important;
+  flex-shrink: 0;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.btn-base :deep(.v-btn__content) {
+  white-space: nowrap;
+}
+
+/* 紧凑按钮 - 用于空间有限的地方 */
+.btn-compact {
+  min-width: auto !important;
+  width: auto !important;
+  flex-shrink: 0;
+  height: 28px !important;
+  padding: 0 12px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.btn-compact :deep(.v-btn__content) {
+  white-space: nowrap;
+}
+
+/* 标准按钮 - 常规使用 */
+.btn-standard {
+  min-width: auto !important;
+  width: auto !important;
+  flex-shrink: 0;
+  height: 32px !important;
+  padding: 0 16px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.btn-standard :deep(.v-btn__content) {
+  white-space: nowrap;
+}
+
+/* 图标按钮 - 只有图标的按钮 */
+.btn-icon {
+  min-width: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  flex-shrink: 0;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.btn-icon :deep(.v-btn__content) {
+  white-space: nowrap;
+}
+
+/* 内联按钮 - 在文本或输入框内的按钮 */
+.btn-inline {
+  min-width: auto !important;
+  width: auto !important;
+  height: 24px !important;
+  padding: 0 8px !important;
+  flex-shrink: 0;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.btn-inline :deep(.v-btn__content) {
+  white-space: nowrap;
 }
 
 /* ========================================

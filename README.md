@@ -1,33 +1,28 @@
-# JsonToJs - 智能JSON转换工具
+# JsonToJs - 智能 JSON 筛选工具
 
-一个基于Vue 3的现代化JSON数据转换平台，提供可视化的JSON处理、JavaScript代码编辑和AI辅助转换功能。
+一个基于 Vue 3 的现代化 JSON 数据筛选平台，提供可视化的 JSON 处理和智能字段筛选功能。
 
 ## 🚀 核心特性
 
-### 📊 可视化JSON处理
+### 📊 可视化 JSON 处理
 
-- **三列布局设计**：JSON展示+输入 → 代码编辑 → 结果预览
-- **上下分割设计**：第一列采用上下分割，上部分展示JSON，下部分提供输入功能
+- **两列布局设计**：JSON 展示+输入 → 筛选结果预览
+- **上下分割设计**：第一列采用上下分割，上部分展示 JSON，下部分提供输入和筛选功能
 - **实时数据同步**：所有面板数据实时联动更新
-- **智能JSON解析**：支持复杂嵌套结构的JSON数据处理
+- **智能 JSON 解析**：支持复杂嵌套结构的 JSON 数据处理
 
-### 💻 强大的代码编辑器
+### � 智能字段筛选
 
-- **基于CodeMirror 6**：现代化的代码编辑体验
-- **JavaScript语法高亮**：完整的ES6+语法支持
-- **智能代码格式化**：内置Prettier格式化功能
-- **快捷键支持**：`Ctrl + Enter` 执行代码，`Ctrl + S` 格式化代码
+- **两种筛选模式**：指定层级筛选和递归深度筛选
+- **可视化字段选择**：点击 JSON 字段直接添加到筛选列表
+- **多种输出格式**：支持对象格式和字段分组格式
+- **实时筛选预览**：选择字段后自动执行筛选并显示结果
 
-### 🤖 AI智能助手
+### 📋 便捷操作
 
-- **自然语言转换**：用中文描述转换需求，AI自动生成代码
-- **JSON结构分析**：智能分析JSON数据结构和字段关系
-- **代码自动生成**：支持复杂的数据转换逻辑生成
-
-### 📚 常用代码库
-
-- **预置转换模板**：常见的JSON处理场景代码模板
-- **一键应用**：快速插入常用的转换代码片段
+- **剪切板支持**：一键读取剪切板中的 JSON 数据
+- **字段智能推荐**：自动分析 JSON 结构并推荐常用字段
+- **筛选配置保存**：记住用户的筛选偏好设置
 
 ## 🏗️ 技术架构
 
@@ -35,10 +30,9 @@
 
 - **前端框架**：Vue 3 + Composition API
 - **构建工具**：Vite 6.x
-- **UI组件库**：Vuetify 3.x
+- **UI 组件库**：Vuetify 3.x
 - **状态管理**：Pinia
-- **代码编辑器**：CodeMirror 6
-- **AI集成**：OpenAI API
+- **数据处理**：JSONPath
 
 ## 📁 项目结构
 
@@ -49,26 +43,19 @@ src/
 │   │   ├── BaseModal.vue            # 基础模态框
 │   │   ├── ModalHeader.vue          # 模态框头部
 │   │   └── GlobalErrorDisplay.vue   # 全局错误显示
-│   ├── layout/                # 布局相关组件
-│   │   ├── ResizableContainer.vue   # 可调整大小容器
-│   │   ├── ResizableLayout.vue      # 水平布局
-│   │   ├── ResizableRowLayout.vue   # 垂直布局
-│   │   ├── ColumnHeader.vue         # 列头组件
-│   │   └── RowHeader.vue            # 行头组件
-│   └── dialogs/               # 对话框组件
-│       ├── AIAssistantDialog.vue   # AI助手对话框
-│       └── CommonCodeDialog.vue    # 常用代码对话框
+│   └── layout/                # 布局相关组件
+│       ├── ResizableContainer.vue   # 可调整大小容器
+│       ├── ResizableLayout.vue      # 水平布局
+│       ├── ResizableRowLayout.vue   # 垂直布局
+│       ├── ColumnHeader.vue         # 列头组件
+│       └── RowHeader.vue            # 行头组件
 ├── features/                  # 功能模块（按业务域组织）
 │   └── json-processor/        # JSON处理功能模块
 │       ├── components/        # JSON处理相关组件
 │       │   ├── JsonView.vue              # JSON视图显示
 │       │   ├── JsonDisplayWithInput.vue  # JSON输入显示组合
 │       │   ├── JsonResultDisplay.vue     # JSON结果显示
-│       │   ├── CodeEditor.vue            # 代码编辑器
-│       │   ├── CodeEditorWrapper.vue     # 代码编辑器包装
-│       │   ├── CodeExecutor.vue          # 代码执行器
-│       │   ├── JsTransformer.vue         # JS转换器（主组件）
-│       │   ├── ActionButtons.vue         # 操作按钮
+│       │   ├── FilterPanel.vue           # 筛选面板
 │       │   └── ErrorDisplay.vue          # 错误显示
 │       └── composables/       # JSON处理相关组合式函数
 │           └── useJsonContext.js      # JSON上下文管理
@@ -80,8 +67,7 @@ src/
 │   │   ├── app-config.js      # 应用配置
 │   │   └── ui-config.js       # UI配置
 │   └── utils/                 # 工具函数
-│       ├── commonCodes.js     # 常用代码
-│       ├── editorUtils.js     # 编辑器工具
+│       ├── filterUtils.js     # 筛选工具
 │       └── icons.js           # 图标配置
 ├── stores/                    # 状态管理
 │   ├── jsonProcessor.js       # JSON处理状态
@@ -99,27 +85,27 @@ src/
 
 #### 1. 功能模块化
 
-- **按业务域组织**：JSON处理功能独立成模块
+- **按业务域组织**：JSON 处理功能独立成模块
 - **清晰的边界**：每个模块职责明确
 - **便于扩展**：新功能可按相同模式组织
 
 #### 2. 组件分层
 
-- **基础组件**：可在任何地方复用的UI组件
+- **基础组件**：可在任何地方复用的 UI 组件
 - **布局组件**：专门处理布局逻辑的组件
 - **业务组件**：特定功能域的组件
 
 #### 3. 状态管理
 
-- **集中式管理**：使用Pinia管理全局状态
-- **Context模式**：功能模块内部使用Context Provider
-- **响应式数据流**：Vue 3 Composition API确保数据响应性
+- **集中式管理**：使用 Pinia 管理全局状态
+- **Context 模式**：功能模块内部使用 Context Provider
+- **响应式数据流**：Vue 3 Composition API 确保数据响应性
 
 ## 🎨 界面设计
 
 ### 布局特点
 
-- **三列布局**：JSON输入 → 代码编辑 → 结果展示
+- **两列布局**：JSON 输入+筛选 → 结果展示
 - **可调整尺寸**：支持动态调整各列宽度
 - **桌面端优化**：专为桌面端开发环境设计
 - **响应式设计**：适配不同屏幕尺寸
@@ -153,46 +139,70 @@ npm run preview
 
 ## 🔧 核心功能详解
 
-### JSON转换工作流
+### JSON 筛选工作流
 
-1. **数据输入与预览**：第一列上部分实时显示解析后的JSON结构，下部分提供输入框
-2. **代码编写**：第二列编写JavaScript转换逻辑
-3. **结果查看**：第三列显示转换后的结果
+1. **数据输入与预览**：第一列上部分实时显示解析后的 JSON 结构，下部分提供输入框
+2. **字段选择**：点击 JSON 字段或在筛选面板中选择要提取的字段
+3. **筛选配置**：选择筛选模式（指定层级或递归深度）和输出格式
+4. **结果查看**：第二列实时显示筛选后的结果
 
-### 代码执行机制
+### 筛选功能详解
 
-系统使用安全的代码执行环境：
+系统提供两种筛选模式：
+
+#### 指定层级筛选
+
+适用于有明确数组结构的 JSON 数据，从指定路径中提取字段：
 
 ```javascript
-// 转换函数模板
-function transform(json) {
-  // 用户编写的转换代码
-  return json.address // 示例：提取地址信息
-}
+// 示例：从 json.users 数组中提取 name 和 email 字段
+const targetData = json.users
+const keys = ['name', 'email']
+return targetData.map((item) => {
+  const result = {}
+  keys.forEach((key) => {
+    if (item.hasOwnProperty(key)) {
+      result[key] = item[key]
+    }
+  })
+  return result
+})
 ```
 
-支持的功能：
+#### 递归深度筛选
 
-- **ES6+语法**：箭头函数、解构赋值、模板字符串等
-- **JSONPath查询**：使用jsonpath库进行复杂数据查询
-- **错误处理**：自动捕获和显示运行时错误
-- **类型安全**：自动处理数据类型转换
+适用于复杂嵌套结构，递归搜索整个 JSON 中的指定字段：
 
-### AI助手使用
+```javascript
+// 示例：递归收集所有 name 和 email 字段
+const keys = ['name', 'email']
+const result = {}
+keys.forEach((key) => {
+  result[key] = []
+})
 
-配置API密钥后，可以用自然语言描述转换需求，AI会自动生成相应的JavaScript代码。
+function collectFields(obj, path = '') {
+  if (typeof obj === 'object' && obj !== null) {
+    Object.keys(obj).forEach((key) => {
+      if (keys.includes(key)) {
+        result[key].push(obj[key])
+      }
+      if (typeof obj[key] === 'object') {
+        collectFields(obj[key], path + '.' + key)
+      }
+    })
+  }
+}
 
-**示例描述**：
-
-- "提取所有用户的姓名和邮箱"
-- "筛选年龄大于25岁的用户"
-- "将数组转换为以ID为键的对象"
+collectFields(json)
+return result
+```
 
 ## 📖 使用示例
 
-### 基础数据转换
+### 基础字段筛选
 
-**输入JSON：**
+**输入 JSON：**
 
 ```json
 {
@@ -203,17 +213,20 @@ function transform(json) {
 }
 ```
 
-**转换代码：**
+**筛选操作：**
 
-```javascript
-// 提取用户姓名列表
-return json.users.map((user) => user.name)
-```
+1. 选择筛选模式：指定层级筛选
+2. 设置数组路径：`json.users`
+3. 选择字段：`name`, `city`
+4. 选择输出格式：对象格式
 
 **输出结果：**
 
 ```json
-["张三", "李四"]
+[
+  { "name": "张三", "city": "北京" },
+  { "name": "李四", "city": "上海" }
+]
 ```
 
 ## 🛠️ 开发和部署
@@ -233,4 +246,4 @@ npm run build
 
 ---
 
-**JsonToJs** - 让JSON数据转换变得简单而强大 🚀
+**JsonToJs** - 让 JSON 数据筛选变得简单而强大 🚀

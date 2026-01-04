@@ -1,6 +1,7 @@
-import { inject, provide, computed } from 'vue'
+import { inject, provide, computed, watch } from 'vue'
 import { useJsonProcessorStore } from '@/stores/jsonProcessor.js'
 import { useErrorHandler } from '@/shared/composables/useErrorHandler.js'
+import { generateFilterCode, executeFilterCode, debounce } from '@/shared/utils/filterUtils.js'
 
 // JSON处理上下文
 export const JSON_CONTEXT_KEY = Symbol('json-context')
@@ -30,51 +31,6 @@ export function provideJsonContext() {
     }
   }
 
-  const executeTransform = async (code) => {
-    try {
-      jsonProcessor.setExecuting(true)
-      jsonProcessor.setTransformCode(code)
-
-      // 执行转换逻辑
-      const result = await executeCode(code, jsonProcessor.state.parsedJson)
-      jsonProcessor.setTransformedJson(result)
-
-      return result
-    } catch (error) {
-      jsonProcessor.addTransformError(error)
-      handleError(error, '代码执行')
-      throw error
-    } finally {
-      jsonProcessor.setExecuting(false)
-    }
-  }
-
-  // 代码执行函数
-  const executeCode = async (code, json) => {
-    return new Promise((resolve, reject) => {
-      try {
-        // 创建安全的执行环境
-        const func = new Function(
-          'json',
-          'jsonpath',
-          `
-          try {
-            ${code}
-          } catch (error) {
-            throw new Error('代码执行错误: ' + error.message);
-          }
-        `,
-        )
-
-        // 执行代码
-        const result = func(json, window.jsonpath)
-        resolve(result)
-      } catch (error) {
-        reject(error)
-      }
-    })
-  }
-
   const clearAllErrors = () => {
     jsonProcessor.clearErrors()
   }
@@ -87,22 +43,95 @@ export function provideJsonContext() {
     updateJsonInput(historyItem.content)
   }
 
+  // 筛选相关方法
+  const updateFilterConfig = (config) => {
+    jsonProcessor.updateFilterConfig(config)
+  }
+
+  const addSelectedKey = (key) => {
+    jsonProcessor.addSelectedKey(key)
+  }
+
+  const removeSelectedKey = (key) => {
+    jsonProcessor.removeSelectedKey(key)
+  }
+
+  const clearSelectedKeys = () => {
+    jsonProcessor.clearSelectedKeys()
+  }
+
+  // 计算属性 - 重新包装以确保响应性
+  const hasValidJson = computed(() => jsonProcessor.hasValidJson)
+  const canExecuteFilter = computed(() => jsonProcessor.canExecuteFilter)
+  const hasErrors = computed(() => jsonProcessor.hasErrors)
+  const latestError = computed(() => jsonProcessor.latestError)
+
+  // 执行筛选
+  const executeFilter = async () => {
+    try {
+      if (!canExecuteFilter.value) {
+        return
+      }
+
+      jsonProcessor.setExecuting(true)
+
+      // 生成筛选代码
+      const code = generateFilterCode(jsonProcessor.state.filterConfig)
+
+      // 执行筛选
+      const result = await executeFilterCode(code, jsonProcessor.state.parsedJson)
+      jsonProcessor.setTransformedJson(result)
+
+      return result
+    } catch (error) {
+      jsonProcessor.addTransformError(error)
+      handleError(error, '筛选执行')
+      throw error
+    } finally {
+      jsonProcessor.setExecuting(false)
+    }
+  }
+
+  // 防抖的自动执行筛选
+  const debouncedExecuteFilter = debounce(executeFilter, 300)
+
+  // 监听筛选配置变化，自动执行筛选
+  watch(
+    () => [
+      jsonProcessor.state.filterConfig.selectedKeys,
+      jsonProcessor.state.filterConfig.method,
+      jsonProcessor.state.filterConfig.outputFormat,
+      jsonProcessor.state.filterConfig.listPath,
+      jsonProcessor.state.parsedJson,
+    ],
+    () => {
+      if (jsonProcessor.state.filterConfig.autoExecute && canExecuteFilter.value) {
+        debouncedExecuteFilter()
+      }
+    },
+    { deep: true },
+  )
+
   const context = {
     // 状态
     jsonState: jsonProcessor.state,
 
     // 方法
     updateJsonInput,
-    executeTransform,
+    executeFilter,
     clearAllErrors,
     getInputHistory,
     restoreFromHistory,
+    updateFilterConfig,
+    addSelectedKey,
+    removeSelectedKey,
+    clearSelectedKeys,
 
     // 计算属性 - 重新包装以确保响应性
-    hasValidJson: computed(() => jsonProcessor.hasValidJson.value),
-    canExecuteTransform: computed(() => jsonProcessor.canExecuteTransform.value),
-    hasErrors: computed(() => jsonProcessor.hasErrors.value),
-    latestError: computed(() => jsonProcessor.latestError.value),
+    hasValidJson,
+    canExecuteFilter,
+    hasErrors,
+    latestError,
   }
 
   provide(JSON_CONTEXT_KEY, context)

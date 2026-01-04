@@ -12,10 +12,13 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       vue(),
-      vueDevTools(),
-      codeInspectorPlugin({
-        bundler: 'vite',
-      }),
+      // 在扩展模式下禁用开发工具插件，避免CSP问题
+      ...(!isExtension ? [
+        vueDevTools(),
+        codeInspectorPlugin({
+          bundler: 'vite',
+        }),
+      ] : []),
     ],
     resolve: {
       alias: {
@@ -38,7 +41,16 @@ export default defineConfig(({ mode }) => {
             entryFileNames: 'assets/[name].js',
             chunkFileNames: 'assets/[name].js',
             assetFileNames: 'assets/[name].[ext]',
+            // 确保代码不包含eval或Function构造函数
+            format: 'es',
           },
+          external: [
+            // 排除可能使用eval的开发依赖
+            'code-inspector-plugin',
+            'vite-plugin-vue-devtools',
+            // 排除使用eval的jsonpath库（在扩展中我们使用自己的实现）
+            'jsonpath'
+          ]
         },
       }),
       // 非扩展模式的配置
@@ -70,15 +82,7 @@ export default defineConfig(({ mode }) => {
               // 将大型库分离成独立的chunk
               'vue-vendor': ['vue', 'vue-router', 'pinia'],
               vuetify: ['vuetify'],
-              codemirror: [
-                'codemirror',
-                '@codemirror/state',
-                '@codemirror/view',
-                '@codemirror/commands',
-                '@codemirror/lang-javascript',
-                '@codemirror/theme-one-dark',
-                '@lezer/highlight',
-              ],
+
               'babel-utils': ['@babel/parser', '@babel/types'],
               highlight: ['highlight.js'],
               jsonpath: ['jsonpath'],
@@ -98,6 +102,14 @@ export default defineConfig(({ mode }) => {
         compress: {
           drop_console: true, // 移除console.log
           drop_debugger: true, // 移除debugger
+          // 在扩展模式下额外的安全配置
+          ...(isExtension && {
+            unsafe: false, // 禁用不安全的优化
+          }),
+        },
+        mangle: {
+          // 在扩展模式下保持函数名，避免CSP问题
+          keep_fnames: isExtension,
         },
       },
     },
