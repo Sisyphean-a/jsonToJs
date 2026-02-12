@@ -82,11 +82,7 @@ export default defineConfig(({ mode }) => {
               // 将大型库分离成独立的chunk
               'vue-vendor': ['vue', 'vue-router', 'pinia'],
               vuetify: ['vuetify'],
-
-              'babel-utils': ['@babel/parser', '@babel/types'],
-              highlight: ['highlight.js'],
               jsonpath: ['jsonpath'],
-              openai: ['openai'],
             },
           },
         },
